@@ -1,0 +1,3 @@
+[submodule "realtime-playground"]
+	path = realtime-playground
+	url = git@github.com:googledrive/realtime-playground.git
