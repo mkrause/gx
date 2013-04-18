@@ -14,6 +14,7 @@ public class JsTestScript {
 	public static void main(String[] args) {
 
 		ScriptEngine js = new ScriptEngineManager().getEngineByName("javascript");
+		System.out.println("ScriptEngine: " + js);
 	    Bindings bindings = js.getBindings(ScriptContext.ENGINE_SCOPE);
 	    
 	    bindings.put("stdout", System.out);
@@ -21,12 +22,11 @@ public class JsTestScript {
 	    	BufferedReader br = new BufferedReader(new FileReader(new File("src/test/testScript.js")));
 			js.eval(br);
 			System.out.println(js.get("helloVar"));
+			//XXX: Note that the helloFunction is executed in the js script by default. This get call does not invoke the function
 			System.out.println(js.get("helloFunction"));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    // Prints "-1.0" to the standard output stream.
 	}
 
 }
