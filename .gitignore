@@ -1,5 +1,6 @@
 *.class
 *.log
+bin/
 
 # sbt specific
 dist/*
@@ -11,4 +12,4 @@ project/plugins/project/
 
 # Scala-IDE specific
 .scala_dependencies
-bin/*.js
+
