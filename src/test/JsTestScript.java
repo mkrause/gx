@@ -22,7 +22,8 @@ public class JsTestScript {
 	    	BufferedReader br = new BufferedReader(new FileReader(new File("src/test/testScript.js")));
 			js.eval(br);
 			System.out.println(js.get("helloVar"));
-			//XXX: Note that the helloFunction is executed in the js script by default. This get call does not invoke the function
+			//XXX: Note that the helloFunction is executed in the js script by default. This get call does not invoke the function.
+			//Invoking functions is really done by js.eval
 			System.out.println(js.get("helloFunction"));
 		} catch (Exception e) {
 			e.printStackTrace();
