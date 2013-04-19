@@ -6,9 +6,10 @@ import java.io.FileReader;
 
 import org.mozilla.javascript.*;
 
-public class jsWrapper {
+public class JsWrapper {
 	
 	private static String[] scriptPaths = new String[]{
+		//TODO: add jQuery and other dependables of playground?
 		"src/js/gxWrapper.js",
 		"../realtime-playground/js/realtime-client-utils.js",
 		"../realtime-playground/js/rtpg.js",
@@ -24,7 +25,7 @@ public class jsWrapper {
 	private Context context;
 	private Scriptable scope;
 	
-	public jsWrapper(){
+	public JsWrapper(){
 		
 	}
 	
