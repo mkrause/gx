@@ -10,3 +10,11 @@
 	function helloLazyFunction(value1, value2){
 		return "This string contains the parameter: " + value1 + " and " + value2;
 	};
+
+	function testFunction(){
+		java.test();
+	}
+
+	function addEventListener(handler){
+		handler();
+	}
