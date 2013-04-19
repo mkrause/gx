@@ -17,15 +17,15 @@ public class jsWrapper {
 		"src/js/api.js",
 		"src/js/jquery.min.js",
 		"src/js/jquery-ui.min.js",
-		"../realtime-playground/js/realtime-client-utils.js",
-		"../realtime-playground/js/rtpg.js",
-		"../realtime-playground/js/rtpg.log.js",
-		"../realtime-playground/js/rtpg.string.js",
-		"../realtime-playground/js/rtpg.list.js",
-		"../realtime-playground/js/rtpg.map.js",
-		"../realtime-playground/js/rtpg.custom.js",
-		"../realtime-playground/js/rtpg.collaborators.js",
-		"../realtime-playground/js/rtpg.ui.js",
+		"realtime-playground/js/realtime-client-utils.js",
+		"realtime-playground/js/rtpg.js",
+		"realtime-playground/js/rtpg.log.js",
+		"realtime-playground/js/rtpg.string.js",
+		"realtime-playground/js/rtpg.list.js",
+		"realtime-playground/js/rtpg.map.js",
+		"realtime-playground/js/rtpg.custom.js",
+        "realtime-playground/js/rtpg.collaborators.js",
+        "realtime-playground/js/rtpg.ui.js",
 	};
 	
 	private Context context;
@@ -49,8 +49,9 @@ public class jsWrapper {
             ScriptableObject.putProperty(scope, "stdout", jsOut);
             
             for(String path : scriptPaths){
+                String fileName = new File(path).getName();
             	BufferedReader br = new BufferedReader(new FileReader(new File(path)));
-            	context.evaluateReader(scope, br, "<cmd>", 1, null);
+            	context.evaluateReader(scope, br, fileName, 1, null);
             }
 		} catch(Exception e){
 			e.printStackTrace();
