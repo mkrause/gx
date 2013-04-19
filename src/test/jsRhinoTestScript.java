@@ -25,10 +25,21 @@ public class jsRhinoTestScript {
              Object jsOut = Context.javaToJS(System.out, scope);
              ScriptableObject.putProperty(scope, "stdout", jsOut);
              
+             //TODO: test if this can be reversed
+             BufferedReader external = new BufferedReader(new FileReader(new File("src/test/externalScript.js")));
+             cx.evaluateReader(scope, external, "<cmd>", 1, null);
              BufferedReader br = new BufferedReader(new FileReader(new File("src/test/testScript.js")));
              cx.evaluateReader(scope, br, "<cmd>", 1, null);
 
+             
+             
+             //System.out.println("Calling external function");
+             Function externalFunction = (Function)scope.get("externalFunction", scope);
+             Object externalResult = externalFunction.call(cx, scope, scope, new Object[] {4});
+             System.out.println("externalResult: " + externalResult);
+
              System.out.println(scope.get("helloVar", scope));
+             
              //XXX: Note that the helloFunction is executed in the js script by default. This get call does not invoke the function
              System.out.println(scope.get("helloFunction", scope));
              
