@@ -1,0 +1,1 @@
+Run this script on a local web server (localhost) to successfully authenticate your Google account using OAuth 2.0.
