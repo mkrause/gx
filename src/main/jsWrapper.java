@@ -13,6 +13,10 @@ public class jsWrapper {
 		//TODO: add jQuery and other dependables of playground?
 		"src/test/env.rhino.js",
 		"src/js/gxWrapper.js",
+		"src/js/jsapi.js",
+		"src/js/api.js",
+		"src/js/jquery.min.js",
+		"src/js/jquery-ui.min.js",
 		"../realtime-playground/js/realtime-client-utils.js",
 		"../realtime-playground/js/rtpg.js",
 		"../realtime-playground/js/rtpg.log.js",
