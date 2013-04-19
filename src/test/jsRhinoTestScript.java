@@ -25,7 +25,6 @@ public class jsRhinoTestScript {
              Object jsOut = Context.javaToJS(System.out, scope);
              ScriptableObject.putProperty(scope, "stdout", jsOut);
              
-             //TODO: test if this can be reversed
              BufferedReader external = new BufferedReader(new FileReader(new File("src/test/externalScript.js")));
              cx.evaluateReader(scope, external, "<cmd>", 1, null);
              BufferedReader br = new BufferedReader(new FileReader(new File("src/test/testScript.js")));
