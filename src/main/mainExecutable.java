@@ -6,9 +6,10 @@ public class mainExecutable {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JsWrapper js = new JsWrapper();
+		jsWrapper js = new jsWrapper();
 		js.initialize();
 		
+		System.out.println("All files loaded.");
 	}
 
 }

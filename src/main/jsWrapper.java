@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileReader;
 
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.tools.shell.Global;
 
-public class JsWrapper {
+public class jsWrapper {
 	
 	private static String[] scriptPaths = new String[]{
 		//TODO: add jQuery and other dependables of playground?
+		"src/test/env.rhino.js",
 		"src/js/gxWrapper.js",
 		"../realtime-playground/js/realtime-client-utils.js",
 		"../realtime-playground/js/rtpg.js",
@@ -25,17 +27,19 @@ public class JsWrapper {
 	private Context context;
 	private Scriptable scope;
 	
-	public JsWrapper(){
+	public jsWrapper(){
 		
 	}
 	
 	public void initialize(){
 		context = Context.enter();
+		context.setOptimizationLevel(-1);
+		Global scope = new Global(context);
 		try {
             // Initialize the standard objects (Object, Function, etc.)
             // This must be done before scripts can be executed. Returns
             // a scope object that we use in later calls.
-            scope = context.initStandardObjects();
+            //scope = context.initStandardObjects();
             
             Object jsOut = Context.javaToJS(System.out, scope);
             ScriptableObject.putProperty(scope, "stdout", jsOut);
