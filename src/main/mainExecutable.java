@@ -10,6 +10,8 @@ public class mainExecutable {
 		js.initialize();
 		
 		System.out.println("All files loaded.");
+		
+		js.callFunction("wrapperTest", null);
 	}
 
 }
