@@ -29,9 +29,6 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-/**
- * @author Yaniv Inbar
- */
 public class ServiceAccountTest {
 
   /** E-mail address of the service account. */
@@ -150,7 +147,7 @@ public class ServiceAccountTest {
     	  //System.out.println("File md5:" + file.getMd5Checksum());
           System.out.println("Contentlink of file: " + file.getWebContentLink());
           //System.out.println("Downloadlink: " + file.getDownloadUrl());
-          InputStream fileContents = DriveComm.downloadFile(service, file);
+          InputStream fileContents = DriveComm.getFileContents(service, file);
           BufferedReader reader = new BufferedReader(new InputStreamReader(fileContents));
           String line;
           while((line = reader.readLine())!=null){

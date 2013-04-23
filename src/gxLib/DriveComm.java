@@ -18,7 +18,7 @@ public class DriveComm {
 	 * @param file Drive File instance.
 	 * @return InputStream containing the file's content if successful, {@code null} otherwise.
 	 */
-	public static InputStream downloadFile(Drive service, File file) {
+	public static InputStream getFileContents(Drive service, File file) {
 		if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
 			try {
 				HttpResponse resp = service.getRequestFactory()
@@ -67,10 +67,6 @@ public class DriveComm {
 				java.io.File fileContent = new java.io.File(newFilename);
 				FileContent mediaContent = new FileContent(newMimeType, fileContent);
 				
-				//OutputStream out = new FileOutputStream(new java.io.File("out.txt"));
-				//mediaContent.writeTo(out);
-				//System.out.println("file mediaContent to be updated written to out.txt");
-
 				// Send the request to the API.
 				File updatedFile = service.files().update(fileId, file, mediaContent).execute();
 
@@ -93,5 +89,29 @@ public class DriveComm {
 		} catch (IOException e) {
 			System.out.println("An error occurred: " + e);
 		}
+	}
+	
+	/**
+	 * Wraper function for creating a new file in Google Drive
+	 * @param service The Drive that should be used to add the new file.
+	 * @param title The title of the new file.
+	 * @param description The description of the new file.
+	 * @param mimeType The mimeType of the new file.
+	 * @return The new file.
+	 */
+	public static File createFile(Drive service, String title, String description, String mimeType){
+		File file = new File();
+		file.setTitle(title);
+		file.setDescription(description);
+		file.setMimeType(mimeType);
+		
+		File result = null;
+	    try {
+			result = service.files().insert(file).execute();
+		} catch (IOException e) {
+			e.printStackTrace();
+			result = null;
+		}
+	    return result;
 	}
 }
