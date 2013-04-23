@@ -7,6 +7,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.Json;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.tasks.*;
@@ -16,7 +17,13 @@ import com.google.api.services.calendar.model.*;
 import com.google.api.services.drive.*;
 import com.google.api.services.drive.model.*;
 
+import gxLib.DriveComm;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -104,11 +111,52 @@ public class ServiceAccountTest {
 //      body.setMimeType("application/vnd.google-apps.document");
 //      service.files().insert(body).execute();
       
+      /*
+      File body = new File();
+    body.setTitle("A sample TEXT file");
+    body.setDescription("Dit is een plain text file");
+    body.setMimeType("plain/text");
+    service.files().insert(body).execute();
+    */
+      
+
+      //create file on which content of files will be based
+      String newFilename = "baseFile.txt";
+      Long time = System.nanoTime();
+      PrintWriter writer = new PrintWriter(newFilename, "UTF-8");
+      writer.println("File created at:");
+      writer.println(time);
+      writer.close();
+
+      
       FileList files = service.files().list().execute();
       
       for (com.google.api.services.drive.model.File file : files.getItems()) {
-        System.out.println("File: " + file.getTitle());
+        System.out.println("File: " + file.getId() + " / " + file.getTitle() + " - " + file.getMimeType());
+        //System.out.println("File md5:" + file.getMd5Checksum());
+        
+        if(!file.getMimeType().equals("plain/text")){
+        	System.out.println("Deleting file " + file.getId());
+        	DriveComm.deleteFile(service, file.getId());
+        } else {
+        	System.out.println("Updating file with timestamp: " + time);
+        	DriveComm.updateFile(service, file.getId(), file.getTitle(), file.getDescription(), file.getMimeType(), newFilename, true);
+        }
       }
+      
+      files = service.files().list().execute();
+      for (com.google.api.services.drive.model.File file : files.getItems()) {
+    	  System.out.println("File: " + file.getId() + " / " + file.getTitle() + " - " + file.getMimeType());
+    	  //System.out.println("File md5:" + file.getMd5Checksum());
+          System.out.println("Contentlink of file: " + file.getWebContentLink());
+          //System.out.println("Downloadlink: " + file.getDownloadUrl());
+          InputStream fileContents = DriveComm.downloadFile(service, file);
+          BufferedReader reader = new BufferedReader(new InputStreamReader(fileContents));
+          String line;
+          while((line = reader.readLine())!=null){
+        	  System.out.println(line);
+          }
+        }
       
       System.exit(0);
 
