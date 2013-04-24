@@ -100,12 +100,12 @@ public class ServiceAccountTest {
       com.google.api.services.drive.Drive service =
               new com.google.api.services.drive.Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
               .setApplicationName("Realtime-Gx/1.0").build();
-      
-      // Add file
+
+      // Add Realtime file
 //      File body = new File();
-//      body.setTitle("A sample file");
-//      body.setDescription("Beschrijving");
-//      body.setMimeType("application/vnd.google-apps.document");
+//      body.setTitle("GxFile");
+//      body.setDescription("A Realtime Gx file");
+//      body.setMimeType("application/vnd.google-apps.drive-sdk");
 //      service.files().insert(body).execute();
       
       /*
