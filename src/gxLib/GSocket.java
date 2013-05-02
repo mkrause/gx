@@ -24,8 +24,6 @@ public class GSocket {
      * Global configuration of Google Cloud Storage OAuth 2.0 scope. 
      */
     private static final String SCOPES[] = new String[] {
-        com.google.api.services.tasks.TasksScopes.TASKS,
-        com.google.api.services.calendar.CalendarScopes.CALENDAR,
         com.google.api.services.drive.DriveScopes.DRIVE
     };
 

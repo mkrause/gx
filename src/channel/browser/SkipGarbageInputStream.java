@@ -1,9 +1,14 @@
-package oauth;
+package channel.browser;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A stream wrapper that skips certain garbage characters: )]}'
+ * 
+ * @author Erik
+ */
 public class SkipGarbageInputStream extends FilterInputStream
 {
     private String garbage = ")]}'\n";

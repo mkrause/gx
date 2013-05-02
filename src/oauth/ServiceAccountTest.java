@@ -10,10 +10,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.Json;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.tasks.*;
-import com.google.api.services.tasks.model.*;
-import com.google.api.services.calendar.*;
-import com.google.api.services.calendar.model.*;
 import com.google.api.services.drive.*;
 import com.google.api.services.drive.model.*;
 
@@ -37,8 +33,6 @@ public class ServiceAccountTest {
 
   /** Global configuration of Google Cloud Storage OAuth 2.0 scope. */
   private static final String SCOPES[] = new String[] {
-      com.google.api.services.tasks.TasksScopes.TASKS,
-      com.google.api.services.calendar.CalendarScopes.CALENDAR,
       com.google.api.services.drive.DriveScopes.DRIVE
   };
 

@@ -1,11 +1,11 @@
-package oauth;
+package channel.browser;
 
 import com.google.api.client.util.Key;
 
-public class JsonGs
+public class Session
 {
     @Key("sid")
-    private String sessionId;
+    private String id;
 
     @Key("revision")
     private int revision;
@@ -16,16 +16,13 @@ public class JsonGs
     @Key("modelId")
     private String modelId;
     
+    // TODO: parse snapshot
 //    @Key("snapshot")
 //    private type Snapshot;
-    
-    public JsonGs()
-    {
-    }
 
-    public String getSessionId()
+    public String getId()
     {
-        return sessionId;
+        return id;
     }
     
     public int getRevision()
