@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,17 +18,39 @@ public class Xhrio
 {
 
     private static Logger logger = LogManager.getLogger(Xhrio.class);
+    private HashMap<String, String> default_headers;
+
     private URLWithQuery lastUri;
     private HttpURLConnection xhr;
 
-    public void send(URLWithQuery url, String method, String content, Map<String, String> headers)
+    public Xhrio() {
+        default_headers = new HashMap<String, String>();
+
+    }
+
+    /**
+     * Performs a certain XHR request.
+     *
+     * @param url
+     * @param method
+     * @param content
+     * @param extra_headers
+     * @return
+     */
+    // TODO: Use callbacks
+    public String send(URLWithQuery url, String method, String content, Map<String, String> extra_headers)
     {
         this.lastUri = url;
 
-        if (method == "POST") {
+        if (method.equals("POST")) {
             // For POST requests, default to the url-encoded form content type.
-            headers.put("Content-Type", "application/x-www-form-urlencoded");
+            extra_headers.put("Content-Type", "application/x-www-form-urlencoded");
         }
+
+        HashMap<String, String> headers = (HashMap<String, String>)default_headers.clone();
+        headers.putAll(extra_headers);
+
+        String output = "";
 
         try {
             logger.info("Opening connection");
@@ -36,7 +59,7 @@ public class Xhrio
             xhr.setDoInput(true);
             xhr.setInstanceFollowRedirects(false);
             xhr.setRequestMethod("POST");
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
+            for (Map.Entry<String, String> entry : extra_headers.entrySet()) {
                 xhr.setRequestProperty(entry.getKey(), entry.getValue());
             }
             xhr.setRequestProperty("charset", "utf-8");
@@ -55,9 +78,7 @@ public class Xhrio
 
         logger.info("Sending request");
         try {
-
-            DataOutputStream writer = new DataOutputStream(
-                    xhr.getOutputStream ());
+            DataOutputStream writer = new DataOutputStream(xhr.getOutputStream());
             writer.writeBytes(content);
             writer.flush();
             writer.close();
@@ -72,9 +93,12 @@ public class Xhrio
                 response.append('\r');
             }
             reader.close();
+            output = response.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return output;
     }
 
 }

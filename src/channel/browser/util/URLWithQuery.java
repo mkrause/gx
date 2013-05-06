@@ -33,6 +33,21 @@ public class URLWithQuery implements Cloneable
             queryMap.put(parts[0], parts[1]);
         }
     }
+
+    public URLWithQuery(String url, Map<String, String> queryMap) throws MalformedURLException
+    {
+        if(url == null)
+            throw new IllegalArgumentException("URL must not be null");
+
+        if(queryMap == null)
+            throw new IllegalArgumentException("Query map must not be null");
+
+        this.url = new URL(url);
+        if(this.url.getQuery() != null)
+            throw new MalformedURLException("URL must not contain a query");
+
+        this.queryMap = queryMap;
+    }
     
     public URLWithQuery(URL url, Map<String, String> queryMap) throws MalformedURLException
     {

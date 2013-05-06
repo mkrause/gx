@@ -1,5 +1,8 @@
 package channel;
 
+import channel.browser.Session;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+
 public interface Channel
 {    
     public void initialize(String driveFileId);
@@ -13,4 +16,10 @@ public interface Channel
     
     public void isClosed();
     public void getState();
+
+    Session getSession();
+
+    void openBackwardChannel();
+
+    void openForwardChannel();
 }

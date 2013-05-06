@@ -46,7 +46,7 @@ public class ChannelRequest
         sendXmlHttp();
     }
 
-    private void sendXmlHttp()
+    private String sendXmlHttp()
     {
         this.requestUri = this.baseUri.clone();
         this.requestUri.setParameterValue("t", Integer.toString(this.retryId));
@@ -58,11 +58,10 @@ public class ChannelRequest
         if (this.postData.length() > 0) {
             this.verb = "POST";
             headers.put("Content-Type", "application/x-www-form-urlencoded");
-            this.xmlHttp.send(this.requestUri, this.verb, this.postData, headers);
         } else {
             this.verb = "GET";
-            this.xmlHttp.send(this.requestUri, this.verb, null, headers);
         }
+        return this.xmlHttp.send(this.requestUri, this.verb, this.postData, headers);
     }
 }
 
