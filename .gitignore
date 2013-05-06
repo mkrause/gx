@@ -15,3 +15,8 @@ project/plugins/project/
 
 
 baseFile.txt
+
+# IDEA files
+.idea
+*.iml
+out/
