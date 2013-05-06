@@ -13,3 +13,10 @@ project/plugins/project/
 # Scala-IDE specific
 .scala_dependencies
 
+
+baseFile.txt
+
+# IDEA files
+.idea
+*.iml
+out/

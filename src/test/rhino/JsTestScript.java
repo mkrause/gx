@@ -1,4 +1,4 @@
-package test;
+package test.rhino;
 
 import java.io.BufferedReader;
 import java.io.File;

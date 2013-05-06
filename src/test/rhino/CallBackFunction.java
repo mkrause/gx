@@ -1,4 +1,4 @@
-package test;
+package test.rhino;
 
 import org.mozilla.javascript.*;
 
