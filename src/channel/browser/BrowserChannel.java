@@ -1,13 +1,11 @@
 package channel.browser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.json.JsonFactory;
@@ -16,6 +14,8 @@ import channel.Channel;
 import channel.Message;
 import channel.MessageHandler;
 import channel.browser.util.URLWithQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A Java port of the JavaScript implementation of BrowserChannel.
@@ -30,10 +30,20 @@ public class BrowserChannel implements Channel
     private String baseUrl = "https://drive.google.com/otservice";
     private String modelId;
     private Session session;
-    
+    private static Logger logger = LogManager.getLogger(BrowserChannel.class);
+    private String path;
+    private String clientVersion;
+    private URLWithQuery forwardChannelUri;
+    private State state;
+    private ChannelRequest forwardChannelRequest;
+    private int nextRid;
+    private int lastArrayId;
+    private List<? extends Queue<String>> outgoingMaps;
+
     public BrowserChannel(Credential credentials)
     {
         this.credentials = credentials;
+        outgoingMaps = new LinkedList<LinkedList<String>>();
     }
     
     @Override
@@ -48,15 +58,127 @@ public class BrowserChannel implements Channel
     @Override
     public void connect()
     {
-        // TODO Auto-generated method stub
-        
+        logger.info("connect()");
+
+        this.path = "/bind";
+
+        //path = channelPath;
+        //this.extraParams = extraParams
+
+        // Test the connection quality, does not actually seem to do anything else
+        connectTest("/test");
+    }
+
+    /**
+     * Establishes a new channel session with the the server.
+     * @private
+     */
+    private void open() {
+        nextRid = (int) Math.floor(Math.random() * 100000);
+
+        int rid = nextRid++;
+
+        ChannelRequest request = createChannelRequest(this, "", rid);
+//        request.setExtraHeaders(this.extraHeaders);
+        String requestText = this.dequeueOutgoingMaps();
+        URLWithQuery uri = this.forwardChannelUri.clone();
+        uri.setParameterValue("RID", Integer.toString(rid));
+        if(this.clientVersion != null) {
+            uri.setParameterValue("CVER", this.clientVersion);
+        }
+
+        request.xmlHttpPost(uri, requestText);
+        this.forwardChannelRequest = request;
+    }
+
+    private ChannelRequest createChannelRequest(BrowserChannel browserChannel, String sessionId, int rid) {
+        return new ChannelRequest(browserChannel, sessionId, rid, 0);
+    }
+
+    public void connectTest(String testPath) {
+        // Check if the handler says it"s ok to make a request
+        //handler.okToMakeRequest()
+    }
+
+    public void connectChannel() {
+        this.forwardChannelUri = getForwardChannelUri(path);
+        ensureForwardChannel();
+    }
+
+    private void ensureForwardChannel()
+    {
+        if(this.forwardChannelRequest != null) {
+            // connection in process - no need to start a new request
+            return;
+        }
+
+        startForwardChannel();
+    }
+
+    private void startForwardChannel()
+    {
+        logger.info("startForwardChannel");
+
+        if(!okToMakeRequest()) {
+            return;
+        } else if(state == State.INIT) {
+            open();
+            state = State.OPENING;
+        } else if (this.state == State.OPENED) {
+            if(outgoingMaps.size() == 0) {
+                logger.debug("startForwardChannel returned: nothing to send");
+
+                return;
+            }
+
+            if(forwardChannelRequest != null) {
+                logger.info("startForwardChannel returned: connection already in progress");
+            }
+
+            makeForwardChannelRequest();
+            logger.debug("startForwardChannel finished, sent request");
+        }
+    }
+
+    private void makeForwardChannelRequest()
+    {
+        int rid;
+        String requestText;
+
+        rid = this.nextRid++;
+        requestText = dequeueOutgoingMaps();
+
+        URLWithQuery uri = forwardChannelUri.clone();
+
+        uri.setParameterValue("SID", this.session.getId());
+        uri.setParameterValue("RID", Integer.toString(rid));
+        uri.setParameterValue("AID", Integer.toString(this.lastArrayId));
+        //addAdditionalParams(uri);
+
+        ChannelRequest request = createChannelRequest(this, session.getId(), rid);
+
+        //request.setExtraHeaders(this.extraHeaders);
+
+        request.xmlHttpPost(uri, requestText);
+    }
+
+    private String dequeueOutgoingMaps()
+    {
+        // TODO: implement dequeueing
+        return "";
+    }
+
+    private boolean okToMakeRequest()
+    {
+        return true;
     }
 
     @Override
     public void disconnect()
     {
-        // TODO Auto-generated method stub
-        
+        logger.info("disconnect()");
+
+        // TODO: Cancel outstanding requests
     }
 
     @Override
@@ -91,7 +213,7 @@ public class BrowserChannel implements Channel
     public void getState()
     {
         // TODO Auto-generated method stub
-        
+
     }
     
     private String getModelId(String driveFileId)
@@ -196,5 +318,48 @@ public class BrowserChannel implements Channel
 //        while((line = reader.readLine()) != null)
 //            System.out.println(line);
 //        reader.close();
+    }
+
+    /**
+     * Gets the Uri used for the connection that sends data to the server.
+     * @return {goog.Uri} The forward channel URI.
+     */
+    public URLWithQuery getForwardChannelUri(String path)
+    {
+        return createDataUri(null, path);
+    }
+
+    /**
+     * Creates a data Uri applying logic for secondary hostprefix, port
+     * overrides, and versioning.
+     * @return {goog.Uri} The data URI.
+     */
+    private URLWithQuery createDataUri(String hostPrefix, String path) {
+        String hostName;
+        if (hostPrefix != null) {
+            hostName = hostPrefix + "." + baseUrl;
+        } else {
+            hostName = baseUrl;
+        }
+
+        // Set up parameters
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        // Add the protocol version to the URI.
+        parameters.put("VER", Integer.toString(this.channelVersion));
+
+        // Add the reconnect parameters.
+        // TODO: track additional parameters for reconnecting purposes, if necessary
+        // this.addAdditionalParams_(uri);
+
+        URLWithQuery urlq = null;
+        try {
+            urlq = new URLWithQuery(new URL(baseUrl + path), parameters);
+        } catch (MalformedURLException e) {
+            logger.error("createDataUri: MalformedURLException");
+            e.printStackTrace();
+        }
+
+        return urlq;
     }
 }

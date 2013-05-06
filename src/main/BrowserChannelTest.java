@@ -84,21 +84,21 @@ public class BrowserChannelTest {
       
       Channel channel = new BrowserChannel(credential);
       channel.initialize(fileId);
-            
+
 //      // Forward Channel (POST)
 //      System.out.println("Forward Channel (POST)");
 //      String RID = "66172";
 //      int CVER = 1;
-//      random = "i9dw6xv4b81e";
+//      String random = "i9dw6xv4b81e";
 //      byte[] rawData = new byte[0];
 //      String urlParameters = "id=" + modelId + "&access_token=" + accessToken + "&sid=" + sessionId + "&VER=" + version + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&CVER=" + CVER + "&zx=" + random + "&t=" + retries;
 //      url = new URL(baseURL + "/bind?" + urlParameters);
 //      connection = (HttpURLConnection) url.openConnection();
 //      connection.setDoOutput(true);
 //      connection.setDoInput(true);
-//      connection.setInstanceFollowRedirects(false); 
-//      connection.setRequestMethod("POST"); 
-//      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
+//      connection.setInstanceFollowRedirects(false);
+//      connection.setRequestMethod("POST");
+//      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 //      connection.setRequestProperty("charset", "utf-8");
 //      connection.setRequestProperty("Content-Length", "0");
 //      connection.setUseCaches (false);
