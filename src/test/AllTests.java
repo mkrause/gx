@@ -12,6 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	CollaborativeMapTest.class
+	//TODO: create more tests
 })
 
 public class AllTests {

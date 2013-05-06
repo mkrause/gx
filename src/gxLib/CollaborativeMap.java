@@ -5,24 +5,26 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class CollaborativeMap<V extends Cloneable>{
+public class CollaborativeMap<V extends Cloneable> extends CollaborativeObject{
+	/*TODO: constraints on V:
+	 * - Should be serializable to JSON
+	 * - Should be cloneable?
+	 */
+	
 	
 	//TODO: javadoc. Use javadoc of google docs as much as possible
 
 	private HashMap<String, V> map;
-	private String id;
-	public int size;
 	
 	//TODO: constructor:
 	//This class should not be instantiated directly. To create a new map, use gapi.drive.realtime.Model.prototype.createMap().
-	public CollaborativeMap(){
+	public CollaborativeMap(Model model){
+		super(model);
 		map = new HashMap<String, V>();
-		//TODO: determine the id of this object...
 	}
 	
 	public V delete(String key){
 		V result = map.remove(key);
-		size = map.size();
 		return result;
 	}
 	
@@ -62,7 +64,6 @@ public class CollaborativeMap<V extends Cloneable>{
 	
 	public V set(String key, V value){
 		V result = map.put(key, value);
-		size = map.size();
 		return result;
 	}
 	
@@ -72,22 +73,13 @@ public class CollaborativeMap<V extends Cloneable>{
 		return null;
 	}
 	
-	public String getId(){
-		return this.id;
-	}
-	
 	public String toString(){
 		return map.toString();
 	}
 	
-	public void addEventListener(){
-		//TODO?
+	public int size(){
+		return map.size();
 	}
-	
-	public void removeEventListener(){
-		//TODO?
-	}
-	
 	
 	
 }
