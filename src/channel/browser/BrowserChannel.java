@@ -3,6 +3,8 @@ package channel.browser;
 import channel.Channel;
 import channel.Message;
 import channel.MessageHandler;
+import channel.browser.util.ConnectionFactory;
+import channel.browser.util.RandomUtils;
 import channel.browser.util.URLQueryBuilder;
 import channel.browser.util.URLWithQuery;
 import com.google.api.client.auth.oauth2.Credential;
@@ -55,20 +57,6 @@ public class BrowserChannel implements Channel
         outgoingMaps = new LinkedList<LinkedList<String>>();
     }
 
-    public URLQueryBuilder getDefaultParamBuilder()
-    {
-        URLQueryBuilder q = new URLQueryBuilder();
-        q.put("id", modelId)
-                .put("access_token", credentials.getAccessToken())
-                .put("sid", session.getId())
-                .put("VER", Integer.toString(channelVersion))
-                .put("lsq", Long.toString(lastSequenceNumber))
-                .put("RID", Integer.toString(nextRid++))
-                .put("t", "" + retries);
-
-        return q;
-    }
-
     @Override
     public void initialize(String driveFileId)
     {
@@ -85,10 +73,10 @@ public class BrowserChannel implements Channel
         logger.info("Delta channel");
         int startRevision = session.getRevision() + 1;
         try {
-            URLQueryBuilder m = getDefaultParamBuilder().put("startRev", startRevision);
+            URLQueryBuilder m = getDefaultQueryBuilder().put("startRev", startRevision);
 
             URLWithQuery url = new URLWithQuery(baseUrl + "/delta", m);
-            HttpURLConnection connection = createConnection(url, "GET");
+            HttpURLConnection connection = ConnectionFactory.createConnection(url, "GET");
             BufferedReader reader = new BufferedReader(new InputStreamReader(new SkipGarbageInputStream(connection.getInputStream())));
             String line;
             while ((line = reader.readLine()) != null)
@@ -113,12 +101,12 @@ public class BrowserChannel implements Channel
 
         String response = "";
         try {
-            URLQueryBuilder queryBuilder = getDefaultParamBuilder();
-            queryBuilder.put("CVER", clientVersion).put("zx", getRandomString());
+            URLQueryBuilder queryBuilder = getDefaultQueryBuilder();
+            queryBuilder.put("CVER", clientVersion).put("zx", RandomUtils.getRandomString());
 
             url = new URLWithQuery(baseUrl + "/bind", queryBuilder);
 
-            connection = createConnection(url, "POST");
+            connection = ConnectionFactory.createConnection(url, "POST");
             connection.setRequestProperty("Content-Length", "0");
             connection.getOutputStream().write(new byte[0]);
 
@@ -168,11 +156,11 @@ public class BrowserChannel implements Channel
         int CI = 0; // are we chunked?
 
         logger.info("openBackwardChannel (GET)");
-        // String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&SID=" + channelSessionId + "&AID=" + AID + "&CI=" + CI + "&TYPE=" + type + "&zx=" + getRandomString() + "&t=" + retries;
-        URLQueryBuilder params = getDefaultParamBuilder();
+        // String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&SID=" + channelSessionId + "&AID=" + AID + "&CI=" + CI + "&TYPE=" + type + "&zx=" + RandomUtils.getRandomString() + "&t=" + retries;
+        URLQueryBuilder params = getDefaultQueryBuilder();
         params.put("SID", channelSessionId).put("AID", AID)
                 .put("CI", CI).put("TYPE", "xmlhttp")
-                .put("zx", getRandomString()).put("RID", "rpc");
+                .put("zx", RandomUtils.getRandomString()).put("RID", "rpc");
 
         URL url;
         try {
@@ -245,7 +233,7 @@ public class BrowserChannel implements Channel
         long lastSequenceNumber = -1;
         int retries = 1;
         try {
-            URL url = new URL(baseUrl + testPath + "?id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&MODE=" + mode + "&zx=" + getRandomString() + "&t=" + retries);
+            URL url = new URL(baseUrl + testPath + "?id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&MODE=" + mode + "&zx=" + RandomUtils.getRandomString() + "&t=" + retries);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
@@ -296,11 +284,12 @@ public class BrowserChannel implements Channel
             connection.setUseCaches(false);
             connection.getOutputStream().write(rawData);
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String response = "";
+            StringBuffer response = new StringBuffer();
             String line;
             while ((line = reader.readLine()) != null)
-                response += line;
+                response.append(line);
             reader.close();
+            logger.debug("forwardChannel response: {}", response.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ProtocolException e) {
@@ -309,26 +298,7 @@ public class BrowserChannel implements Channel
             e.printStackTrace();
         }
 
-//       // Google API compliant implementation;
-//        if (!okToMakeRequest()) {
-//            return;
-//        } else if (state == State.INIT) {
-//            open();
-//            state = State.OPENING;
-//        } else if (this.state == State.OPENED) {
-//            if (outgoingMaps.size() == 0) {
-//                logger.debug("startForwardChannel returned: nothing to send");
-//
-//                return;
-//            }
-//
-//            if (forwardChannelRequest != null) {
-//                logger.info("startForwardChannel returned: connection already in progress");
-//            }
-//
-//            makeForwardChannelRequest();
-//            logger.debug("startForwardChannel finished, sent request");
-//        }
+        // TODO: do something with the response?
     }
 
     private void makeForwardChannelRequest()
@@ -357,11 +327,6 @@ public class BrowserChannel implements Channel
     {
         // TODO: implement dequeueing
         return "";
-    }
-
-    private boolean okToMakeRequest()
-    {
-        return true;
     }
 
     @Override
@@ -529,7 +494,7 @@ public class BrowserChannel implements Channel
 
         URLWithQuery urlq = null;
         try {
-            urlq = new URLWithQuery(new URL(baseUrl + path), parameters);
+            urlq = new URLWithQuery(new URL(hostName + path), parameters);
         } catch (MalformedURLException e) {
             logger.error("createDataUri: MalformedURLException");
             e.printStackTrace();
@@ -543,36 +508,19 @@ public class BrowserChannel implements Channel
         return credentials.getAccessToken();
     }
 
-    private HttpURLConnection createConnection(URLWithQuery url, String method)
-    {
-        HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) url.getURL().openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setInstanceFollowRedirects(false);
-
-            connection.setRequestMethod(method);
-
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-            connection.setUseCaches(false);
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return connection;
-    }
-
     /**
-     * Generates a pseudorandom String containing the hexadecimal representation of a Math.random value.
-     *
+     * Returns an URLQueryBuilder containing the default parameters for this BrowserChannel
      * @return
      */
-    private String getRandomString()
+    public URLQueryBuilder getDefaultQueryBuilder()
     {
-        return Long.toHexString(Double.doubleToLongBits(Math.random()));
+        return new URLQueryBuilder()
+                .put("id", modelId)
+                .put("access_token", credentials.getAccessToken())
+                .put("sid", session.getId())
+                .put("VER", Integer.toString(channelVersion))
+                .put("lsq", Long.toString(lastSequenceNumber))
+                .put("RID", Integer.toString(nextRid++))
+                .put("t", "" + retries);
     }
 }
