@@ -60,6 +60,8 @@ public class BrowserChannel implements Channel
         output.put("id", modelId);
         output.put("access_token", credentials.getAccessToken());
         output.put("sid", session.getId());
+
+        return output;
     }
 
     @Override
@@ -100,7 +102,6 @@ public class BrowserChannel implements Channel
         int RID = nextRid++;
         String random = "i9dw6xv4b81e";
         byte[] rawData = new byte[0];
-
 
         String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion +
                 "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
