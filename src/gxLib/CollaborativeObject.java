@@ -11,7 +11,7 @@ public abstract class CollaborativeObject extends EventTarget{
 	private String id;
 	protected Model model;
 	
-	public CollaborativeObject(Model model){
+	protected CollaborativeObject(Model model){
 		this.model = model;
 		//TODO: determine id of this object.
 	}

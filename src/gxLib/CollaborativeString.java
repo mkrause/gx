@@ -4,7 +4,7 @@ public class CollaborativeString extends CollaborativeObject {
 	
 	private String value;
 	
-	public CollaborativeString(Model model){
+	protected CollaborativeString(Model model){
 		super(model);
 	}
 	

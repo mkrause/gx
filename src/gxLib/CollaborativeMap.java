@@ -5,14 +5,14 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class CollaborativeMap<V extends Cloneable> extends CollaborativeObject{
+public class CollaborativeMap<V> extends CollaborativeObject{
 	//TODO: javadoc. Use javadoc of google docs as much as possible
 
 	private HashMap<String, V> map;
 	
 	//TODO: constructor:
 	//This class should not be instantiated directly. To create a new map, use gapi.drive.realtime.Model.prototype.createMap().
-	public CollaborativeMap(Model model){
+	protected CollaborativeMap(Model model){
 		super(model);
 		map = new HashMap<String, V>();
 	}
