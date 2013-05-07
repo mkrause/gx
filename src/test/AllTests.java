@@ -4,6 +4,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import test.gxLib.CollaborativeListTest;
+import test.gxLib.CollaborativeMapTest;
+import test.gxLib.CollaborativeObjectTest;
+import test.gxLib.CollaborativeStringTest;
+import test.gxLib.EventTargetTest;
+import test.gxLib.IndexReferenceTest;
+import test.gxLib.MainTest;
+import test.gxLib.ModelTest;
+
 /**
  * Test suite for all non-db errors
  * @author Rdebokx
@@ -11,8 +20,15 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-	CollaborativeMapTest.class
-	//TODO: create more tests
+	//gxLib tests
+	CollaborativeListTest.class,
+	CollaborativeMapTest.class,
+	CollaborativeObjectTest.class,
+	CollaborativeStringTest.class,
+	EventTargetTest.class,
+	IndexReferenceTest.class,
+	MainTest.class,
+	ModelTest.class
 })
 
 public class AllTests {

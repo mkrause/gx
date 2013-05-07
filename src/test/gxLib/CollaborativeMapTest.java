@@ -1,4 +1,4 @@
-package test;
+package test.gxLib;
 
 import static org.junit.Assert.*;
 import gxLib.CollaborativeMap;

@@ -1,9 +1,10 @@
-package gxLib;
+package test;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.*;
 
 import gxLib.DriveComm;
+import gxLib.GSocket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
