@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class CollaborativeList<E> extends CollaborativeObject{
-	/*TODO: constraints on E:
-	 * - Should be serializable to JSON
-	 * - Should be cloneable
-	 */
-	
+
 	private ArrayList<E> values;
 	
 	public CollaborativeList(Model model){
@@ -17,10 +13,10 @@ public class CollaborativeList<E> extends CollaborativeObject{
 		//TODO: determine id of the document.
 	}
 	
+	@SuppressWarnings("unchecked")
 	public E[] asArray(){
-		//TODO: objects should be cloned...
-		
-		return null;
+		//TODO: test if this actually clones are returned
+		return (E[]) values.toArray();
 	}
 	
 	public E get(int index){
@@ -80,9 +76,7 @@ public class CollaborativeList<E> extends CollaborativeObject{
 	}
 	
 	public IndexReference registerReference(int index, boolean canBeDeleted){
-		//TODO
-		
-		return null;
+		return new IndexReference(this.model, index, canBeDeleted);
 	}
 	
 	public void remove(int index){
@@ -109,10 +103,6 @@ public class CollaborativeList<E> extends CollaborativeObject{
 	
 	public void set(int index, E value){
 		values.set(index, value);
-	}
-	
-	public String toString(){
-		return values.toString();
 	}
 	
 	public int length(){

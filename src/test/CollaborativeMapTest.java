@@ -10,7 +10,6 @@ public class CollaborativeMapTest {
 	@Test
 	public void testItems() {
 		fail("Not yet implemented");
-		
 	}
 	
 	@Test

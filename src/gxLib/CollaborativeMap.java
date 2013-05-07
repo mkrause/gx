@@ -6,12 +6,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class CollaborativeMap<V extends Cloneable> extends CollaborativeObject{
-	/*TODO: constraints on V:
-	 * - Should be serializable to JSON
-	 * - Should be cloneable?
-	 */
-	
-	
 	//TODO: javadoc. Use javadoc of google docs as much as possible
 
 	private HashMap<String, V> map;
@@ -40,14 +34,8 @@ public class CollaborativeMap<V extends Cloneable> extends CollaborativeObject{
 		return map.isEmpty();
 	}
 	
-	/* TODO: implement items function
-	 * note that returned items should be clones. So either use a clone library, or only support 
-	 * cloneable objects (However this means that immutable objects such as Integers and Strings are not supported and
-	 * need to be worked around)
-	 */
-	public V[][] items(){
-		//TODO
-		return null;
+	public Set<Entry<String, V>> items(){
+		return map.entrySet();
 	}
 	
 	public String[] keys(){
@@ -67,14 +55,10 @@ public class CollaborativeMap<V extends Cloneable> extends CollaborativeObject{
 		return result;
 	}
 	
-	/*TODO: create array of clones. Note that this means we can only support cloneable objects, or need a cloning library */
+	@SuppressWarnings("unchecked")
 	public V[] values(){
-		//TODO
-		return null;
-	}
-	
-	public String toString(){
-		return map.toString();
+		//TODO: test if it actually contains clones
+		return (V[]) map.values().toArray();
 	}
 	
 	public int size(){

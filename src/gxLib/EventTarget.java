@@ -2,5 +2,15 @@ package gxLib;
 
 public class EventTarget {
 
-	//TODO
+	public EventTarget(){
+		
+	}
+	
+	public void addEventListener(/*TODO*/){
+		//TODO
+	}
+	
+	public void removeEventListener(/*TODO*/){
+		//TODO
+	}
 }

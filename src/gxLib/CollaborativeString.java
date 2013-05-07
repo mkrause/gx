@@ -21,8 +21,7 @@ public class CollaborativeString extends CollaborativeObject {
 	}
 	
 	public IndexReference registerReference(int index, boolean canBeDeleted){
-		//TODO
-		return null;
+		return new IndexReference(this.model, index, canBeDeleted);
 	}
 	
 	public void removeRange(int startIndex, int endIndex){
@@ -32,10 +31,6 @@ public class CollaborativeString extends CollaborativeObject {
 	public void setText(String text){
 		//TODO: investigate why in the Google SDK API they say that the value should be changed with text insert and remove actions.
 		value = text;
-	}
-	
-	public String toString(){
-		return value;
 	}
 	
 	public int length(){
