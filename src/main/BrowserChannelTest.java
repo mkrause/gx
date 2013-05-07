@@ -83,7 +83,7 @@ public class BrowserChannelTest
             channel.connect();
             channel.openDeltaChannel();
             channel.openForwardChannel();
-//            channel.openBackwardChannel();
+            channel.openBackwardChannel();
 
             System.out.println("done");
             System.exit(0);
