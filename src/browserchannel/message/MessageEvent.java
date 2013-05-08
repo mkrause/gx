@@ -1,4 +1,6 @@
-package channel;
+package browserchannel.message;
+
+import browserchannel.BrowserChannel;
 
 public class MessageEvent extends java.util.EventObject
 {
@@ -6,7 +8,7 @@ public class MessageEvent extends java.util.EventObject
     
     private Message message;
     
-    public MessageEvent(Channel channel, Message message)
+    public MessageEvent(BrowserChannel channel, Message message)
     {
         super(channel);
         this.message = message;

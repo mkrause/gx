@@ -1,6 +1,7 @@
-package channel.browser;
+package browserchannel;
 
-import channel.browser.util.URLWithQuery;
+import browserchannel.util.URLWithQuery;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

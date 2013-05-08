@@ -1,6 +1,6 @@
-package channel.browser;
+package browserchannel;
 
-import channel.browser.util.URLWithQuery;
+import browserchannel.util.URLWithQuery;
 
 /**
  *

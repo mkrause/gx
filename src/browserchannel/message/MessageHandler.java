@@ -1,4 +1,4 @@
-package channel;
+package browserchannel.message;
 
 public interface MessageHandler
 {

@@ -1,4 +1,4 @@
-package channel.browser.util;
+package browserchannel.util;
 
 /**
  * Utility class containing helpers for the creation of pseudo random data

@@ -1,4 +1,4 @@
-package channel.browser.util;
+package browserchannel.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;

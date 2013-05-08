@@ -1,4 +1,4 @@
-package channel.browser;
+package browserchannel;
 
 /**
  *

@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import channel.browser.BrowserChannel;
+import browserchannel.BrowserChannel;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
