@@ -14,7 +14,8 @@ public class CollaborativeListTest {
 	
 	@Before
 	public void setUp(){
-		model = Main.load("abc123");
+	    // TODO
+		//model = Main.load("abc123");
 	}
 	
 	@Test

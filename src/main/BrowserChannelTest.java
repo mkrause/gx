@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import browserchannel.BrowserChannel;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -67,6 +70,8 @@ public class BrowserChannelTest
      * Location of the credential file of the user.
      */
     private static String CREDENTIAL_FILE;
+    
+    private static Logger logger = LogManager.getLogger(BrowserChannelTest.class);
 
     public static void main(String[] args)
     {
@@ -86,8 +91,8 @@ public class BrowserChannelTest
             // Get token
             credential.refreshToken();
             String accessToken = credential.getAccessToken();
-            System.out.println("Access token: " + accessToken);
-            System.out.println("Expires in " + credential.getExpiresInSeconds() + " seconds");
+            logger.debug("Access token: {}", accessToken);
+            logger.debug("Expires in {} seconds", credential.getExpiresInSeconds());
 
             Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APP_NAME).build();
@@ -107,8 +112,8 @@ public class BrowserChannelTest
                 }
             }
             
-            System.out.println("FileID: " + fileId);
-            System.out.println("FileName: " + fileName);
+            logger.debug("FileID: {}", fileId);
+            logger.debug("FileName: {}", fileName);
             
             if(fileId == null)
                 throw new Exception("No Realtime file found");

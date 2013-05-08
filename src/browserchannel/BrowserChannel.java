@@ -92,7 +92,7 @@ public class BrowserChannel
 
             URLWithQuery url = new URLWithQuery(baseUrl + "/delta", m);
             HttpURLConnection connection = ConnectionFactory.createConnection(url, "GET");
-            InputStream in = new SkipGarbageInputStream(connection.getInputStream());
+            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
             JsonFactory jfactory = new JsonFactory();
@@ -119,7 +119,6 @@ public class BrowserChannel
 //                "&lsq=" + lastSequenceNumber + "&RID=" + randomId + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
         URLWithQuery url;
 
-        String response = "";
         try {
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder();
             queryBuilder.put("CVER", clientVersion).put("zx", RandomUtils.getRandomString());
@@ -131,30 +130,20 @@ public class BrowserChannel
             connection.getOutputStream().write(new byte[0]);
 
             logger.debug("Sent request, reading input");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new SkipGarbageInputStream(connection.getInputStream())));
-            StringBuffer responseBuffer = new StringBuffer();
-            String line;
-            while ((line = reader.readLine()) != null)
-                responseBuffer.append(line + "\n");
-            reader.close();
-            response = responseBuffer.toString();
-            
-            // TODO: improve this fix, could be done in the SkipGarbageInputStream class (rename to NormalizeJsonInputStream)
-            response = response.replaceAll(",,", ",null,");
+            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
             JsonFactory jfactory = new JsonFactory();
-            JsonParser jParser = jfactory.createParser(response);
+            JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
             Message[] messages = jParser.readValueAs(Message[].class);
             
+            // Process messages
             for(Message m : messages) {
-                if(m instanceof SessionMessage)
+                if(m instanceof SessionMessage) {
                     channelSessionId = ((SessionMessage)m).getId();
-                if(m instanceof UserMessage)
-                {
+                } else if(m instanceof UserMessage) {
                     User user = ((UserMessage)m).getUser();
                     logger.debug("User: {}, (me: {})", user.getDisplayName(), user.isMe());
                 }
@@ -201,6 +190,7 @@ public class BrowserChannel
             stream = new InputStreamReader(connection.getInputStream());
 
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
+            // TODO: parse incoming messages
             int character;
             while ((character = stream.read()) != -1)
                 System.out.print(String.valueOf((char) character));
@@ -388,10 +378,9 @@ public class BrowserChannel
 
     }
 
-    public void getState()
+    public State getState()
     {
-        // TODO Auto-generated method stub
-
+        return state;
     }
 
     private String getModelId(String driveFileId)
@@ -405,7 +394,7 @@ public class BrowserChannel
             // Create connection
             URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/modelid"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            InputStream in = new SkipGarbageInputStream(connection.getInputStream());
+            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
             JsonFactory jfactory = new JsonFactory();
@@ -431,7 +420,7 @@ public class BrowserChannel
             // Create connection
             URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/gs"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            InputStream in = new SkipGarbageInputStream(connection.getInputStream());
+            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
             JsonFactory jfactory = new JsonFactory();
@@ -527,6 +516,7 @@ public class BrowserChannel
 
     private String getAccessToken()
     {
+        // TODO: refresh token, if necessary
         return credentials.getAccessToken();
     }
 
