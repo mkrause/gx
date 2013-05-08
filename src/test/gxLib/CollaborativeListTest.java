@@ -1,28 +1,33 @@
 package test.gxLib;
 
 import static org.junit.Assert.*;
+import gxLib.CollaborativeList;
+import gxLib.Main;
+import gxLib.Model;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class CollaborativeListTest {
 
+	private Model model;
+	
+	@Before
+	public void setUp(){
+		model = Main.load("abc123");
+	}
+	
 	@Test
 	public void testCollaborativeList() {
-		fail("Not yet implemented");
+		CollaborativeList<TestObject> list = model.createList();
+		assertNotNull(list.getId());
+		assertEquals(0, list.length());
+		
+		//TODO: maybe test base case?, including push and set
 	}
 
 	@Test
 	public void testAsArray() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGet() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testIndexOfE() {
 		fail("Not yet implemented");
 	}
 
@@ -32,17 +37,7 @@ public class CollaborativeListTest {
 	}
 
 	@Test
-	public void testInsert() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testInsertAll() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testLastIndexOfE() {
 		fail("Not yet implemented");
 	}
 
@@ -52,22 +47,7 @@ public class CollaborativeListTest {
 	}
 
 	@Test
-	public void testPush() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testPushAll() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testRegisterReference() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testRemove() {
 		fail("Not yet implemented");
 	}
 
@@ -79,20 +59,11 @@ public class CollaborativeListTest {
 	@Test
 	public void testRemoveValue() {
 		fail("Not yet implemented");
+		//TODO: test for list of Integers: no unexpected behavior with indices vs values?
 	}
 
 	@Test
 	public void testReplaceRange() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSet() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testLength() {
 		fail("Not yet implemented");
 	}
 
