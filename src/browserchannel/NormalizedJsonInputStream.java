@@ -40,17 +40,21 @@ public class NormalizedJsonInputStream extends FilterInputStream
     
     public boolean nextChunk() throws IOException
     {
+        // Not a chunked stream
         if(!isChunked)
             return false;
         
+        // Trim beginning of chunk
         skipStreamPrefix();
         super.mark(1);
         
+        // Check for EOF
         if(super.read() == -1) {
             startOfChunk = false;
             return false;
         }
-
+        
+        // There is another chunk
         startOfChunk = true;
         super.reset();
         state = State.Normal;
@@ -62,7 +66,7 @@ public class NormalizedJsonInputStream extends FilterInputStream
     {
         int c;
         
-        // Indicate end of stream, if stream is chunked and nextChunk() has not been called
+        // Signal end of stream, if stream is chunked and nextChunk() has not been called
         if(isChunked && !startOfChunk)
             return -1;
         
@@ -111,7 +115,7 @@ public class NormalizedJsonInputStream extends FilterInputStream
                 state = State.CommaSeen;
                 return COMMA;
                 
-            // Indicate end of stream
+            // Signal end of stream
             case EndOfChunk:
             default:
                 return -1;
@@ -120,20 +124,14 @@ public class NormalizedJsonInputStream extends FilterInputStream
     
     private boolean isEndOfChunk(int c)
     {
-        boolean change;
         switch(c) {
+            case BRACKET_CLOSE:
+                return --numOpenBrackets == 0;
             case BRACKET_OPEN:
                 numOpenBrackets++;
-                change = true;
                 break;
-            case BRACKET_CLOSE:
-                numOpenBrackets--;
-                change = true;
-                break;
-            default:
-                change = false;
         }
-        return change && numOpenBrackets == 0;
+        return false;
     }
 
     @Override
