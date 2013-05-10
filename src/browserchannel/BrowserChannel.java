@@ -51,6 +51,7 @@ public class BrowserChannel
     private String channelSessionId;
     private Credential credentials;
     private String modelId;
+    private JsonFactory jfactory = new JsonFactory();
 
     public BrowserChannel(Credential credentials)
     {
@@ -95,7 +96,6 @@ public class BrowserChannel
             InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
-            JsonFactory jfactory = new JsonFactory();
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
@@ -133,7 +133,6 @@ public class BrowserChannel
             InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
-            JsonFactory jfactory = new JsonFactory();
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
@@ -144,11 +143,14 @@ public class BrowserChannel
                 if(m instanceof SessionMessage) {
                     channelSessionId = ((SessionMessage)m).getId();
                 } else if(m instanceof UserMessage) {
-                    User user = ((UserMessage)m).getUser();
-                    logger.debug("User: {}, (me: {})", user.getDisplayName(), user.isMe());
+                    // TODO: do something with users, pass to message handler
+                    logger.debug(((UserMessage)m).toString());
+                } else {
+                    logger.debug("Other message");
                 }
                 lastSequenceNumber = m.getLastArrayId();
             }
+            in.close();
             
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -183,18 +185,30 @@ public class BrowserChannel
             e.printStackTrace();
             return;
         }
-        HttpURLConnection connection;
-        InputStreamReader stream;
+
         try {
-            connection = (HttpURLConnection) url.openConnection();
-            stream = new InputStreamReader(connection.getInputStream());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            NormalizedJsonInputStream in = new NormalizedJsonInputStream(connection.getInputStream(), true);
 
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
-            // TODO: parse incoming messages
-            int character;
-            while ((character = stream.read()) != -1)
-                System.out.print(String.valueOf((char) character));
-            System.out.println();
+            while(in.nextChunk()) {
+                JsonParser jParser = jfactory.createParser(in);
+                ObjectMapper mapper = new ObjectMapper();
+                jParser.setCodec(mapper);
+
+                Message[] messages = jParser.readValueAs(Message[].class);
+                for(Message m : messages) {
+                    // TODO: pass all messages, except NOOP, to handler
+                    if(m instanceof NoopMessage) {
+                        logger.debug("NOOP");
+                    } else if(m instanceof UserMessage) {
+                        logger.debug(((UserMessage)m).toString());
+                    } else {
+                        logger.debug("Other message");
+                    }
+                }
+            }
+            in.close();
         } catch (IOException e) {
             logger.error("IOException: " + e.getMessage());
             e.printStackTrace();
@@ -397,7 +411,6 @@ public class BrowserChannel
             InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
-            JsonFactory jfactory = new JsonFactory();
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
@@ -423,7 +436,6 @@ public class BrowserChannel
             InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
 
             // Parse response
-            JsonFactory jfactory = new JsonFactory();
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);

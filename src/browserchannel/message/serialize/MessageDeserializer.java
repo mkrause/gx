@@ -94,6 +94,7 @@ public class MessageDeserializer extends JsonDeserializer<Message>
 
     private Message readMessage(JsonParser jp, int type) throws JsonProcessingException, IOException
     {
+        // TODO: recognize other message types
         switch(type) {
             case 5:
                 return jp.readValueAs(UserMessage.class);

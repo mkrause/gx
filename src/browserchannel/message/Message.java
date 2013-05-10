@@ -8,8 +8,8 @@ import com.google.api.client.util.DateTime;
 @JsonDeserialize(using = MessageDeserializer.class)
 public abstract class Message
 {
-    private int lastArrayId = -1;
-    private DateTime timestamp = null;
+    protected int lastArrayId = -1;
+    protected DateTime timestamp = null;
     
     public void setLastArrayId(int lastArrayId)
     {

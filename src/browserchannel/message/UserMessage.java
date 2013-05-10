@@ -20,6 +20,12 @@ public class UserMessage extends Message
         return user;
     }
     
+    @Override
+    public String toString()
+    {
+        return "UserMessage[AID: " + lastArrayId + ", timestamp: " + timestamp + ", user: User[name: " + user.displayName  +", isMe: " + user.isMe + "]]";
+    }
+    
     public static class User
     {
         @JsonProperty("color")
