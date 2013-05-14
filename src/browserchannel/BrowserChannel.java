@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -93,7 +94,7 @@ public class BrowserChannel
 
             URLWithQuery url = new URLWithQuery(baseUrl + "/delta", m);
             HttpURLConnection connection = ConnectionFactory.createConnection(url, "GET");
-            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -130,7 +131,7 @@ public class BrowserChannel
             connection.getOutputStream().write(new byte[0]);
 
             logger.debug("Sent request, reading input");
-            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -188,7 +189,7 @@ public class BrowserChannel
 
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            NormalizedJsonInputStream in = new NormalizedJsonInputStream(connection.getInputStream(), true);
+            NormalizedJsonReader in = new NormalizedJsonReader(connection.getInputStream(), true);
 
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
             while(in.nextChunk()) {
@@ -408,7 +409,7 @@ public class BrowserChannel
             // Create connection
             URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/modelid"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -433,7 +434,7 @@ public class BrowserChannel
             // Create connection
             URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/gs"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            InputStream in = new NormalizedJsonInputStream(connection.getInputStream());
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);

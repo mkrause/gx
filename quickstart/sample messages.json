@@ -1,3 +1,52 @@
+// Object types
+//  0: CollaborativeMap
+//  1: CollaborativeList
+//  2: CollaborativeString
+
+// Value types
+//  1: EditableString
+//  2: CollaborativeObject
+//  21: json
+
+// Event types
+//  0: ObjectChangedEvent?
+//  1: ?
+//  5: CollaboratorJoinedEvent
+//  6: CollaboratorLeftEvent
+
+// Snapshot (document model)
+[
+  [
+    7, // operation type: create CollaborativeObject
+    "root", // the object id
+    0 // object type: CollaborativeMap (1: CollaborativeList, 2: CollaborativeString)
+  ],
+  [
+    7, // operation type: create CollaborativeObject
+    "gdenhcaajhgyv50ud", // the object id
+    2 // object type: CollaborativeString
+  ],
+  [
+    5, // operation type: insert (6 means delete)
+    "gdenhcaajhgyv50ud", // the object id
+    0, // position to enter/delete data
+    [
+      1, // value type: EditableString (2: CollaborativeObject, 21: json)
+      "Hello Realtime World!" // the value (a string)
+    ]
+  ],
+  [
+    8, // operation type: set value
+    "root", // the object id
+    "text", // key name
+    [
+      2, // value type: CollaborativeObject
+      "gdenhcaajhgyv50ud" // the value (an object id)
+    ]
+  ]
+]
+
+// Init messages
 758 // Content length
 [
   [
@@ -12,7 +61,7 @@
   [
     1, // AID
     [
-      5, // Message type: user related
+      5, // Message type: CollaboratorJoinedEvent
       1367925530423, // Unix timestamp (ms)
       {
         "color":"#58B442",
@@ -32,7 +81,7 @@
   [
     2, // AID
     [
-      5, // Message type: user related
+      5, // Message type: CollaboratorJoinedEvent
       1367925530425, // Unix timestamp (ms)
       {
         "color":"#58B442",
@@ -81,56 +130,56 @@
   [
     14, // AID
     [
-      0, // Message type: ?
+      0, // Message type: ObjectChangedEvent
       1367937931301, // Unix timestamp (ms)
       [
         [
           [
             [
-              9
+              9 // Acknowledgement?
             ]
           ],
           1367938042047, // Unix timestamp (ms)
           "112956879592017678596", // User Id
           10, // revision
           "34eed1ce5e1fc8e1", // sid
-          5
+          5 // requestNumber of the message that is acknowledged
         ],
         [
           [
             [
-              9
+              9 // Acknowledgement?
             ]
           ],
           1367938042047, // Unix timestamp (ms)
           "112956879592017678596", // User Id
           11, // revision
           "34eed1ce5e1fc8e1", // sid
-          5
+          5 // requestNumber of the message that is acknowledged
         ],
         [
           [
             [
-              9
+              9 // Acknowledgement?
             ]
           ],
           1367938042047, // Unix timestamp (ms)
           "112956879592017678596", // User Id
           12, // revision
           "34eed1ce5e1fc8e1", // sid
-          5
+          5 // requestNumber of the message that is acknowledged
         ],
         [
           [
             [
-              9
+              9 // Acknowledgement?
             ]
           ],
           1367938042047, // Unix timestamp (ms)
           "112956879592017678596", // User Id
           13, // revision
           "34eed1ce5e1fc8e1", // sid
-          5
+          5 // requestNumber of the message that is acknowledged
         ]
       ]
     ]
@@ -142,20 +191,20 @@
   [
     42, // AID
     [
-      0, // Message type: ?
+      0, // Message type: ObjectChangedEvent
       1367937931304, // Unix timestamp (ms)
       [
         [
           [
             [
-              9
+              9 // Acknowledgement?
             ]
           ],
           1367938530789, // Unix timestamp (ms)
           "112956879592017678596", // User Id
           14, // revision
           "34eed1ce5e1fc8e1", // sid
-          6
+          6 // requestNumber of the message that is acknowledged
         ]
       ]
     ]
@@ -167,7 +216,7 @@
   [
     76, // AID
     [
-      5, // Message type: ?
+      5, // Message type: CollaboratorJoinedEvent
       1367937931311, // Unix timestamp (ms)
       {"color":"#58B442","displayName":"Erik van der Veen","isActive":true,"isAnonymous":false,"isMe":false,"isNew":true,"photoUrl":"\/\/lh5.googleusercontent.com\/-93KE3EpMwQY\/AAAAAAAAAAI\/AAAAAAAADcc\/1zkYuRv7BJY\/s128-c\/photo.jpg","profileId":"112956879592017678596","sid":"31d9317c707d16a1","userId":"112956879592017678596","userType":0}
     ]
@@ -179,7 +228,7 @@
   [
     78, // AID
     [
-      6, // Message type: ?
+      6, // Message type: CollaboratorLeftEvent
       1367937931314, // Unix timestamp (ms)
       {"sid":"31d9317c707d16a1","userId":"112956879592017678596"}
     ]
@@ -191,22 +240,22 @@
   [
     90, // AID
     [
-      0, // Message type: ?
+      0, // Message type: ObjectChangedEvent
       1367937931321, // Unix timestamp (ms)
       [
         [
           [
             [
-              4,
+              4, // ?
               [
-                0,
+                0, // ?
                 [
-                  5, // operation type: insert (6 means delete)
-                  "gde9cnpj3hg952dy9",
+                  5, // operation type: TextInsertedEvent (6 means TextDeletedEvent)
+                  "gde9cnpj3hg952dy9", // the object id
                   37, // position to enter/delete data
                   [
-                    1,
-                    " " // character content
+                    1, // value type: EditableString
+                    " " // value to insert
                   ]
                 ]
               ]
@@ -216,7 +265,7 @@
           "112956879592017678596", // User Id
           19, // revision
           "39c1e633a0c5ef19", // sid
-          0
+          0 // requestNumber of this client
         ]
       ]
     ]
@@ -228,22 +277,22 @@
   [
     91, // AID
     [
-      0, // Message type: ?
+      0, // Message type: ObjectChangedEvent
       1367937931323, // Unix timestamp (ms)
       [
         [
           [
             [
-              4,
+              4, // ?
               [
-                0,
+                0, // ?
                 [
-                  5, // operation type: insert (6 means delete)
-                  "gde9cnpj3hg952dy9",
+                  5, // operation type: TextInsertedEvent (6 means TextDeletedEvent)
+                  "gde9cnpj3hg952dy9", // the object id
                   38, // position to enter/delete data
                   [
-                    1,
-                    "t" // character content
+                    1, // value type: EditableString
+                    "t" // value to insert
                   ]
                 ]
               ]
@@ -253,21 +302,21 @@
           "112956879592017678596", // User Id
           20, // revision
           "39c1e633a0c5ef19", // sid
-          1
+          1 // requestNumber of this client
         ],
         [
           [
             [
-              4,
+              4, // ?
               [
-                0,
+                0, // ?
                 [
-                  5, // operation type: insert (6 means delete)
-                  "gde9cnpj3hg952dy9",
+                  5, // operation type: TextInsertedEvent (6 means TextDeletedEvent)
+                  "gde9cnpj3hg952dy9", // the object id
                   39, // position to enter/delete data
                   [
-                    1,
-                    "e" // character content
+                    1, // value type: EditableString
+                    "e" // value to insert
                   ]
                 ]
               ]
@@ -277,21 +326,21 @@
           "112956879592017678596", // User Id
           21, // revision
           "39c1e633a0c5ef19", // sid
-          1
+          1 // requestNumber of this client
         ],
         [
           [
             [
-              4,
+              4, // ?
               [
-                0,
+                0, // ?
                 [
-                  5, // operation type: insert
-                  "gde9cnpj3hg952dy9",
+                  5, // operation type: TextInsertedEvent (6 means TextDeletedEvent)
+                  "gde9cnpj3hg952dy9", // the object id
                   40, // position to enter/delete data
                   [
-                    1,
-                    "st" // character content
+                    1, // value type: EditableString
+                    "st" // value to insert
                   ]
                 ]
               ]
@@ -301,7 +350,7 @@
           "112956879592017678596", // User Id
           22, // revision
           "39c1e633a0c5ef19", // sid
-          1
+          1 // requestNumber of this client
         ]
       ]
     ]

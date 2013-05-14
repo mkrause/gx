@@ -3,7 +3,7 @@ package main;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
-import browserchannel.NormalizedJsonInputStream;
+import browserchannel.NormalizedJsonReader;
 import browserchannel.message.Message;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,10 +17,10 @@ public class JacksonParseTest
     
     public static void main(String[] args) {
         try {
-            NormalizedJsonInputStream in = new NormalizedJsonInputStream(new ByteArrayInputStream(JSON_CHUNKED.getBytes()), true);
+            NormalizedJsonReader in = new NormalizedJsonReader(new ByteArrayInputStream(JSON_CHUNKED.getBytes()), true);
             
             while(in.nextChunk()) {
-                String inputStreamString = new Scanner(in, "UTF-8").useDelimiter("\\A").next();
+                String inputStreamString = new Scanner(in).useDelimiter("\\A").next();
                 //System.out.println(inputStreamString);
                 
                 JsonParser jParser = jfactory.createParser(inputStreamString);
