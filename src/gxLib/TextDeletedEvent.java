@@ -10,7 +10,7 @@ public class TextDeletedEvent extends BaseModelEvent{
 
     public TextDeletedEvent(CollaborativeString target, String sessionId, String userId, boolean local, int index, String text){
         //TODO: should last argument be false?
-        super("TextDeletedEvent", target, sessionId, local, false);
+        super("TextDeletedEvent", target, sessionId, userId, local, false);
         this.index = index;
         this.text = text;
     }

@@ -3,7 +3,7 @@ package gxLib;
 /**
  * @author Rdebokx
  */
-public class BaseModelEvent {
+public abstract class BaseModelEvent {
 
     private String type;
     protected EventTarget target;
@@ -11,7 +11,8 @@ public class BaseModelEvent {
     private boolean isLocal;
     private boolean bubbles;
 
-    public BaseModelEvent(String type, EventTarget target, String sessionId, boolean isLocal, boolean bubbles){
+    public BaseModelEvent(String type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles){
+        //TODO: for all subclasses, check whether they should bubble or not.
         this.type = type;
         this.target = target;
         this.sessionId = sessionId;

@@ -10,7 +10,7 @@ public class TextInsertedEvent extends BaseModelEvent {
 
     public TextInsertedEvent(CollaborativeString target, String sessionId, String userId, boolean local, int index, String text){
         //TODO: should last argument be false?
-        super("TextInsertedEvent", target, sessionId, local, false);
+        super("TextInsertedEvent", target, sessionId, userId, local, false);
         this.index = index;
         this.text = text;
     }
