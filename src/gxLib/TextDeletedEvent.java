@@ -1,12 +1,32 @@
 package gxLib;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Rdebokx
- * Date: 5/15/13
- * Time: 13:52
- * To change this template use File | Settings | File Templates.
+ * @author Rdebokx
  */
 public class TextDeletedEvent extends BaseModelEvent{
 
+    private int index;
+    private String text;
+
+    public TextDeletedEvent(CollaborativeString target, String sessionId, String userId, boolean local, int index, String text){
+        super("TextDeletedEvent", target, sessionId, local, false);
+        this.index = index;
+        this.text = text;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }

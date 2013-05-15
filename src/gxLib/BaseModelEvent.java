@@ -6,7 +6,7 @@ package gxLib;
 public class BaseModelEvent {
 
     private String type;
-    private EventTarget target;
+    protected EventTarget target;
     private String sessionId;
     private boolean isLocal;
     private boolean bubbles;
@@ -51,7 +51,7 @@ public class BaseModelEvent {
         isLocal = local;
     }
 
-    public boolean isBubbles() {
+    public boolean getBubbles() {
         return bubbles;
     }
 
