@@ -3,14 +3,14 @@ package gxLib;
 /**
  * @author Rdebokx
  */
-public class TextDeletedEvent extends BaseModelEvent{
+public class TextInsertedEvent extends BaseModelEvent {
 
     private int index;
     private String text;
 
-    public TextDeletedEvent(CollaborativeString target, String sessionId, String userId, boolean local, int index, String text){
+    public TextInsertedEvent(CollaborativeString target, String sessionId, String userId, boolean local, int index, String text){
         //TODO: should last argument be false?
-        super("TextDeletedEvent", target, sessionId, local, false);
+        super("TextInsertedEvent", target, sessionId, local, false);
         this.index = index;
         this.text = text;
     }
