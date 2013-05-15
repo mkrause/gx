@@ -3,14 +3,13 @@ package test;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.*;
 
-import gxLib.DriveComm;
-import gxLib.GSocket;
+import gx.realtime.DriveComm;
+import gx.realtime.GSocket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 
 public class PlaygroundTest {
 	

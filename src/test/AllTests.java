@@ -4,14 +4,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import test.gxLib.CollaborativeListTest;
-import test.gxLib.CollaborativeMapTest;
-import test.gxLib.CollaborativeObjectTest;
-import test.gxLib.CollaborativeStringTest;
-import test.gxLib.EventTargetTest;
-import test.gxLib.IndexReferenceTest;
-import test.gxLib.MainTest;
-import test.gxLib.ModelTest;
+import test.gx.realtime.CollaborativeListTest;
+import test.gx.realtime.CollaborativeMapTest;
+import test.gx.realtime.CollaborativeObjectTest;
+import test.gx.realtime.CollaborativeStringTest;
+import test.gx.realtime.EventTargetTest;
+import test.gx.realtime.IndexReferenceTest;
+import test.gx.realtime.ClientTest;
+import test.gx.realtime.ModelTest;
 
 /**
  * Test suite for all non-db errors
@@ -20,14 +20,14 @@ import test.gxLib.ModelTest;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-	//gxLib tests
+	//gx.realtime tests
 	CollaborativeListTest.class,
 	CollaborativeMapTest.class,
 	CollaborativeObjectTest.class,
 	CollaborativeStringTest.class,
 	EventTargetTest.class,
 	IndexReferenceTest.class,
-	MainTest.class,
+	ClientTest.class,
 	ModelTest.class
 })
 
