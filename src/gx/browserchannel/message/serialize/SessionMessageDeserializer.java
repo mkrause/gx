@@ -1,7 +1,7 @@
-package browserchannel.message.serialize;
+package gx.browserchannel.message.serialize;
 
 import java.io.IOException;
-import browserchannel.message.SessionMessage;
+import gx.browserchannel.message.SessionMessage;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;

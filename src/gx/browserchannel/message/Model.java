@@ -1,8 +1,8 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ModelMessage
+public class Model
 {
     @JsonProperty("modelId")
     private String modelId;

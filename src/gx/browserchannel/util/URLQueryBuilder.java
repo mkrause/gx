@@ -1,4 +1,4 @@
-package browserchannel.util;
+package gx.browserchannel.util;
 
 import java.util.HashMap;
 import java.util.Map;

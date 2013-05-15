@@ -1,6 +1,6 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
-import browserchannel.message.serialize.SessionMessageDeserializer;
+import gx.browserchannel.message.serialize.SessionMessageDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

@@ -1,4 +1,4 @@
-package browserchannel.util;
+package gx.browserchannel.util;
 
 /**
  * Utility class containing helpers for the creation of pseudo random data

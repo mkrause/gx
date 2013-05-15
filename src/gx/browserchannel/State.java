@@ -1,4 +1,4 @@
-package browserchannel;
+package gx.browserchannel;
 
 /**
  *

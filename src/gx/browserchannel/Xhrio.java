@@ -1,6 +1,6 @@
-package browserchannel;
+package gx.browserchannel;
 
-import browserchannel.util.URLWithQuery;
+import gx.browserchannel.util.URLWithQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
 public interface MessageHandler
 {

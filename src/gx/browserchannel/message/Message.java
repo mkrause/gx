@@ -1,6 +1,6 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
-import browserchannel.message.serialize.MessageDeserializer;
+import gx.browserchannel.message.serialize.MessageDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.api.client.util.DateTime;

@@ -3,8 +3,8 @@ package main;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
-import browserchannel.NormalizedJsonReader;
-import browserchannel.message.Message;
+import gx.browserchannel.NormalizedJsonReader;
+import gx.browserchannel.message.Message;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;

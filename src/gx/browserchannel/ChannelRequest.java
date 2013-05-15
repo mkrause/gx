@@ -1,8 +1,7 @@
-package browserchannel;
+package gx.browserchannel;
 
-import browserchannel.util.URLWithQuery;
+import gx.browserchannel.util.URLWithQuery;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

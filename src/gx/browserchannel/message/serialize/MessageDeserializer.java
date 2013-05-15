@@ -1,15 +1,15 @@
-package browserchannel.message.serialize;
+package gx.browserchannel.message.serialize;
 
 import java.io.IOException;
-import browserchannel.message.*;
+import gx.browserchannel.message.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.DateTime;
 
 public class MessageDeserializer extends JsonDeserializer<Message>
 {
@@ -21,7 +21,6 @@ public class MessageDeserializer extends JsonDeserializer<Message>
     {
         Message message = null;
         int lastArrayId = -1;
-        long timestamp = -1;
 
         // Add mapper
         if(jp.getCodec() == null)
@@ -33,35 +32,33 @@ public class MessageDeserializer extends JsonDeserializer<Message>
         
         // Read AID
         lastArrayId = jp.nextIntValue(-1);
-        
-        // Check if next token is array start
-        if(!jp.nextToken().equals(JsonToken.START_ARRAY))
+        jp.nextToken();
+
+        // Read whole payload array
+        JsonNode jsonNode = jp.readValueAsTree();
+
+        if(!jsonNode.isArray())
             throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
-        
+
+        // Create parse for inner message
+        JsonParser innerJp = jsonNode.traverse();
+        innerJp.setCodec(jp.getCodec());
+
         // Read message type
-        jp.nextValue();
-        boolean isNum = jp.getCurrentToken().isNumeric();
+        innerJp.nextToken();
+        innerJp.nextValue();
+        boolean isNum = innerJp.getCurrentToken().isNumeric();
 
         // Read actual message
         if(!isNum) {
             // Type is non-numeric
-            String type = jp.getText();
-            message = readMessage(jp, type);
-        } else {
-            // Type is numeric
-            int type = jp.getIntValue();
-            timestamp = jp.nextLongValue(-1);
-            jp.nextToken();
-            message = readMessage(jp, type);
+            String type = innerJp.getText();
+            message = readMessage(innerJp, type);
         }
-        
-        // Message type not recognized
+
+        // Message type not recognized, assume DataMessage
         if(message == null)
-            throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
-        
-        // Check if next token is array end token
-        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
-            throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
+            message = new DataMessage(jsonNode);
         
         // Check if next token is array end token
         if(!jp.nextToken().equals(JsonToken.END_ARRAY))
@@ -69,10 +66,6 @@ public class MessageDeserializer extends JsonDeserializer<Message>
         
         // Set message AID
         message.setLastArrayId(lastArrayId);
-        
-        // Set message timestamp
-        if(timestamp != -1)
-            message.setTimestamp(new DateTime(timestamp));
         
         return message;
     }
@@ -89,16 +82,6 @@ public class MessageDeserializer extends JsonDeserializer<Message>
         else if(type.equals("stop"))
             return new StopMessage();
         
-        return null;
-    }
-
-    private Message readMessage(JsonParser jp, int type) throws JsonProcessingException, IOException
-    {
-        // TODO: recognize other message types
-        switch(type) {
-            case 5:
-                return jp.readValueAs(UserMessage.class);
-        }
         return null;
     }
 }

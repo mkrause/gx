@@ -1,4 +1,4 @@
-package browserchannel;
+package gx.browserchannel;
 
 import java.io.BufferedReader;
 import java.io.FilterReader;

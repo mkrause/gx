@@ -1,8 +1,8 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class InitMessage
+public class Session
 {
     @JsonProperty("sid")
     private String sid;

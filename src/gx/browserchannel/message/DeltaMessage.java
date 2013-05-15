@@ -1,4 +1,4 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
 import java.util.ArrayList;
 

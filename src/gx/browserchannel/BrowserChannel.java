@@ -1,12 +1,11 @@
-package browserchannel;
+package gx.browserchannel;
 
-import browserchannel.message.*;
-import browserchannel.message.UserMessage.User;
-import browserchannel.util.URLQueryBuilder;
-import browserchannel.util.URLWithQuery;
+import gx.browserchannel.message.*;
+import gx.browserchannel.util.URLQueryBuilder;
+import gx.browserchannel.util.URLWithQuery;
 
-import browserchannel.util.ConnectionFactory;
-import browserchannel.util.RandomUtils;
+import gx.browserchannel.util.ConnectionFactory;
+import gx.browserchannel.util.RandomUtils;
 import com.google.api.client.auth.oauth2.Credential;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
@@ -28,7 +26,7 @@ import java.util.*;
 
 /**
  * A Java port of the JavaScript implementation of BrowserChannel.
- * TODO: implement functions in quickstart/js/browserchannel.js
+ * TODO: implement functions in quickstart/js/gx.browserchannel.js
  *
  * @author Erik
  */
@@ -38,7 +36,7 @@ public class BrowserChannel
     int retries = 1;
     private int channelVersion = 8;
     private String baseUrl = "https://drive.google.com/otservice";
-    private InitMessage sessionInfo;
+    private Session sessionInfo;
     private String path;
     private String clientVersion = "1";
     private URLWithQuery forwardChannelUri;
@@ -53,6 +51,7 @@ public class BrowserChannel
     private Credential credentials;
     private String modelId;
     private JsonFactory jfactory = new JsonFactory();
+    private List<MessageHandler> handlers = new ArrayList<MessageHandler>();
 
     public BrowserChannel(Credential credentials)
     {
@@ -143,11 +142,9 @@ public class BrowserChannel
             for(Message m : messages) {
                 if(m instanceof SessionMessage) {
                     channelSessionId = ((SessionMessage)m).getId();
-                } else if(m instanceof UserMessage) {
-                    // TODO: do something with users, pass to message handler
-                    logger.debug(((UserMessage)m).toString());
                 } else {
-                    logger.debug("Other message");
+                    // Pass message to handlers
+                    fireEvent(new MessageEvent(this, m));
                 }
                 lastSequenceNumber = m.getLastArrayId();
             }
@@ -199,13 +196,11 @@ public class BrowserChannel
 
                 Message[] messages = jParser.readValueAs(Message[].class);
                 for(Message m : messages) {
-                    // TODO: pass all messages, except NOOP, to handler
                     if(m instanceof NoopMessage) {
                         logger.debug("NOOP");
-                    } else if(m instanceof UserMessage) {
-                        logger.debug(((UserMessage)m).toString());
                     } else {
-                        logger.debug("Other message");
+                        // Pass message to handlers
+                        fireEvent(new MessageEvent(this, m));
                     }
                 }
             }
@@ -377,14 +372,19 @@ public class BrowserChannel
 
     public void addMessageHandler(MessageHandler handler)
     {
-        // TODO Auto-generated method stub
-
+        handlers.add(handler);
     }
 
     public void removeMessageHandler(MessageHandler handler)
     {
-        // TODO Auto-generated method stub
+        handlers.remove(handler);
+    }
 
+    private void fireEvent(MessageEvent event)
+    {
+        // TODO: fire in separate thread?
+        for(MessageHandler handler : handlers)
+            handler.receive(event);
     }
 
     public void isClosed()
@@ -415,7 +415,7 @@ public class BrowserChannel
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
-            ModelMessage message = jParser.readValueAs(ModelMessage.class);
+            Model message = jParser.readValueAs(Model.class);
             in.close();
             return message.getModelId();
         } catch (IOException e) {
@@ -423,7 +423,7 @@ public class BrowserChannel
         }
     }
 
-    public InitMessage getInitializationMessage()
+    public Session getInitializationMessage()
     {
         // Set up parameters
         Map<String, String> parameters = new HashMap<String, String>();
@@ -440,7 +440,7 @@ public class BrowserChannel
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
-            InitMessage message = jParser.readValueAs(InitMessage.class);
+            Session message = jParser.readValueAs(Session.class);
             in.close();
             return message;
         } catch (IOException e) {

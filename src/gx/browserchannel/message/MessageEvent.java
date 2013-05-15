@@ -1,6 +1,6 @@
-package browserchannel.message;
+package gx.browserchannel.message;
 
-import browserchannel.BrowserChannel;
+import gx.browserchannel.BrowserChannel;
 
 public class MessageEvent extends java.util.EventObject
 {

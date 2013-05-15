@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import browserchannel.BrowserChannel;
+import gx.browserchannel.BrowserChannel;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
@@ -27,6 +27,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import gx.realtime.RealtimeMessageHandler;
 
 public class BrowserChannelTest
 {
@@ -119,6 +120,7 @@ public class BrowserChannelTest
                 throw new Exception("No Realtime file found");
 
             BrowserChannel channel = new BrowserChannel(credential);
+            channel.addMessageHandler(new RealtimeMessageHandler());
             channel.initialize(fileId);
 
             channel.connect();
