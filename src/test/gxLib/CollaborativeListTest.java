@@ -2,7 +2,6 @@ package test.gxLib;
 
 import static org.junit.Assert.*;
 import gxLib.CollaborativeList;
-import gxLib.Main;
 import gxLib.Model;
 
 import org.junit.Before;

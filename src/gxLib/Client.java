@@ -1,6 +1,6 @@
 package gxLib;
 
-public class Main {
+public class Client {
 
 	public static String getToken(){
 		//TODO
