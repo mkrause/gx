@@ -3,7 +3,8 @@ package gxLib;
 /**
  * @author Rdebokx
  */
-public abstract class BaseModelEvent {
+public class BaseModelEvent {
+    //TODO: is this class actually used as an abstract class?
 
     private String type;
     protected EventTarget target;
