@@ -3,12 +3,12 @@ package gxLib;
 /**
  * @author Rdebokx
  */
-public class CollaboratorJoinedEvent {
+public class CollaboratorLeftEvent {
 
     Document document;
     Collaborator collaborator;
 
-    public CollaboratorJoinedEvent(Document document, Collaborator collaborator) {
+    public CollaboratorLeftEvent(Document document, Collaborator collaborator) {
         this.document = document;
         this.collaborator = collaborator;
     }

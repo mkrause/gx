@@ -11,7 +11,7 @@ public class DocumentSaveStateChangedEvent {
 
     public DocumentSaveStateChangedEvent(Document document, boolean isSaving, boolean isPending){
         this.document = document;
-        this.isSaving = document;
+        this.isSaving = isSaving;
         this.isPending = isPending;
     }
 
