@@ -1,24 +1,14 @@
 package main;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import gx.browserchannel.BrowserChannel;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
-import com.google.api.client.googleapis.extensions.java6.auth.oauth2.GooglePromptReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.extensions.java6.auth.oauth2.GooglePromptReceiver;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -27,7 +17,15 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import gx.browserchannel.BrowserChannel;
 import gx.realtime.RealtimeMessageHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class BrowserChannelTest
 {
@@ -71,53 +69,21 @@ public class BrowserChannelTest
      * Location of the credential file of the user.
      */
     private static String CREDENTIAL_FILE;
-    
+
     private static Logger logger = LogManager.getLogger(BrowserChannelTest.class);
+
+    private static long appId;
 
     public static void main(String[] args)
     {
         try {
-            SCOPES.add(DriveScopes.DRIVE);
-            CREDENTIAL_FILE = System.getProperty("user.home") + "/.credentials/oauth2.json";
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();            
-
-            // load client secrets
-            InputStream s = new FileInputStream(CLIENT_SECRETS_FILE);
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, s);
-            long appId = getAppId(clientSecrets);
-
-            // Authorize
-            Credential credential = USE_SERVICE_ACCOUNT ? authorizeServiceAccount() : authorizeUser(clientSecrets);
-            
-            // Get token
-            credential.refreshToken();
-            String accessToken = credential.getAccessToken();
-            logger.debug("Access token: {}", accessToken);
-            logger.debug("Expires in {} seconds", credential.getExpiresInSeconds());
+            Credential credential = authorize();
 
             Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APP_NAME).build();
-            
-            // Add file
-            //addRealtimeFile(service);
 
             // Get file ID
-            String fileName = null;
-            String fileId = null;
-            FileList files = service.files().list().execute();
-            for (File file : files.getItems()) {
-                if (file.getMimeType().equals(APP_MIME_TYPE + "." + appId)) {
-                    fileId = file.getId();
-                    fileName = file.getTitle();
-                    break;
-                }
-            }
-            
-            logger.debug("FileID: {}", fileId);
-            logger.debug("FileName: {}", fileName);
-            
-            if(fileId == null)
-                throw new Exception("No Realtime file found");
+            String fileId = getFileId(service);
 
             BrowserChannel channel = new BrowserChannel(credential);
             channel.addMessageHandler(new RealtimeMessageHandler());
@@ -136,8 +102,68 @@ public class BrowserChannelTest
         System.exit(1);
     }
 
+    /**
+     * Retrieve a suitable file to open our browserchannel with
+     *
+     * @param service
+     * @return
+     * @throws Exception
+     */
+    private static String getFileId(Drive service) throws Exception
+    {
+        String fileName = null;
+        String fileId = null;
+        FileList files = service.files().list().execute();
+        for (File file : files.getItems()) {
+            if (file.getMimeType().equals(APP_MIME_TYPE + "." + appId)) {
+                fileId = file.getId();
+                fileName = file.getTitle();
+                break;
+            }
+        }
+
+        logger.debug("FileID: {}", fileId);
+        logger.debug("FileName: {}", fileName);
+
+        if (fileId == null) {
+            throw new Exception("No Realtime file found");
+            // Add file
+//            fileId = addRealtimeFile(service);
+        }
+
+        return fileId;
+    }
+
+    /**
+     * Obtains credentials using the preferred authorization method.
+     *
+     * @return
+     * @throws Exception
+     */
+    private static Credential authorize() throws Exception
+    {
+        SCOPES.add(DriveScopes.DRIVE);
+        CREDENTIAL_FILE = System.getProperty("user.home") + "/.credentials/oauth2.json";
+        HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+        // load client secrets
+        InputStream s = new FileInputStream(CLIENT_SECRETS_FILE);
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, s);
+        appId = getAppId(clientSecrets);
+
+        // Authorize
+        Credential credential = USE_SERVICE_ACCOUNT ? authorizeServiceAccount() : authorizeUser(clientSecrets);
+
+        // Get token
+        credential.refreshToken();
+        logger.debug("Access token: {}", credential.getAccessToken());
+        logger.debug("Expires in {} seconds", credential.getExpiresInSeconds());
+        return credential;
+    }
+
     // Build service account credential.
-    private static Credential authorizeServiceAccount() throws Exception {
+    private static Credential authorizeServiceAccount() throws Exception
+    {
         GoogleCredential credential = new GoogleCredential.Builder()
                 .setTransport(HTTP_TRANSPORT)
                 .setJsonFactory(JSON_FACTORY)
@@ -145,43 +171,48 @@ public class BrowserChannelTest
                 .setServiceAccountScopes(SCOPES)
                 .setServiceAccountPrivateKeyFromP12File(new java.io.File(PRIVATE_KEY_FILE))
                 .build();
-        
-      return credential;
+
+        return credential;
     }
 
-    /** Authorizes the installed application to access user's protected data. */
-    private static Credential authorizeUser(GoogleClientSecrets clientSecrets) throws Exception {
-      // set up file credential store
-      //CredentialStore credentialStore = new MemoryCredentialStore();
-      CredentialStore credentialStore = new FileCredentialStore(new java.io.File(CREDENTIAL_FILE), JSON_FACTORY);
-      
-      // set up authorization code flow
-      GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-          HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setCredentialStore(credentialStore).build();
-      
-      // authorize
-      VerificationCodeReceiver receiver = new GooglePromptReceiver();
-      return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    /**
+     * Authorizes the installed application to access user's protected data.
+     */
+    private static Credential authorizeUser(GoogleClientSecrets clientSecrets) throws Exception
+    {
+        // set up file credential store
+        //CredentialStore credentialStore = new MemoryCredentialStore();
+        CredentialStore credentialStore = new FileCredentialStore(new java.io.File(CREDENTIAL_FILE), JSON_FACTORY);
+
+        // set up authorization code flow
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setCredentialStore(credentialStore).build();
+
+        // authorize
+        VerificationCodeReceiver receiver = new GooglePromptReceiver();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
-    
-    private static long getAppId(GoogleClientSecrets clientSecrets) throws Exception {
+
+    private static long getAppId(GoogleClientSecrets clientSecrets) throws Exception
+    {
 
         String clientId = clientSecrets.getDetails().getClientId();
         String[] parts = clientId.split("-");
-        
-        if(parts.length != 2)
+
+        if (parts.length != 2)
             return -1;
-        
+
         return Long.parseLong(parts[0]);
     }
 
     // Add Realtime file
-    private static void addRealtimeFile(Drive service) throws IOException
+    private static String addRealtimeFile(Drive service) throws IOException
     {
         File body = new File();
         body.setTitle("GxFile");
         body.setDescription("A Realtime Gx file");
         body.setMimeType(APP_MIME_TYPE);
         service.files().insert(body).execute();
+        return body.getId();
     }
 }
