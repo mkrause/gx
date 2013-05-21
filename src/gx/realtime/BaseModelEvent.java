@@ -3,7 +3,7 @@ package gx.realtime;
 /**
  * @author Rdebokx
  */
-public class BaseModelEvent {
+public class BaseModelEvent implements Event {
     //TODO: is this class actually used as an abstract class?
 
     private String type;

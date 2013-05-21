@@ -3,7 +3,7 @@ package gx.realtime;
 /**
  * @author Rdebokx
  */
-public class CollaboratorLeftEvent {
+public class CollaboratorLeftEvent implements Event {
 
     Document document;
     Collaborator collaborator;

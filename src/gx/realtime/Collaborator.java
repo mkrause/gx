@@ -1,18 +1,38 @@
 package gx.realtime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author Rdebokx
  */
 public class Collaborator {
 
+    @JsonProperty("userId")
     private String userId;
+    @JsonProperty("sid")
     private String sessionId;
+    @JsonProperty("displayName")
     private String displayName;
+    @JsonProperty("color")
     private String color;
+    @JsonProperty("isMe")
     private boolean isMe;
+    @JsonProperty("isAnonymous")
     private boolean isAnonymous;
+    @JsonProperty("photoUrl")
     private String photoUrl;
 
+    @JsonProperty("isActive")
+    private boolean isActive;
+    @JsonProperty("isNew")
+    private boolean isNew;
+    @JsonProperty("profileId")
+    private String profileId;
+    @JsonProperty("userType")
+    private int userType;
+
+    public Collaborator()
+    { }
 
     public Collaborator(String userId, String sessionId, String displayName, String color, boolean isMe, boolean isAnonymous, String photoUrl) {
         this.userId = userId;

@@ -1,9 +1,13 @@
 package gx.realtime;
 
+import gx.realtime.serialize.CollaboratorJoinedEventDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * @author Rdebokx
  */
-public class CollaboratorJoinedEvent {
+@JsonDeserialize(using = CollaboratorJoinedEventDeserializer.class)
+public class CollaboratorJoinedEvent implements Event {
 
     Document document;
     Collaborator collaborator;
