@@ -10,16 +10,13 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 
 	private HashMap<String, V> map;
 	
-	//TODO: constructor:
-	//This class should not be instantiated directly. To create a new map, use gapi.drive.realtime.Model.prototype.createMap().
 	protected CollaborativeMap(Model model){
 		super(model);
 		map = new HashMap<String, V>();
 	}
 	
 	public V delete(String key){
-		V result = map.remove(key);
-		return result;
+		return map.remove(key);
 	}
 	
 	public V get(String key){
@@ -51,13 +48,11 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	}
 	
 	public V set(String key, V value){
-		V result = map.put(key, value);
-		return result;
+		return map.put(key, value);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public V[] values(){
-		//TODO: test if it actually contains clones
 		return (V[]) map.values().toArray();
 	}
 	
