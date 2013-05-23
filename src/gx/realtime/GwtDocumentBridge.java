@@ -2,5 +2,5 @@ package gx.realtime;
 
 public class GwtDocumentBridge {
 
-	//TODO
+	//TODO: this can be found in the Google Web Toolkit?
 }
