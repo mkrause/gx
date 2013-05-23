@@ -1,4 +1,4 @@
-package gx.realtime.acceptance;
+package gx.realtime.acceptance_test;
 
 import gx.realtime.RealtimeLoader;
 import gx.realtime.RealtimeOptions;
