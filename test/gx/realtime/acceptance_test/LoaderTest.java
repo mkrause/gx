@@ -13,6 +13,7 @@ public class LoaderTest {
     @Test
     public void testLoader() {
         RealtimeOptions options = new RealtimeOptions();
+        options.setDocId("0B6gFLa0mYRcOc3NKTmtwdV9idHM");
         options.setAppId("foo");
         options.setClientId("bar");
         
