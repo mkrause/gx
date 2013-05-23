@@ -68,7 +68,7 @@ public class RealtimeLoader {
         String modelId = retrieveModelId(cred, docId);
         Session session = createSession(cred, modelId);
         
-        return new Document();
+        return new Document(null, null);
     }
 
     private static String retrieveModelId(Credential cred, String docId) {
