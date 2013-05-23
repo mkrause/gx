@@ -1,6 +1,6 @@
 package test.gx.realtime;
 
-public class TestObject {
+public class TestObject implements Cloneable{
 
 	private int id;
 	private TestObject child;
@@ -22,6 +22,7 @@ public class TestObject {
 		return child;
 	}
 	
+	@Override
 	public boolean equals(Object object){
 		boolean result = false;
 		if(object instanceof TestObject){
@@ -30,4 +31,10 @@ public class TestObject {
 		}
 		return result;
 	}
+	
+	@Override
+	public TestObject clone(){
+		return new TestObject(this.getId(), this.getChild().clone());
+	}
+	
 }
