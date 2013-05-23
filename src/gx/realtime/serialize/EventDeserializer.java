@@ -2,6 +2,7 @@ package gx.realtime.serialize;
 
 import java.io.IOException;
 
+import gx.browserchannel.message.MessageHandler;
 import gx.realtime.CollaboratorJoinedEvent;
 import gx.realtime.CollaboratorLeftEvent;
 import gx.realtime.Event;
@@ -14,11 +15,15 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.realtime.ObjectChangedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EventDeserializer extends JsonDeserializer<Event>
 {
     private final String INVALID_FORMAT = "Invalid event format";
     private final String UNKNOWN_TYPE = "Unknown event type";
+
+    private static Logger logger = LogManager.getLogger(MessageHandler.class);
     
     @Override
     public Event deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonParseException
@@ -37,6 +42,13 @@ public class EventDeserializer extends JsonDeserializer<Event>
 
         // Read type
         eventType = jp.nextIntValue(-1);
+        logger.debug("Event type: {}", eventType);
+
+        // Check if we managed to parse this
+        if(eventType == -1) {
+            logger.debug("Unrecognized event type, content: {}", jp.getCurrentToken());
+            return null;
+        }
         
         // Read timestamp
         timestamp = jp.nextLongValue(-1);
@@ -46,9 +58,10 @@ public class EventDeserializer extends JsonDeserializer<Event>
         event = readEvent(jp, eventType);
 
         // Message type not recognized
-        if(event == null)
+        if(event == null) {
             return null;
-        
+        }
+
         // Check if next token is array end token
         if(!jp.nextToken().equals(JsonToken.END_ARRAY))
             throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
