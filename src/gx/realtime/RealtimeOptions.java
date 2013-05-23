@@ -4,24 +4,26 @@ package gx.realtime;
  * Options (key/value) for the RealtimeLoader.
  */
 public class RealtimeOptions {
-    private String appId;
-    private String clientId;
-
+	
+	//Callback interfaces
     public interface OnFileLoadedCallback {
         void onFileLoaded(Document doc);
     }
-    private OnFileLoadedCallback onFileLoaded;
-
     public interface InitializeModelCallback {
         void initializeModel(Model model);
     }
-    private InitializeModelCallback initializeModel;
-
     public interface HandleErrorsCallback {
         void handleErrors(Exception e);
     }
+    
+    //Attributes
+	private String appId;
+    private String clientId;
+    private OnFileLoadedCallback onFileLoaded;
+    private InitializeModelCallback initializeModel;
     private HandleErrorsCallback handleErrors;
 
+    //Methods
     public String getClientId() {
         return clientId;
     }
