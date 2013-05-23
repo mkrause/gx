@@ -15,7 +15,7 @@ public class Session
     private String modelId;
 //    @JsonProperty("snapshot")
     @JsonIgnore
-    private String snapshot;
+    private BaseModelEvent[] snapshot;
 
     public String getSessionId()
     {
@@ -37,9 +37,8 @@ public class Session
         return modelId;
     }
     
-    public String getSnapshot()
+    public BaseModelEvent[] getSnapshot()
     {
-        // TODO: parse snapshot string
         return snapshot;
     }
 }

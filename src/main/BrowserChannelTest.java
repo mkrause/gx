@@ -197,7 +197,7 @@ public class BrowserChannelTest
         String fileId = null;
         FileList files = service.files().list().execute();
         for (File file : files.getItems()) {
-            if (file.getMimeType().equals(APP_MIME_TYPE + "." + appId) && file.getTitle().contains("List")) {
+            if (file.getMimeType().equals(APP_MIME_TYPE + "." + appId)) {
                 fileId = file.getId();
                 fileName = file.getTitle();
                 break;

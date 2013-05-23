@@ -1,8 +1,13 @@
 package gx.realtime;
 
+import gx.realtime.serialize.BaseModelEventDeserializer;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * @author Rdebokx
  */
+@JsonDeserialize(using = BaseModelEventDeserializer.class)
 public abstract class BaseModelEvent {
     private EventType type;
     protected EventTarget target;

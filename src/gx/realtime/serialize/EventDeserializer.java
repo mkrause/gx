@@ -42,13 +42,6 @@ public class EventDeserializer extends JsonDeserializer<Event>
 
         // Read type
         eventType = jp.nextIntValue(-1);
-        logger.debug("Event type: {}", eventType);
-
-        // Check if we managed to parse this
-        if(eventType == -1) {
-            logger.debug("Unrecognized event type, content: {}", jp.getCurrentToken());
-            return null;
-        }
         
         // Read timestamp
         timestamp = jp.nextLongValue(-1);
@@ -60,6 +53,7 @@ public class EventDeserializer extends JsonDeserializer<Event>
         // Message type not recognized
         if(event == null) {
             return null;
+            // TODO: throw exception 
         }
 
         // Check if next token is array end token

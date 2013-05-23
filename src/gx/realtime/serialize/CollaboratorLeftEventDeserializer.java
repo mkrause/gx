@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import gx.realtime.Collaborator;
-import gx.realtime.CollaboratorJoinedEvent;
 import gx.realtime.CollaboratorLeftEvent;
 
 import java.io.IOException;
