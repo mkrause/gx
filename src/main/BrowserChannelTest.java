@@ -1,5 +1,9 @@
 package main;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -11,21 +15,29 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.java6.auth.oauth2.GooglePromptReceiver;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import gx.browserchannel.BrowserChannel;
+import gx.browserchannel.NormalizedJsonReader;
+import gx.browserchannel.util.URLWithQuery;
 import gx.realtime.RealtimeMessageHandler;
+import gx.realtime.Session;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BrowserChannelTest
 {
@@ -60,7 +72,7 @@ public class BrowserChannelTest
     /**
      * Global instance of the JSON factory.
      */
-    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static final com.google.api.client.json.JsonFactory JSON_FACTORY = new JacksonFactory();
     /**
      * Global instance of the HTTP transport.
      */
@@ -73,35 +85,103 @@ public class BrowserChannelTest
     private static Logger logger = LogManager.getLogger(BrowserChannelTest.class);
 
     private static long appId;
+    
+    // Properties for realtime loader
+    private static String channelUrl = "https://drive.google.com/otservice";
+    private static String fileId;
+    private static String modelId;
+    private static Session session;
+    private static Credential credential;
+    private static JsonFactory jfactory = new JsonFactory();
 
     public static void main(String[] args)
     {
         try {
-            Credential credential = authorize();
+            // TODO: move functionality to separate Loader/Authorizer
+            
+            credential = authorize();
 
             Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APP_NAME).build();
 
-            // Get file ID
-            String fileId = getFileId(service);
+            // Fetch information
+            fileId = getFileId(service);
+            modelId = retrieveModelId(fileId);
+            session = createSession();
+            
+            // TODO: build document model according to session.snapshot
 
-            BrowserChannel channel = new BrowserChannel(credential);
+            // Create channel
+            BrowserChannel channel = new BrowserChannel();
             channel.addMessageHandler(new RealtimeMessageHandler());
-            channel.initialize(fileId);
-
+            channel.addExtraParameter("id", modelId);
+            channel.addExtraParameter("access_token", credential.getAccessToken());
+            channel.addExtraParameter("sid", session.getSessionId());
             logger.debug("Initialized BrowserChannel");
-
-            channel.connect();
-            channel.openDeltaChannel();
+            
+            // Open channel
+            channel.connect(channelUrl);
             channel.openForwardChannel();
             channel.openBackwardChannel();
 
             System.out.println("done");
             System.exit(0);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         System.exit(1);
+    }
+
+    private static String retrieveModelId(String driveFileId)
+    {
+        // Set up parameters
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("id", driveFileId);
+        parameters.put("access_token", credential.getAccessToken());
+
+        try {
+            // Create connection
+            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/modelid"), parameters);
+            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
+
+            // Parse response
+            JsonParser jParser = jfactory.createParser(in);
+            ObjectMapper mapper = new ObjectMapper();
+            jParser.setCodec(mapper);
+            ModelResponse response = jParser.readValueAs(ModelResponse.class);
+            in.close();
+            return response.getModelId();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Session createSession()
+    {
+        // Set up parameters
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("id", modelId);
+        parameters.put("access_token", credential.getAccessToken());
+
+        try {
+            // Create connection
+            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/gs"), parameters);
+            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
+
+            // Parse response
+            JsonParser jParser = jfactory.createParser(in);
+            ObjectMapper mapper = new ObjectMapper();
+            jParser.setCodec(mapper);
+            Session message = jParser.readValueAs(Session.class);
+            in.close();
+            return message;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -216,5 +296,16 @@ public class BrowserChannelTest
         body.setMimeType(APP_MIME_TYPE);
         service.files().insert(body).execute();
         return body.getId();
+    }
+    
+    private static class ModelResponse
+    {
+        @JsonProperty("modelId")
+        private String modelId;
+
+        public String getModelId()
+        {
+            return modelId;
+        }
     }
 }
