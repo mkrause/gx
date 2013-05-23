@@ -3,7 +3,11 @@ package gx.realtime;
 import gx.browserchannel.BrowserChannel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Document extends EventTarget{
 	
@@ -12,13 +16,17 @@ public class Document extends EventTarget{
 		public void execute(String json);
 	}
 	public interface FailureFunction{
-		public void execute();
+		public void execute(BaseModelEvent e);
+	}
+	public interface EventHandler{
+		public void execute(BaseModelEvent e);
 	}
 	
 	//attributes
 	private Model model;
 	private BrowserChannel channel;
 	private List<Collaborator> collaborators;
+	private Map<EventType, Set<EventHandler>> eventHandlers;
 	
 	//functions
 	
@@ -26,7 +34,7 @@ public class Document extends EventTarget{
 		this.model = model;
 		this.channel = channel;
 		collaborators = new ArrayList<Collaborator>();
-		//TODO: investigate how and when collaborators will be added.
+		eventHandlers = new HashMap<EventType, Set<EventHandler>>();
 	}
 
     /**
@@ -34,7 +42,7 @@ public class Document extends EventTarget{
      */
     public void close() {
     	channel.disconnect();
-    	//TODO: remove eventlisteners
+    	eventHandlers = new HashMap<EventType, Set<EventHandler>>();
     }
 
     /**
@@ -62,12 +70,26 @@ public class Document extends EventTarget{
         return model;
     }
 
-    public void addEventListener(/*TODO*/){
-        //TODO?
+    public void addEventListener(EventType type, EventHandler handler){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	if(handlers == null){
+    		handlers = new HashSet<EventHandler>();
+    		eventHandlers.put(type, handlers);
+    	}
+    	handlers.add(handler);
     }
 
-    public void removeEventListener(/*TODO*/){
-        //TODO?
+    public void removeEventListener(EventType type, EventHandler handler){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	if(handlers != null){
+    		handlers.remove(handler);
+    	}
     }
-
+    
+    protected void fireEvent(EventType type, BaseModelEvent event){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	for(EventHandler handler : handlers){
+    		handler.execute(event);
+    	}
+    }
 }

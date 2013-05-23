@@ -10,7 +10,7 @@ public class ValuesSetEvent extends BaseModelEvent {
     private Object[] newValues;
 
     public ValuesSetEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, Object[] oldValues, Object[] newValues){
-        super("ValuesSetEvent", target, sessionId, userId, isLocal, false);
+        super(EventType.VALUES_SET, target, sessionId, userId, isLocal, false);
         this.index = index;
         this.oldValues = oldValues;
         this.newValues = newValues;

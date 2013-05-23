@@ -1,18 +1,34 @@
 package gx.realtime;
 
+import gx.realtime.Document.EventHandler;
+
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class CollaborativeObject extends EventTarget{
 
+	//interfaces
+	public interface EventHandler{
+		public void execute(BaseModelEvent e);
+	}
+	
+	//Attributes
 	private String id;
 	protected Model model;
+	private Map<EventType, Set<EventHandler>> eventHandlers;
+	
+	//Methods
 	
 	protected CollaborativeObject(Model model){
 		this.model = model;
+		this.eventHandlers = new HashMap<EventType, Set<EventHandler>>();
 		//TODO: determine id of this object.
 	}
 	
@@ -32,14 +48,29 @@ public abstract class CollaborativeObject extends EventTarget{
 		return writer.toString();
 	}
 	
-	public void addEventListener(/*TODO*/){
-		//TODO?
-	}
-	
-	public void removeEventListener(/*TODO*/){
-		//TODO?
-	}
-	
+	public void addEventListener(EventType type, EventHandler handler){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	if(handlers == null){
+    		handlers = new HashSet<EventHandler>();
+    		eventHandlers.put(type, handlers);
+    	}
+    	handlers.add(handler);
+    }
+
+    public void removeEventListener(EventType type, EventHandler handler){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	if(handlers != null){
+    		handlers.remove(handler);
+    	}
+    }
+    
+    protected void fireEvent(EventType type, BaseModelEvent event){
+    	Set<EventHandler> handlers = eventHandlers.get(type);
+    	for(EventHandler handler : handlers){
+    		handler.execute(event);
+    	}
+    }
+    
 	protected <E> E clone(E value){
 		E clone = null;
 		ObjectMapper mapper = new ObjectMapper();

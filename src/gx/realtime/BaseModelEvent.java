@@ -6,13 +6,13 @@ package gx.realtime;
 public class BaseModelEvent {
     //TODO: is this class actually used as an abstract class?
 
-    private String type;
+    private EventType type;
     protected EventTarget target;
     private String sessionId;
     private boolean isLocal;
     private boolean bubbles;
 
-    public BaseModelEvent(String type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles){
+    public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles){
         //TODO: for all subclasses, check whether they should bubble or not.
         this.type = type;
         this.target = target;
@@ -21,11 +21,11 @@ public class BaseModelEvent {
         this.bubbles = bubbles;
     }
 
-    public String getType() {
+    public EventType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(EventType type) {
         this.type = type;
     }
 

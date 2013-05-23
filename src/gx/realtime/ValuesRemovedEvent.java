@@ -9,7 +9,7 @@ public class ValuesRemovedEvent extends BaseModelEvent {
     private Object[] values;
 
     public ValuesRemovedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, Object[] values){
-        super("ValuesRemovedEvent", target, sessionId, userId, isLocal, false);
+        super(EventType.VALUES_REMOVED, target, sessionId, userId, isLocal, false);
         this.index = index;
         this.values = values;
     }
