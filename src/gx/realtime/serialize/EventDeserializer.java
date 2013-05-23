@@ -42,10 +42,10 @@ public class EventDeserializer extends JsonDeserializer<Event>
         
         // Read entire event
         event = readEvent(jp, eventType);
-        
+
         // Message type not recognized
         if(event == null)
-            throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
+            return null;
         
         // Check if next token is array end token
         if(!jp.nextToken().equals(JsonToken.END_ARRAY))
