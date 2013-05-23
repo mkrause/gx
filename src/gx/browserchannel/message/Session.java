@@ -1,5 +1,6 @@
 package gx.browserchannel.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Session
@@ -12,7 +13,8 @@ public class Session
     private String interactionMode;
     @JsonProperty("modelId")
     private String modelId;
-    @JsonProperty("snapshot")
+//    @JsonProperty("snapshot")
+    @JsonIgnore
     private String snapshot;
 
     public String getSessionId()
