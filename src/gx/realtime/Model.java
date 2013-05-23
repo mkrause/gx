@@ -6,7 +6,6 @@ import java.util.Set;
 
 public class Model extends EventTarget {
 	
-	private GwtDocumentBridge bridge;
 	private Document document;
 	private CollaborativeMap<CollaborativeObject> root;
 	private boolean initialized;
@@ -14,8 +13,7 @@ public class Model extends EventTarget {
 	private boolean canUndo;
 	private boolean readOnly;
 	
-	protected Model(GwtDocumentBridge bridge, Document document){
-		this.bridge = bridge;
+	protected Model(Document document){
 		this.document = document;
 		this.root = new CollaborativeMap<CollaborativeObject>(this);
 		initialized = true;
