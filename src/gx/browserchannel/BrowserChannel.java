@@ -41,6 +41,7 @@ public class BrowserChannel
     private ChannelRequest forwardChannelRequest;
     private int nextRid;
     private int lastArrayId;
+    private boolean useChunked;
     private List<? extends Queue<String>> outgoingMaps;
     // Non-JS-BrowserChannel compliant parameters
     private long lastSequenceNumber = 0L;
@@ -79,7 +80,7 @@ public class BrowserChannel
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder();
             queryBuilder.put("CVER", clientVersion).put("zx", RandomUtils.getRandomString());
 
-            url = new URLWithQuery(baseUrl + "/bind", queryBuilder);
+            url = new URLWithQuery(baseUrl + path, queryBuilder);
 
             connection = ConnectionFactory.createConnection(url, "POST");
             connection.setRequestProperty("Content-Length", "0");
@@ -121,19 +122,15 @@ public class BrowserChannel
      */
     public void openBackwardChannel()
     {
-        // TODO: retrieve this value from the testConnection
-        int CI = 0; // are we chunked?
-
         logger.info("openBackwardChannel (GET)");
-        // String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&SID=" + channelSessionId + "&AID=" + AID + "&CI=" + CI + "&TYPE=" + type + "&zx=" + RandomUtils.getRandomString() + "&t=" + retries;
         URLQueryBuilder params = getDefaultQueryBuilder();
         params.put("SID", channelSessionId).put("AID", lastSequenceNumber)
-                .put("CI", CI).put("TYPE", "xmlhttp")
+                .put("CI", useChunked ? 1 : 0).put("TYPE", "xmlhttp")
                 .put("zx", RandomUtils.getRandomString()).put("RID", "rpc");
 
         URL url;
         try {
-            url = new URLWithQuery(baseUrl + "/bind", params.build()).getURL();
+            url = new URLWithQuery(baseUrl + path, params.build()).getURL();
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.getMessage());
             e.printStackTrace();
@@ -178,39 +175,12 @@ public class BrowserChannel
         connectTest("/test");
     }
 
-    /**
-     * Establishes a new channel session with the the server.
-     *
-     * @private
-     */
-    private void open()
-    {
-        int rid = nextRid++;
-
-        ChannelRequest request = createChannelRequest(this, "", rid);
-        String requestText = this.dequeueOutgoingMaps();
-        URLWithQuery uri = this.forwardChannelUri.clone();
-        uri.setParameterValue("RID", Integer.toString(rid));
-        if (this.clientVersion != null) {
-            uri.setParameterValue("CVER", this.clientVersion);
-        }
-
-        request.xmlHttpPost(uri, requestText);
-        this.forwardChannelRequest = request;
-    }
-
-    private ChannelRequest createChannelRequest(BrowserChannel browserChannel, String sessionId, int rid)
-    {
-        return new ChannelRequest(browserChannel, sessionId, rid, 0);
-    }
-
     public void connectTest(String testPath)
     {
-        logger.info("Get Host Prefixes");
-        String mode = "init";
         try {
+            logger.info("Get Host Prefixes");
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder()
-                .put("MODE", mode)
+                .put("MODE", "init")
                 .put("zx", RandomUtils.getRandomString());
 
             URL url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
@@ -220,11 +190,48 @@ public class BrowserChannel
             while ((line = reader.readLine()) != null)
                 logger.debug(line);
             reader.close();
+
             // TODO: decode / store optional host prefixes
+
+            logger.info("Buffering Proxy Test");
+            queryBuilder = getDefaultQueryBuilder()
+                .put("TYPE", "xmlhttp")
+                .put("zx", RandomUtils.getRandomString());
+
+            url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
+            connection = (HttpURLConnection) url.openConnection();
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            while ((line = reader.readLine()) != null)
+                logger.debug(line);
+            reader.close();
+
+            // TODO: set useChunk from the testConnection
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+//    private void open()
+//    {
+//        int rid = nextRid++;
+//
+//        ChannelRequest request = createChannelRequest(this, "", rid);
+//        String requestText = this.dequeueOutgoingMaps();
+//        URLWithQuery uri = this.forwardChannelUri.clone();
+//        uri.setParameterValue("RID", Integer.toString(rid));
+//        if (this.clientVersion != null) {
+//            uri.setParameterValue("CVER", this.clientVersion);
+//        }
+//
+//        request.xmlHttpPost(uri, requestText);
+//        this.forwardChannelRequest = request;
+//    }
+
+//    private ChannelRequest createChannelRequest(BrowserChannel browserChannel, String sessionId, int rid)
+//    {
+//        return new ChannelRequest(browserChannel, sessionId, rid, 0);
+//    }
 
 //    public void connectChannel()
 //    {
@@ -355,39 +362,6 @@ public class BrowserChannel
     {
         return state;
     }
-
-//    private void getHostPrefixes()
-//    {
-//        // Test channel
-//        System.out.println("Get Host Prefixes");
-//        int version = 8;
-//        String mode = "init";
-//        long lastSequenceNumber = -1;
-//        String random = "5z7qn2t4bnz7";
-//        int retries = 1;
-//        url = new URL(baseURL + "/test?id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionId + "&VER=" + version + "&lsq=" + lastSequenceNumber + "&MODE=" + mode + "&zx=" + random + "&t=" + retries);
-//        connection = (HttpURLConnection) url.openConnection();
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//        String line;
-//        while((line = reader.readLine()) != null)
-//            System.out.println(line);
-//        reader.close();
-//    }
-
-//    private void bufferingProxyTest()
-//    {
-//        // Test chunking channel
-//        System.out.println("Buffering Proxy Test (11111: first chunk, 2: second chunk)");
-//        String type = "xmlhttp";
-//        random = "0h7we2q4bnv9";
-//        url = new URL(baseURL + "/test?id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionId + "&VER=" + version + "&lsq=" + lastSequenceNumber + "&TYPE=" + type + "&zx=" + random + "&t=" + retries);
-//        connection = (HttpURLConnection) url.openConnection();
-//        InputStreamReader stream = new InputStreamReader(connection.getInputStream());
-//        int character;
-//        while((character = stream.read()) != -1)
-//            System.out.print(String.valueOf((char)character));
-//        System.out.println();
-//    }
 
     /**
      * Gets the Uri used for the connection that sends data to the server.
