@@ -3,6 +3,7 @@ package gx.realtime.serialize;
 import java.io.IOException;
 
 import gx.realtime.CollaboratorJoinedEvent;
+import gx.realtime.CollaboratorLeftEvent;
 import gx.realtime.Event;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gx.realtime.ObjectChangedEvent;
 
 public class EventDeserializer extends JsonDeserializer<Event>
 {
@@ -58,8 +60,15 @@ public class EventDeserializer extends JsonDeserializer<Event>
     {
         // TODO: recognize other message types
         switch(eventType) {
+            case 0:
+                return jp.readValueAs(ObjectChangedEvent.class);
             case 5:
                 return jp.readValueAs(CollaboratorJoinedEvent.class);
+            case 6:
+                return jp.readValueAs(CollaboratorLeftEvent.class);
+            case 7:
+                // create collab object event?
+                return null;
         }
         return null;
     }

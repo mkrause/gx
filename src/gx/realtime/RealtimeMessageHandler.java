@@ -27,10 +27,15 @@ public class RealtimeMessageHandler implements MessageHandler {
         Event event = parseDataMessage(data);
 
         // Handle events
+        // TODO: notify Document of this event
         if(event instanceof CollaboratorJoinedEvent) {
             Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
-            System.out.println("Collaborator joined event: " + user.getDisplayName());
-            // TODO: notify Document of this event
+            logger.debug("Collaborator joined event: {}", user.getDisplayName());
+        } else if (event instanceof CollaboratorLeftEvent) {
+            Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
+            logger.debug("Collaborator left event: {}", user.getUserId());
+        } else {
+            logger.debug("Received unknown event of class {}, {}", e.getClass(), e);
         }
     }
 
