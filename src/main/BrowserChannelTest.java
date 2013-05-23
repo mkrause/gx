@@ -89,6 +89,8 @@ public class BrowserChannelTest
             channel.addMessageHandler(new RealtimeMessageHandler());
             channel.initialize(fileId);
 
+            logger.debug("Initialized BrowserChannel");
+
             channel.connect();
             channel.openDeltaChannel();
             channel.openForwardChannel();
