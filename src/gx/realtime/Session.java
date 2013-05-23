@@ -1,4 +1,4 @@
-package gx.browserchannel.message;
+package gx.realtime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
