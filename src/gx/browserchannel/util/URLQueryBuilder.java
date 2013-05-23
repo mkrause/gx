@@ -30,6 +30,11 @@ public class URLQueryBuilder
         return this;
     }
 
+    public URLQueryBuilder putAll(Map<? extends String, ? extends String> values) {
+        parameters.putAll(values);
+        return this;
+    }
+
     public Map<String,String> build() {
         return parameters;
     }

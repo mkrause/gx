@@ -6,7 +6,6 @@ import gx.browserchannel.util.URLWithQuery;
 
 import gx.browserchannel.util.ConnectionFactory;
 import gx.browserchannel.util.RandomUtils;
-import com.google.api.client.auth.oauth2.Credential;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +19,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.*;
 
@@ -35,8 +33,7 @@ public class BrowserChannel
     private static Logger logger = LogManager.getLogger(BrowserChannel.class);
     int retries = 1;
     private int channelVersion = 8;
-    private String baseUrl = "https://drive.google.com/otservice";
-    private Session sessionInfo;
+    private String baseUrl;
     private String path;
     private String clientVersion = "1";
     private URLWithQuery forwardChannelUri;
@@ -48,65 +45,27 @@ public class BrowserChannel
     // Non-JS-BrowserChannel compliant parameters
     private long lastSequenceNumber = 0L;
     private String channelSessionId;
-    private Credential credentials;
-    private String modelId;
     private JsonFactory jfactory = new JsonFactory();
     private List<MessageHandler> handlers = new ArrayList<MessageHandler>();
+    private Map<String, String> extraParams = new HashMap<String, String>();
 
-    public BrowserChannel(Credential credentials)
+    public BrowserChannel()
     {
-        this.credentials = credentials;
         outgoingMaps = new LinkedList<LinkedList<String>>();
+        nextRid = (int) Math.floor(Math.random() * 100000);
+        logger.info("Initialized");
     }
     
     public URLQueryBuilder getDefaultParamBuilder()
     {
-        URLQueryBuilder q = new URLQueryBuilder();
-        q.put("id", modelId)
-                .put("access_token", credentials.getAccessToken())
-                .put("sid", sessionInfo.getSessionId())
-                .put("VER", Integer.toString(channelVersion))
-                .put("lsq", Long.toString(lastSequenceNumber))
-                .put("RID", Integer.toString(nextRid++))
-                .put("t", "" + retries);
+        URLQueryBuilder q = new URLQueryBuilder()
+            .put("VER", Integer.toString(channelVersion))
+            .put("lsq", Long.toString(lastSequenceNumber))
+            .put("RID", Integer.toString(nextRid++))
+            .put("t", "" + retries);
+        q.putAll(extraParams);
 
         return q;
-    }
-
-    public void initialize(String driveFileId)
-    {
-        this.modelId = getModelId(driveFileId);
-        this.sessionInfo = getInitializationMessage();
-        logger.debug("SessionID: " + sessionInfo.getSessionId());
-        logger.debug("Snapshot: " + sessionInfo.getSnapshot());
-        logger.info("Initialized");
-
-        nextRid = (int) Math.floor(Math.random() * 100000);
-    }
-
-    public void openDeltaChannel()
-    {
-        logger.info("Delta channel");
-        int startRevision = sessionInfo.getRevision() + 1;
-        try {
-            URLQueryBuilder m = getDefaultQueryBuilder().put("startRev", startRevision);
-
-            URLWithQuery url = new URLWithQuery(baseUrl + "/delta", m);
-            HttpURLConnection connection = ConnectionFactory.createConnection(url, "GET");
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
-
-            // Parse response
-            JsonParser jParser = jfactory.createParser(in);
-            ObjectMapper mapper = new ObjectMapper();
-            jParser.setCodec(mapper);
-            DeltaMessage message = jParser.readValueAs(DeltaMessage.class);
-            // TODO: what to do with this message
-            in.close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void openForwardChannel()
@@ -114,9 +73,6 @@ public class BrowserChannel
         logger.info("Forward Channel (POST)");
 
         HttpURLConnection connection;
-
-//        String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + session.getId() + "&VER=" + channelVersion +
-//                "&lsq=" + lastSequenceNumber + "&RID=" + randomId + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
         URLWithQuery url;
 
         try {
@@ -211,8 +167,9 @@ public class BrowserChannel
         }
     }
 
-    public void connect()
+    public void connect(String baseUrl)
     {
+        this.baseUrl = baseUrl;
         logger.info("connect()");
 
         this.path = "/bind";
@@ -231,7 +188,6 @@ public class BrowserChannel
         int rid = nextRid++;
 
         ChannelRequest request = createChannelRequest(this, "", rid);
-//        request.setExtraHeaders(this.extraHeaders);
         String requestText = this.dequeueOutgoingMaps();
         URLWithQuery uri = this.forwardChannelUri.clone();
         uri.setParameterValue("RID", Integer.toString(rid));
@@ -251,12 +207,13 @@ public class BrowserChannel
     public void connectTest(String testPath)
     {
         logger.info("Get Host Prefixes");
-        int channelVersion = 8;
         String mode = "init";
-        long lastSequenceNumber = -1;
-        int retries = 1;
         try {
-            URL url = new URL(baseUrl + testPath + "?id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionInfo.getSessionId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&MODE=" + mode + "&zx=" + RandomUtils.getRandomString() + "&t=" + retries);
+            URLQueryBuilder queryBuilder = getDefaultQueryBuilder()
+                .put("MODE", mode)
+                .put("zx", RandomUtils.getRandomString());
+
+            URL url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
@@ -269,82 +226,83 @@ public class BrowserChannel
         }
     }
 
-    public void connectChannel()
-    {
-        this.forwardChannelUri = getForwardChannelUri(path);
-        ensureForwardChannel();
-    }
+//    public void connectChannel()
+//    {
+//        this.forwardChannelUri = getForwardChannelUri(path);
+//        ensureForwardChannel();
+//    }
+//
+//    private void ensureForwardChannel()
+//    {
+//        if (this.forwardChannelRequest != null) {
+//            // connection in process - no need to start a new request
+//            return;
+//        }
+//
+//        startForwardChannel();
+//    }
 
-    private void ensureForwardChannel()
-    {
-        if (this.forwardChannelRequest != null) {
-            // connection in process - no need to start a new request
-            return;
-        }
+//    private void startForwardChannel()
+//    {
+//        logger.info("startForwardChannel");
+//
+//        String RID = "66172";
+//        int clientVersion = 1;
+//        String random = "i9dw6xv4b81e";
+//        byte[] rawData = new byte[0];
+//        //String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionInfo.getSessionId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
+//        String urlParameters = "";
+//        try {
+//            URL url = new URL(baseUrl + "/bind?" + urlParameters);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setDoOutput(true);
+//            connection.setDoInput(true);
+//            connection.setInstanceFollowRedirects(false);
+//            connection.setRequestMethod("POST");
+//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//            connection.setRequestProperty("charset", "utf-8");
+//            connection.setRequestProperty("Content-Length", "0");
+//            connection.setUseCaches(false);
+//            connection.getOutputStream().write(rawData);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            StringBuffer response = new StringBuffer();
+//            String line;
+//            while ((line = reader.readLine()) != null)
+//                response.append(line);
+//            reader.close();
+//            logger.debug("forwardChannel response: {}", response.toString());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (ProtocolException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // TODO: do something with the response?
+//    }
 
-        startForwardChannel();
-    }
-
-    private void startForwardChannel()
-    {
-        logger.info("startForwardChannel");
-
-        String RID = "66172";
-        int clientVersion = 1;
-        String random = "i9dw6xv4b81e";
-        byte[] rawData = new byte[0];
-        String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionInfo.getSessionId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
-        try {
-            URL url = new URL(baseUrl + "/bind?" + urlParameters);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestProperty("Content-Length", "0");
-            connection.setUseCaches(false);
-            connection.getOutputStream().write(rawData);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuffer response = new StringBuffer();
-            String line;
-            while ((line = reader.readLine()) != null)
-                response.append(line);
-            reader.close();
-            logger.debug("forwardChannel response: {}", response.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // TODO: do something with the response?
-    }
-
-    private void makeForwardChannelRequest()
-    {
-        int rid;
-        String requestText;
-
-        rid = this.nextRid++;
-        requestText = dequeueOutgoingMaps();
-
-        URLWithQuery uri = forwardChannelUri.clone();
-
-        uri.setParameterValue("SID", sessionInfo.getSessionId());
-        uri.setParameterValue("RID", Integer.toString(rid));
-        uri.setParameterValue("AID", Integer.toString(this.lastArrayId));
-        //addAdditionalParams(uri);
-
-        ChannelRequest request = createChannelRequest(this, sessionInfo.getSessionId(), rid);
-
-        //request.setExtraHeaders(this.extraHeaders);
-
-        request.xmlHttpPost(uri, requestText);
-    }
+//    private void makeForwardChannelRequest()
+//    {
+//        int rid;
+//        String requestText;
+//
+//        rid = this.nextRid++;
+//        requestText = dequeueOutgoingMaps();
+//
+//        URLWithQuery uri = forwardChannelUri.clone();
+//
+//        uri.setParameterValue("SID", sessionInfo.getSessionId());
+//        uri.setParameterValue("RID", Integer.toString(rid));
+//        uri.setParameterValue("AID", Integer.toString(this.lastArrayId));
+//        //addAdditionalParams(uri);
+//
+//        ChannelRequest request = createChannelRequest(this, sessionInfo.getSessionId(), rid);
+//
+//        //request.setExtraHeaders(this.extraHeaders);
+//
+//        request.xmlHttpPost(uri, requestText);
+//    }
 
     private String dequeueOutgoingMaps()
     {
@@ -398,59 +356,8 @@ public class BrowserChannel
         return state;
     }
 
-    private String getModelId(String driveFileId)
-    {
-        // Set up parameters
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("id", driveFileId);
-        parameters.put("access_token", credentials.getAccessToken());
-
-        try {
-            // Create connection
-            URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/modelid"), parameters);
-            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
-
-            // Parse response
-            JsonParser jParser = jfactory.createParser(in);
-            ObjectMapper mapper = new ObjectMapper();
-            jParser.setCodec(mapper);
-            Model message = jParser.readValueAs(Model.class);
-            in.close();
-            return message.getModelId();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    public Session getInitializationMessage()
-    {
-        // Set up parameters
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("id", modelId);
-        parameters.put("access_token", credentials.getAccessToken());
-
-        try {
-            // Create connection
-            URLWithQuery urlq = new URLWithQuery(new URL(baseUrl + "/gs"), parameters);
-            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
-
-            // Parse response
-            JsonParser jParser = jfactory.createParser(in);
-            ObjectMapper mapper = new ObjectMapper();
-            jParser.setCodec(mapper);
-            Session message = jParser.readValueAs(Session.class);
-            in.close();
-            return message;
-        } catch (IOException e) {
-            logger.debug("Received IOException: {}", e);
-            return null;
-        }
-    }
-
-    private void getHostPrefixes()
-    {
+//    private void getHostPrefixes()
+//    {
 //        // Test channel
 //        System.out.println("Get Host Prefixes");
 //        int version = 8;
@@ -465,10 +372,10 @@ public class BrowserChannel
 //        while((line = reader.readLine()) != null)
 //            System.out.println(line);
 //        reader.close();
-    }
+//    }
 
-    private void bufferingProxyTest()
-    {
+//    private void bufferingProxyTest()
+//    {
 //        // Test chunking channel
 //        System.out.println("Buffering Proxy Test (11111: first chunk, 2: second chunk)");
 //        String type = "xmlhttp";
@@ -480,7 +387,7 @@ public class BrowserChannel
 //        while((character = stream.read()) != -1)
 //            System.out.print(String.valueOf((char)character));
 //        System.out.println();
-    }
+//    }
 
     /**
      * Gets the Uri used for the connection that sends data to the server.
@@ -527,11 +434,15 @@ public class BrowserChannel
 
         return urlq;
     }
-
-    private String getAccessToken()
+    
+    public void addExtraParameter(String key, String value)
     {
-        // TODO: refresh token, if necessary
-        return credentials.getAccessToken();
+        extraParams.put(key, value);
+    }
+    
+    public void removeExtraParameter(String key)
+    {
+        extraParams.remove(key);
     }
 
     /**
@@ -541,12 +452,10 @@ public class BrowserChannel
     public URLQueryBuilder getDefaultQueryBuilder()
     {
         return new URLQueryBuilder()
-                .put("id", modelId)
-                .put("access_token", credentials.getAccessToken())
-                .put("sid", sessionInfo.getSessionId())
-                .put("VER", Integer.toString(channelVersion))
-                .put("lsq", Long.toString(lastSequenceNumber))
-                .put("RID", Integer.toString(nextRid++))
-                .put("t", "" + retries);
+            .putAll(extraParams)
+            .put("VER", Integer.toString(channelVersion))
+            .put("lsq", Long.toString(lastSequenceNumber))
+            .put("RID", Integer.toString(nextRid++))
+            .put("t", "" + retries);
     }
 }

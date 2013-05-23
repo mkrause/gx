@@ -3,7 +3,7 @@ package gx.realtime;
 /**
  * @author Rdebokx
  */
-public class ObjectChangedEvent extends BaseModelEvent {
+public class ObjectChangedEvent extends BaseModelEvent implements Event {
 
     private BaseModelEvent[] events;
 
