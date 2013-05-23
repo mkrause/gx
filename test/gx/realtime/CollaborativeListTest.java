@@ -1,4 +1,4 @@
-package test.gx.realtime;
+package gx.realtime;
 
 import static org.junit.Assert.*;
 import gx.realtime.CollaborativeList;
