@@ -7,8 +7,8 @@ import org.junit.Test;
 public class CollaborativeMapTest {
 
 	@Test
-	public void testItems() {
-		fail("Not yet implemented");
+	public void CollaborativeMapTest(){
+		fail("TODO");
 	}
 	
 	@Test
@@ -17,24 +17,8 @@ public class CollaborativeMapTest {
 	}
 	
 	@Test
-	public void testValue(){
+	public void testValues(){
+		//TODO: test if it actually contains clones
 		fail("TODO");
 	}
-	
-	@Test
-	public void testGetId(){
-		fail("TODO");
-	}
-	
-	@Test
-	public void testAddEventListener(){
-		fail("TODO");
-	}
-	
-	@Test
-	public void testRemoveEventListener(){
-		fail("TODO");
-	}
-	
-
 }
