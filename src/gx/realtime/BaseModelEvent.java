@@ -3,9 +3,7 @@ package gx.realtime;
 /**
  * @author Rdebokx
  */
-public class BaseModelEvent {
-    //TODO: is this class actually used as an abstract class?
-
+public abstract class BaseModelEvent {
     private EventType type;
     protected EventTarget target;
     private String sessionId;
