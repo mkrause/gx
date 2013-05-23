@@ -444,6 +444,7 @@ public class BrowserChannel
             in.close();
             return message;
         } catch (IOException e) {
+            logger.debug("Received IOException: {}", e);
             return null;
         }
     }
