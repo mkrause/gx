@@ -13,9 +13,9 @@ public class CollaboratorLeftEvent implements Event {
         this.collaborator = collaborator;
     }
 
-    public static CollaboratorJoinedEvent deserialize(Document source, Object serialized){
+    public static CollaboratorLeftEvent deserialize(Document source, Object serialized){
         //TODO: deserialize given object and return new event
-        return new CollaboratorJoinedEvent(source, null);
+        return new CollaboratorLeftEvent(source, null);
     }
 
     public Collaborator getCollaborator(){
