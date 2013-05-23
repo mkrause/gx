@@ -5,20 +5,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import gx.realtime.BaseModelEvent;
-import gx.realtime.Collaborator;
-import gx.realtime.CollaboratorJoinedEvent;
 import gx.realtime.ObjectChangedEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ObjectChangedEventDeserializer extends JsonDeserializer<ObjectChangedEvent>
 {
     @Override
     public ObjectChangedEvent deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException
     {
-        // TODO: pass parameters along
-        return new ObjectChangedEvent(null, null, null, false, new BaseModelEvent[0]);
+        int sequenceNumber = jp.nextIntValue(-1);
+        String targetId = jp.nextTextValue();
+        String userId = jp.nextTextValue();
+        String sessionId = jp.nextTextValue();
+
+        // TODO: parse BaseModelEvents
+        return new ObjectChangedEvent(null, sessionId, userId, false, new BaseModelEvent[0]);
     }
 }
