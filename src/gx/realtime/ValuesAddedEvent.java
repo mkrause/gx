@@ -9,7 +9,7 @@ public class ValuesAddedEvent extends BaseModelEvent {
     private Object[] values;
 
     public ValuesAddedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, Object[] values){
-        super("ValuesAddedEvent", target, sessionId, userId, isLocal, false);
+        super(EventType.VALUES_ADDED, target, sessionId, userId, isLocal, false);
         this.index = index;
         this.values = values;
     }

@@ -10,7 +10,7 @@ public class ValueChangedEvent extends BaseModelEvent {
     private Object oldValue;
 
     public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue){
-        super("ValueChangedEvent", target, sessionId, userId, isLocal, false);
+        super(EventType.VALUE_CHANGED, target, sessionId, userId, isLocal, false);
         this.property = property;
         this.newValue = newValue;
         this.oldValue = oldValue;

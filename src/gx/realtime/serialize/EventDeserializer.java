@@ -63,8 +63,8 @@ public class EventDeserializer extends JsonDeserializer<Event>
         }
 
         // Check if next token is array end token
-        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
-            throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
+//        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
+//            throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
         
         return event;
     }

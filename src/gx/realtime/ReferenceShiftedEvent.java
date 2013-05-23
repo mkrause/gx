@@ -9,7 +9,7 @@ public class ReferenceShiftedEvent extends BaseModelEvent {
     private int newIndex;
 
     public ReferenceShiftedEvent(IndexReference target, int oldIndex, int newIndex, String sessionId, String userId, boolean isLocal){
-        super("ReferenceShiftedEvent", target, sessionId, userId, isLocal, false);
+        super(EventType.REFERENCE_SHIFTED, target, sessionId, userId, isLocal, false);
         this.oldIndex = oldIndex;
         this.newIndex = newIndex;
     }
