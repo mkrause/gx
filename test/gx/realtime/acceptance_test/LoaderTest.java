@@ -16,7 +16,7 @@ public class LoaderTest {
         options.setAppId("foo");
         options.setClientId("bar");
         
-        RealtimeOptions.OnFileLoadedCallback onFileLoadedMock = mock(RealtimeOptions.OnFileLoadedCallback.class);
+        RealtimeLoader.OnDocumentLoadedCallback onFileLoadedMock = mock(RealtimeLoader.OnDocumentLoadedCallback.class);
         options.setOnFileLoaded(onFileLoadedMock);
         
         RealtimeLoader rtLoader = new RealtimeLoader(options);

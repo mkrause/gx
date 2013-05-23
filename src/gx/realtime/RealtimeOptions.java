@@ -1,29 +1,31 @@
 package gx.realtime;
 
+import gx.realtime.RealtimeLoader.InitializeModelCallback;
+import gx.realtime.RealtimeLoader.HandleErrorsCallback;
+
 /**
  * Options (key/value) for the RealtimeLoader.
  */
 public class RealtimeOptions {
-	
-	//Callback interfaces
-    public interface OnFileLoadedCallback {
-        void onFileLoaded(Document doc);
-    }
-    public interface InitializeModelCallback {
-        void initializeModel(Model model);
-    }
-    public interface HandleErrorsCallback {
-        void handleErrors(Exception e);
-    }
     
-    //Attributes
+    // Attributes
 	private String appId;
     private String clientId;
-    private OnFileLoadedCallback onFileLoaded;
+    private String docId;
+
+    private RealtimeLoader.OnDocumentLoadedCallback onFileLoaded;
     private InitializeModelCallback initializeModel;
     private HandleErrorsCallback handleErrors;
 
-    //Methods
+    // Methods
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+    
     public String getClientId() {
         return clientId;
     }
@@ -32,11 +34,19 @@ public class RealtimeOptions {
         this.clientId = clientId;
     }
 
-    public OnFileLoadedCallback getOnFileLoaded() {
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
+    }
+
+    public RealtimeLoader.OnDocumentLoadedCallback getOnFileLoaded() {
         return onFileLoaded;
     }
 
-    public void setOnFileLoaded(OnFileLoadedCallback onFileLoaded) {
+    public void setOnFileLoaded(RealtimeLoader.OnDocumentLoadedCallback onFileLoaded) {
         this.onFileLoaded = onFileLoaded;
     }
 
@@ -54,13 +64,5 @@ public class RealtimeOptions {
 
     public void setHandleErrors(HandleErrorsCallback handleErrors) {
         this.handleErrors = handleErrors;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
     }
 }
