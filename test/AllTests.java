@@ -1,17 +1,15 @@
-package test;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import test.gx.realtime.CollaborativeListTest;
-import test.gx.realtime.CollaborativeMapTest;
-import test.gx.realtime.CollaborativeObjectTest;
-import test.gx.realtime.CollaborativeStringTest;
-import test.gx.realtime.EventTargetTest;
-import test.gx.realtime.IndexReferenceTest;
-import test.gx.realtime.ClientTest;
-import test.gx.realtime.ModelTest;
+import gx.realtime.CollaborativeListTest;
+import gx.realtime.CollaborativeMapTest;
+import gx.realtime.CollaborativeObjectTest;
+import gx.realtime.CollaborativeStringTest;
+import gx.realtime.EventTargetTest;
+import gx.realtime.IndexReferenceTest;
+import gx.realtime.ClientTest;
+import gx.realtime.ModelTest;
 
 /**
  * Test suite for all non-db errors
