@@ -11,8 +11,6 @@ import com.google.api.services.drive.Drive;
  * Socket class that can be used to connect to the Google Drive API.
  * It contains all the necessary parameters.
  * Singleton.
- * @author Rdebokx
- *
  */
 public class GSocket {
 	

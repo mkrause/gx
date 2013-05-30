@@ -3,9 +3,6 @@ package gx.realtime;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gx.realtime.serialize.ValueChangedEventSerializer;
 
-/**
- *
- */
 @JsonSerialize(using = ValueChangedEventSerializer.class)
 public class ValueChangedEvent extends BaseModelEvent
 {

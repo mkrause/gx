@@ -1,8 +1,5 @@
 package gx.realtime;
 
-/**
- * @author Rdebokx
- */
 public class TextInsertedEvent extends BaseModelEvent {
 
     private int index;

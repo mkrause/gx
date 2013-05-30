@@ -108,20 +108,6 @@ public abstract class CollaborativeObject implements EventTarget {
 	protected static <E> E clone(E value){
         Gson gson = new Gson();
         return (E) gson.fromJson(gson.toJson(value), value.getClass());
-
-        /*
-		E clone = null;
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-
-		try {
-			mapper.writeValue(writer, value);
-			clone = mapper.readValue(writer.toString(), new TypeReference<E>(){});
-            //clone = mapper.convertValue(clone, value.getClass());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 
 }

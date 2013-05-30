@@ -6,9 +6,6 @@ import gx.realtime.Model;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Rdebokx
- */
 public class CollaborativeCustomObject extends CollaborativeObject {
 
     private Map<String, CollaborativeValue> fields;

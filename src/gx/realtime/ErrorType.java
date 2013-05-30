@@ -1,8 +1,5 @@
 package gx.realtime;
 
-/**
- * @author Rdebokx
- */
 public enum ErrorType {
     CLIENT_ERROR,
     CONCURRENT_CREATION,

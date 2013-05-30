@@ -3,9 +3,6 @@ package gx.realtime;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gx.realtime.serialize.CollaboratorLeftEventDeserializer;
 
-/**
- * @author Rdebokx
- */
 @JsonDeserialize(using = CollaboratorLeftEventDeserializer.class)
 public class CollaboratorLeftEvent extends Event {
 

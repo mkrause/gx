@@ -1,8 +1,5 @@
 package gx.realtime.custom;
 
-/**
- * @author Rdebokx
- */
 public class CollaborativeValue {
 
     private Object value;

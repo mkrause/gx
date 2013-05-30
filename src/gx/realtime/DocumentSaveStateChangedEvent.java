@@ -1,8 +1,5 @@
 package gx.realtime;
 
-/**
- * @author Rdebokx
- */
 public class DocumentSaveStateChangedEvent extends Event {
 
     private Document document;

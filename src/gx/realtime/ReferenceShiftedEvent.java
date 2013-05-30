@@ -1,8 +1,5 @@
 package gx.realtime;
 
-/**
- * @author Rdebokx
- */
 public class ReferenceShiftedEvent extends BaseModelEvent {
 
     private int oldIndex;

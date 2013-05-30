@@ -1,8 +1,5 @@
 package gx.realtime;
 
-/**
- * @author Rdebokx
- */
 public class ValuesAddedEvent extends BaseModelEvent {
 
     private int index;

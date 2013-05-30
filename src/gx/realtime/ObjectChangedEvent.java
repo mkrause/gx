@@ -4,9 +4,6 @@ import gx.realtime.serialize.ObjectChangedEventDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-/**
- * @author Rdebokx
- */
  @JsonDeserialize(using = ObjectChangedEventDeserializer.class)
 public class ObjectChangedEvent extends BaseModelEvent {
 

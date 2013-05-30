@@ -12,7 +12,6 @@ public class CollaborativeList<E> extends CollaborativeObject{
 	public CollaborativeList(String id, Model model){
 		super(id, model);
 		this.values = new ArrayList<E>();
-		//TODO: determine id of the document.
 	}
 	
 	@SuppressWarnings("unchecked")

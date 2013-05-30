@@ -46,7 +46,7 @@ public class Document implements EventTarget {
     }
     
     /**
-     * Closes the document and disconnects from the server. After this function is called, event listeners will no longer fire and attempts to access the document, model, or model objects will throw a {@link gapi.drive.realtime.DocumentClosedError}. Calling this function after the document has been closed will have no effect.
+     * Closes the document and disconnects from the server. After this function is called, event listeners will no longer fire and attempts to access the document, model, or model objects will throw a {@link gx.realtime.DocumentClosedError}. Calling this function after the document has been closed will have no effect.
      */
     public void close() {
     	channel.disconnect();
