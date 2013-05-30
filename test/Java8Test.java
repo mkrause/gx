@@ -1,4 +1,7 @@
-package test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 public class Java8Test {
 
@@ -10,7 +13,7 @@ public class Java8Test {
         SoccerResult getSoccerResult(Integer teamA, Integer teamB);
     }
 
-    public void soccerResultPredictor() {
+    public SoccerResult soccerResultPredictor() {
 
         SoccerService soccerService = (teamA, teamB) -> {
             SoccerResult result = null;
@@ -26,14 +29,16 @@ public class Java8Test {
 
         // man utd vs wolves
         SoccerResult soccerResult = soccerService.getSoccerResult(3,1);
-        System.out.println("soccerResult = " + soccerResult);
+        //System.out.println("soccerResult = " + soccerResult);
+        return soccerResult;
 
     }
 
-    public static void main(String[] args) {
+    @Test
+    public void testJava8(){
         Java8Test firstLambda= new Java8Test();
-        firstLambda.soccerResultPredictor();
-
+        SoccerResult result = firstLambda.soccerResultPredictor();
+        assertEquals(SoccerResult.WON, result);
     }
 
 }

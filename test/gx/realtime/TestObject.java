@@ -1,6 +1,6 @@
 package gx.realtime;
 
-public class TestObject implements Cloneable{
+public class TestObject extends EventTarget implements Cloneable {
 
 	private int id;
 	private TestObject child;
@@ -36,5 +36,8 @@ public class TestObject implements Cloneable{
 	public TestObject clone(){
 		return new TestObject(this.getId(), this.getChild().clone());
 	}
-	
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
