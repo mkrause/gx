@@ -1,21 +1,24 @@
 package gx.browserchannel.message;
 
-import gx.realtime.operation.CompoundOperation;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import gx.browserchannel.message.serialize.SaveMessageSerializer;
+import gx.realtime.BaseModelEvent;
 
 /**
  * Message sent to the API containing the changes that are to be committed
  */
+@JsonSerialize(using = SaveMessageSerializer.class)
 public class SaveMessage
 {
     private int revision;
     private int requestNumber;
-    private CompoundOperation compoundOperation;
+    private BaseModelEvent event;
 
-    public SaveMessage(int revision, int requestNumber, CompoundOperation compoundOperation)
+    public SaveMessage(int revision, int requestNumber, BaseModelEvent event)
     {
         this.revision = revision;
         this.requestNumber = requestNumber;
-        this.compoundOperation = compoundOperation;
+        this.event = event;
     }
 
     public int getRevision()
@@ -38,13 +41,13 @@ public class SaveMessage
         this.requestNumber = requestNumber;
     }
 
-    public CompoundOperation getCompoundOperation()
+    public BaseModelEvent getEvent()
     {
-        return compoundOperation;
+        return event;
     }
 
-    public void setCompoundOperation(CompoundOperation compoundOperation)
+    public void setEvent(BaseModelEvent event)
     {
-        this.compoundOperation = compoundOperation;
+        this.event = event;
     }
 }

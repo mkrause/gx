@@ -1,21 +1,38 @@
 package gx.browserchannel.message.serialize;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gx.browserchannel.message.SaveMessage;
+
+import java.io.IOException;
 
 /**
  *
  */
-public class SaveMessageSerializer
+public class SaveMessageSerializer extends StdSerializer<SaveMessage>
 {
-    public String serialize(SaveMessage message) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("{\"revision\":");
-        buffer.append(message.getRevision());
-        buffer.append(",\"requestNumber\":");
-        buffer.append(message.getRevision());
-        buffer.append(",\"changes\":");
-//        buffer.append(message.getChanges());
-        buffer.append("}");
-        return buffer.toString();
+
+    protected SaveMessageSerializer()
+    {
+        super(SaveMessage.class);
+    }
+
+    @Override
+    public void serialize(SaveMessage saveMessage, JsonGenerator jg, SerializerProvider serializerProvider) throws IOException, JsonGenerationException
+    {
+        jg.writeStartObject();
+        jg.writeNumberField("revision", saveMessage.getRevision());
+        jg.writeNumberField("requestNumber", saveMessage.getRequestNumber());
+        jg.writeArrayFieldStart("changes");
+
+        ObjectMapper mapper = new ObjectMapper();
+        String output = mapper.writeValueAsString(saveMessage.getEvent());
+        jg.writeRaw(output);
+
+        jg.writeEndArray();
+        jg.writeEndObject();
     }
 }
