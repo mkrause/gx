@@ -1,6 +1,6 @@
 package gx.realtime;
 
-public class TestObject extends EventTarget implements Cloneable {
+public class TestObject implements Cloneable, EventTarget {
 
 	private int id;
 	private TestObject child;
@@ -39,5 +39,17 @@ public class TestObject extends EventTarget implements Cloneable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public void addEventListener(EventType type, EventHandler handler)
+    {
+        // TODO
+    }
+
+    @Override
+    public void removeEventListener(EventType type, EventHandler handler)
+    {
+        // TODO
     }
 }
