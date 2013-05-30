@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
+import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.NormalizedJsonReader;
 import gx.browserchannel.util.DriveWrapper;
 import gx.browserchannel.util.URLWithQuery;
@@ -61,16 +62,6 @@ public class RealtimeLoader {
         return null;
     }
 
-    private Document getDocument(Credential cred, String docId){
-        //DriveWrapper service = new DriveWrapper(cred);
-        //service.connect();
-        
-        String modelId = retrieveModelId(cred, docId);
-        Session session = createSession(cred, modelId);
-        
-        return new Document(null, null);
-    }
-
     private static String retrieveModelId(Credential cred, String docId) {
         // Set up parameters
         Map<String, String> parameters = new HashMap<String, String>();
@@ -96,8 +87,7 @@ public class RealtimeLoader {
         }
     }
 
-    private static Session createSession(Credential cred, String modelId)
-    {
+    private static Session createSession(Credential cred, String modelId) {
         // Set up parameters
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("id", modelId);
@@ -121,6 +111,23 @@ public class RealtimeLoader {
             return null;
         }
     }
+
+    private Document getDocument(Credential cred, String docId){
+        //DriveWrapper service = new DriveWrapper(cred);
+        //service.connect();
+
+        String modelId = retrieveModelId(cred, docId);
+        Session session = createSession(cred, modelId);
+        
+        BrowserChannel channel = new BrowserChannel();
+        Document doc = new Document(channel);
+        
+        // Create a model and link it to the document
+        Model model = new Model(doc);
+        doc.setModel(model);
+        
+        return doc;
+    }
     
     public void load(
         Credential cred,
@@ -130,6 +137,8 @@ public class RealtimeLoader {
         HandleErrorsCallback errorFn
     ) {
         Document doc = getDocument(cred, docId);
+        
+        options.getInitializeModel().initializeModel(doc.getModel());
         options.getOnFileLoaded().onFileLoaded(doc);
     }
     

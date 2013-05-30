@@ -30,8 +30,7 @@ public class Document extends EventTarget{
 	
 	//functions
 	
-	protected Document(Model model, BrowserChannel channel){
-		this.model = model;
+	protected Document(BrowserChannel channel){
 		this.channel = channel;
 		collaborators = new ArrayList<Collaborator>();
 		eventHandlers = new HashMap<EventType, Set<EventHandler>>();
@@ -62,6 +61,15 @@ public class Document extends EventTarget{
         return collaborators;
     }
 
+    /**
+     * Set the model of this document. This method should not be used directly,
+     * the model is set automatically during the document load process.
+     * @param model
+     */
+    protected void setModel(Model model) {
+        this.model = model;
+    }
+    
     /**
      * Gets the collaborative model associated with this document.
      * @return

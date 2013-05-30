@@ -31,13 +31,16 @@ public class LoaderTest
         RealtimeOptions options = new RealtimeOptions();
         options.setClientId(clientId);
         options.setDocId("0B6gFLa0mYRcOc3NKTmtwdV9idHM");
+
+        options.setInitializeModel((model) -> {
+            System.out.println("we haz model");
+        });
         
-        RealtimeLoader.OnDocumentLoadedCallback onFileLoadedMock = mock(RealtimeLoader.OnDocumentLoadedCallback.class);
-        options.setOnFileLoaded(onFileLoadedMock);
+        options.setOnFileLoaded((document) -> {
+            System.out.println("we haz document");
+        });
         
         RealtimeLoader loader = new RealtimeLoader(options);
         loader.start();
-        
-        verify(onFileLoadedMock).onFileLoaded(isA(Document.class));
     }
 }
