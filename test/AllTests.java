@@ -30,7 +30,10 @@ import gx.realtime.RealtimeMessageHandlerTest;
 	IndexReferenceTest.class,
 	ModelTest.class,
 	RealtimeLoaderTest.class,
-	RealtimeMessageHandlerTest.class
+	RealtimeMessageHandlerTest.class,
+
+    //Java8Test
+    Java8Test.class
 })
 
 public class AllTests {

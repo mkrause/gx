@@ -20,6 +20,7 @@ public class ValueChangedOperation extends Operation {
     public ValueChangedOperation(String id, String key, ObjectType type, String value)
     {
         this.type = Type.VALUE_CHANGED;
+        this.key = key;
         this.objectId = id;
         this.valueType = type;
         this.value = value;
