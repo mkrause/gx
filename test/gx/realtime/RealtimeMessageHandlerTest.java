@@ -93,7 +93,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_collabJoinedMsg()
     {
         DataMessage sm = getDataMessage(collabJoinedMsg);
-        Event e = handler.parseDataMessage(sm);
+        Event e = handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(CollaboratorJoinedEvent.class, e.getClass());
@@ -104,7 +104,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_collabLeftMsg()
     {
         DataMessage sm = getDataMessage(collabLeftMsg);
-        Event e = handler.parseDataMessage(sm);
+        Event e = handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(CollaboratorLeftEvent.class, e.getClass());
@@ -115,7 +115,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_mapValueChangedMsg_add()
     {
         DataMessage sm = getDataMessage(mapValueChangedMsg_add);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ValueChangedEvent.class, getFirstEvent(e).getClass());
@@ -125,7 +125,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_mapValueChangedMsg_delete()
     {
         DataMessage sm = getDataMessage(mapValueChangedMsg_delete);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ValueChangedEvent.class, getFirstEvent(e).getClass());
@@ -136,7 +136,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesAddedMsg_single()
     {
         DataMessage sm = getDataMessage(listValuesAddedMsg_single);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, e.getClass());
@@ -149,7 +149,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesAddedMsg_multiple()
     {
         DataMessage sm = getDataMessage(listValuesAddedMsg_multiple);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, getFirstEvent(e).getClass());
@@ -161,7 +161,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesSetMsg()
     {
         DataMessage sm = getDataMessage(listValuesSetMsg);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ValuesSetEvent.class, getFirstEvent(e).getClass());
@@ -171,7 +171,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesRemovedMsg()
     {
         DataMessage sm = getDataMessage(listValuesRemovedMsg);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm);
+        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents()[0];
 
         assertNotNull(e);
         assertEquals(ValuesRemovedEvent.class, getFirstEvent(e).getClass());

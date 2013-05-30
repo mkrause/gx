@@ -24,18 +24,21 @@ public class CompoundOperationDeserializer extends JsonDeserializer<CompoundOper
         // Add mapper
         if(jp.getCodec() == null)
             jp.setCodec(new ObjectMapper());
-        
+
+        jp.nextToken();
+
         // Read whole tree
         TreeNode tree = jp.readValueAsTree();
-        TreeNode operationsTree = tree.get(1);
-        Operation[] operations = new Operation[operationsTree.size()];
-        
+        Operation[] operations = new Operation[tree.size() - 1];
+
+        // tree.get(0) is always zero
+
         // Read operations
-        for(int i = 0; i < operationsTree.size(); i++)
+        for(int i = 1; i < tree.size(); i++)
         {
-            JsonParser ojp = operationsTree.get(i).traverse();
+            JsonParser ojp = tree.get(i).traverse();
             ojp.setCodec(new ObjectMapper());
-            operations[i] = ojp.readValueAs(Operation.class);
+            operations[i-1] = ojp.readValueAs(Operation.class);
         }
         
         return new CompoundOperation(operations);

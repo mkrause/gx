@@ -22,22 +22,25 @@ public class RealtimeMessageHandler implements MessageHandler {
         if(!(e.getMessage() instanceof DataMessage))
             return;
 
-        // Parse data as event
+        // Parse data as events
         DataMessage data = (DataMessage) e.getMessage();
-        Event event = parseDataMessage(data);
+        EventList events = parseDataMessage(data);
 
         // Handle events
-        // TODO: notify Document of this event
-        if(event instanceof CollaboratorJoinedEvent) {
-            Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
-            logger.debug("Collaborator joined event: {}", user.getDisplayName());
-        } else if (event instanceof CollaboratorLeftEvent) {
-            Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
-            logger.debug("Collaborator left event: {}", user.getUserId());
-        } else if(event == null) {
-            logger.debug("Received unparsable event from message: {}", data);
-        } else {
-            logger.debug("Received unknown event of class {}\n {}", event.getClass(), event);
+        for(Event event : events.getEvents())
+        {
+            // TODO: notify Document of this event
+            if(event instanceof CollaboratorJoinedEvent) {
+                Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
+                logger.debug("Collaborator joined event: {}", user.getDisplayName());
+            } else if (event instanceof CollaboratorLeftEvent) {
+                Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
+                logger.debug("Collaborator left event: {}", user.getUserId());
+            } else if(event == null) {
+                logger.debug("Received unparsable event from message: {}", data);
+            } else {
+                logger.debug("Received unknown event of class {}\n {}", event.getClass(), event);
+            }
         }
     }
 
@@ -46,17 +49,17 @@ public class RealtimeMessageHandler implements MessageHandler {
      * @param data
      * @return
      */
-    protected Event parseDataMessage(DataMessage data)
+    protected EventList parseDataMessage(DataMessage data)
     {
         JsonParser parser = data.getContent().traverse();
         parser.setCodec(new ObjectMapper());
-        Event event = null;
+        EventList events = null;
         try {
-            event = parser.readValueAs(Event.class);
+            events = parser.readValueAs(EventList.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return event;
+        return events;
     }
 
 }

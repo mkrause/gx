@@ -37,6 +37,7 @@ public class ObjectChangedEventDeserializer extends JsonDeserializer<ObjectChang
         String timestamp = jp.nextTextValue();
         String userId = jp.nextTextValue();
         String sessionId = jp.nextTextValue();
+        jp.nextToken();
         Operation operation = jp.readValueAs(Operation.class);
         
         // Create event
