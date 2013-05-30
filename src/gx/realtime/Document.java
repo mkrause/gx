@@ -32,13 +32,19 @@ public class Document implements EventTarget {
 		collaborators = new ArrayList<Collaborator>();
 		eventHandlers = new HashMap<EventType, Set<EventHandler>>();
         
-        addEventListener((CollaboratorJoinedEvent e) -> {
+        addPrivateEventHandlers();
+    }
+    
+    private void addPrivateEventHandlers() {
+        addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent e) -> {
             collaborators.add(e.getCollaborator());
         });
-
-        System.out.println("fooo");
+        
+        addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent e) -> {
+            collaborators.remove(e.getCollaborator());
+        });
     }
-
+    
     /**
      * Closes the document and disconnects from the server. After this function is called, event listeners will no longer fire and attempts to access the document, model, or model objects will throw a {@link gapi.drive.realtime.DocumentClosedError}. Calling this function after the document has been closed will have no effect.
      */
@@ -81,7 +87,7 @@ public class Document implements EventTarget {
         return model;
     }
 
-    public void addEventListener(EventType type, EventHandler handler) {
+    public <T extends Event> void addEventListener(EventType type, EventHandler<T> handler) {
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	if(handlers == null){
     		handlers = new HashSet<EventHandler>();
@@ -89,12 +95,8 @@ public class Document implements EventTarget {
     	}
     	handlers.add(handler);
     }
-    
-    public <T extends Event> void addEventListener(EventHandler<T> handler) {
-        
-    }
 
-    public void removeEventListener(EventType type, EventHandler handler) {
+    public <T extends Event> void removeEventListener(EventType type, EventHandler<T> handler) {
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	if(handlers != null){
     		handlers.remove(handler);

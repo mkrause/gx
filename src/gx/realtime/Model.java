@@ -20,7 +20,15 @@ public class Model implements EventTarget {
 		canRedo = false;
 		canUndo = false;
 		readOnly = false;
+
+        addDocumentEventHandlers();
 	}
+    
+    private void addDocumentEventHandlers() {
+        document.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent e) -> {
+            System.out.println("OBJECT_CHANGED");
+        });
+    }
 	
 	public void beginCompoundOperation(String opt_name){
 		//TODO
