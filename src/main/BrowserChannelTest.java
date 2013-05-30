@@ -33,15 +33,13 @@ import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class BrowserChannelTest
 {
@@ -125,8 +123,6 @@ public class BrowserChannelTest
             
             // Open channel
             channel.connect(channelUrl);
-            channel.openForwardChannel();
-            channel.openBackwardChannel();
 
             // TODO: keep track of the request number this session
             BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new", "old");
@@ -137,6 +133,12 @@ public class BrowserChannelTest
             if(response != null) {
                 session.setRevision(response.getRevision());
             }
+
+            logger.debug("Press ENTER to disconnect");
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            br.readLine();
+
+            channel.disconnect();
 
             System.out.println("done");
             System.exit(0);

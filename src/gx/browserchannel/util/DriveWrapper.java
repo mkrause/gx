@@ -122,8 +122,6 @@ public class DriveWrapper {
             
             // Open channel
             channel.connect(channelUrl);
-            channel.openForwardChannel();
-            channel.openBackwardChannel();
         } catch (Exception e) {
             e.printStackTrace();
         }

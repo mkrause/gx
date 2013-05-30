@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
-import gx.browserchannel.message.serialize.SaveMessageSerializer;
 import gx.browserchannel.util.ConnectionFactory;
 import gx.util.RandomUtils;
 import gx.browserchannel.util.URLQueryBuilder;
@@ -45,11 +44,15 @@ public class BrowserChannel
     private boolean useChunked;
     private List<? extends Queue<String>> outgoingMaps;
     // Non-JS-BrowserChannel compliant parameters
+    private long lastSequenceTimestamp = -1L;
     private long lastSequenceNumber = 0L;
     private String channelSessionId;
     private JsonFactory jfactory = new JsonFactory();
     private List<MessageHandler> handlers = new ArrayList<MessageHandler>();
     private Map<String, String> extraParams = new HashMap<String, String>();
+    private Thread backwardChannel;
+    private HttpURLConnection backwardChannelConnection;
+    private boolean isClosed = true;
 
     public BrowserChannel()
     {
@@ -171,7 +174,7 @@ public class BrowserChannel
     /**
      * Custom method to try opening a backward channel
      */
-    public void openBackwardChannel()
+    private void openBackwardChannel()
     {
         logger.info("openBackwardChannel (GET)");
         URLQueryBuilder params = getDefaultQueryBuilder();
@@ -189,17 +192,20 @@ public class BrowserChannel
         }
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            NormalizedJsonReader in = new NormalizedJsonReader(connection.getInputStream(), true);
+            backwardChannelConnection = (HttpURLConnection) url.openConnection();
+            NormalizedJsonReader in = new NormalizedJsonReader(backwardChannelConnection.getInputStream(), true);
 
+            logger.debug(url);
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
-            while (in.nextChunk()) {
+            while (!isClosed && in.nextChunk()) {
                 JsonParser jParser = jfactory.createParser(in);
                 ObjectMapper mapper = new ObjectMapper();
                 jParser.setCodec(mapper);
 
                 Message[] messages = jParser.readValueAs(Message[].class);
                 for (Message m : messages) {
+                    lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
+                    lastSequenceTimestamp = Math.max(lastSequenceTimestamp, m.getTimestamp());
                     if (m instanceof NoopMessage) {
                         logger.debug("NOOP");
                     } else {
@@ -215,6 +221,23 @@ public class BrowserChannel
         }
     }
 
+    private void ensureBackwardChannel()
+    {
+        if(backwardChannel == null)
+            backwardChannel = new Thread()
+            {
+                public void run() {
+                    while(!isClosed) openBackwardChannel();
+                }
+            };
+
+        if(!isClosed || backwardChannel.isAlive())
+            return;
+
+        isClosed = false;
+        backwardChannel.start();
+    }
+
     public void connect(String baseUrl)
     {
         this.baseUrl = baseUrl;
@@ -224,6 +247,8 @@ public class BrowserChannel
 
         // Test the connection quality, does not actually seem to do anything else
         connectTest("/test");
+        openForwardChannel();
+        ensureBackwardChannel();
     }
 
     public void connectTest(String testPath)
@@ -263,105 +288,6 @@ public class BrowserChannel
         }
     }
 
-//    private void open()
-//    {
-//        int rid = nextRid++;
-//
-//        ChannelRequest request = createChannelRequest(this, "", rid);
-//        String requestText = this.dequeueOutgoingMaps();
-//        URLWithQuery uri = this.forwardChannelUri.clone();
-//        uri.setParameterValue("RID", Integer.toString(rid));
-//        if (this.clientVersion != null) {
-//            uri.setParameterValue("CVER", this.clientVersion);
-//        }
-//
-//        request.xmlHttpPost(uri, requestText);
-//        this.forwardChannelRequest = request;
-//    }
-
-//    private ChannelRequest createChannelRequest(BrowserChannel browserChannel, String sessionId, int rid)
-//    {
-//        return new ChannelRequest(browserChannel, sessionId, rid, 0);
-//    }
-
-//    public void connectChannel()
-//    {
-//        this.forwardChannelUri = getForwardChannelUri(path);
-//        ensureForwardChannel();
-//    }
-//
-//    private void ensureForwardChannel()
-//    {
-//        if (this.forwardChannelRequest != null) {
-//            // connection in process - no need to start a new request
-//            return;
-//        }
-//
-//        startForwardChannel();
-//    }
-
-//    private void startForwardChannel()
-//    {
-//        logger.info("startForwardChannel");
-//
-//        String RID = "66172";
-//        int clientVersion = 1;
-//        String random = "i9dw6xv4b81e";
-//        byte[] rawData = new byte[0];
-//        //String urlParameters = "id=" + modelId + "&access_token=" + getAccessToken() + "&sid=" + sessionInfo.getSessionId() + "&VER=" + channelVersion + "&lsq=" + lastSequenceNumber + "&RID=" + RID + "&CVER=" + clientVersion + "&zx=" + random + "&t=" + retries;
-//        String urlParameters = "";
-//        try {
-//            URL url = new URL(baseUrl + "/bind?" + urlParameters);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setDoOutput(true);
-//            connection.setDoInput(true);
-//            connection.setInstanceFollowRedirects(false);
-//            connection.setRequestMethod("POST");
-//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//            connection.setRequestProperty("charset", "utf-8");
-//            connection.setRequestProperty("Content-Length", "0");
-//            connection.setUseCaches(false);
-//            connection.getOutputStream().write(rawData);
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            StringBuffer response = new StringBuffer();
-//            String line;
-//            while ((line = reader.readLine()) != null)
-//                response.append(line);
-//            reader.close();
-//            logger.debug("forwardChannel response: {}", response.toString());
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (ProtocolException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // TODO: do something with the response?
-//    }
-
-//    private void makeForwardChannelRequest()
-//    {
-//        int rid;
-//        String requestText;
-//
-//        rid = this.nextRid++;
-//        requestText = dequeueOutgoingMaps();
-//
-//        URLWithQuery uri = forwardChannelUri.clone();
-//
-//        uri.setParameterValue("SID", sessionInfo.getSessionId());
-//        uri.setParameterValue("RID", Integer.toString(rid));
-//        uri.setParameterValue("AID", Integer.toString(this.lastArrayId));
-//        //addAdditionalParams(uri);
-//
-//        ChannelRequest request = createChannelRequest(this, sessionInfo.getSessionId(), rid);
-//
-//        //request.setExtraHeaders(this.extraHeaders);
-//
-//        request.xmlHttpPost(uri, requestText);
-//    }
-
     private String dequeueOutgoingMaps()
     {
         // TODO: implement dequeueing
@@ -377,13 +303,18 @@ public class BrowserChannel
     {
         logger.info("disconnect()");
 
-        // TODO: Cancel outstanding requests
+        // TODO: send disconnect request
+
+        isClosed = true;
+        if(backwardChannelConnection != null)
+            backwardChannelConnection.disconnect();
+
+        waitForClosed();
     }
 
     public void send(Message message)
     {
         // TODO Auto-generated method stub
-
     }
 
     public void addMessageHandler(MessageHandler handler)
@@ -403,10 +334,14 @@ public class BrowserChannel
             handler.receive(event);
     }
 
-    public void isClosed()
+    public boolean isClosed()
     {
-        // TODO Auto-generated method stub
+        return !backwardChannel.isAlive() && isClosed;
+    }
 
+    public void waitForClosed()
+    {
+        while(!isClosed());
     }
 
     public State getState()
@@ -480,7 +415,7 @@ public class BrowserChannel
         return new URLQueryBuilder()
                 .putAll(extraParams)
                 .put("VER", Integer.toString(channelVersion))
-                .put("lsq", Long.toString(lastSequenceNumber))
+                .put("lsq", Long.toString(lastSequenceTimestamp))
                 .put("RID", Integer.toString(nextRid++))
                 .put("t", "" + retries);
     }

@@ -3,13 +3,14 @@ package gx.browserchannel.message;
 import gx.browserchannel.message.serialize.MessageDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.api.client.util.DateTime;
+
+import java.util.Date;
 
 @JsonDeserialize(using = MessageDeserializer.class)
 public abstract class Message
 {
     protected int lastArrayId = -1;
-    protected DateTime timestamp = null;
+    protected long timestamp = -1L;
     
     public void setLastArrayId(int lastArrayId)
     {
@@ -21,12 +22,12 @@ public abstract class Message
         return lastArrayId;
     }
 
-    public void setTimestamp(DateTime timestamp)
+    public void setTimestamp(long timestamp)
     {
         this.timestamp = timestamp;
     }
 
-    public DateTime getTimestamp()
+    public long getTimestamp()
     {
         return timestamp;
     }
