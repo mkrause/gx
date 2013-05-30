@@ -25,8 +25,8 @@ public class Model implements EventTarget {
     }
     
     private void addDocumentEventHandlers() {
-        document.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent e) -> {
-            System.out.println("OBJECT_CHANGED");
+        document.addEventListener(EventType.VALUES_ADDED, (ValuesAddedEvent e) -> {
+            System.out.println("VALUES_ADDED");
         });
     }
     
