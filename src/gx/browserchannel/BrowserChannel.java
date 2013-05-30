@@ -1,15 +1,15 @@
 package gx.browserchannel;
 
-import gx.browserchannel.message.*;
-import gx.browserchannel.util.URLQueryBuilder;
-import gx.browserchannel.util.URLWithQuery;
-
-import gx.browserchannel.util.ConnectionFactory;
-import gx.browserchannel.util.RandomUtils;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import gx.browserchannel.message.*;
+import gx.browserchannel.util.ConnectionFactory;
+import gx.browserchannel.util.RandomUtils;
+import gx.browserchannel.util.URLQueryBuilder;
+import gx.browserchannel.util.URLWithQuery;
+import gx.realtime.Session;
+import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,17 +56,59 @@ public class BrowserChannel
         nextRid = (int) Math.floor(Math.random() * 100000);
         logger.info("Initialized");
     }
-    
+
     public URLQueryBuilder getDefaultParamBuilder()
     {
         URLQueryBuilder q = new URLQueryBuilder()
-            .put("VER", Integer.toString(channelVersion))
-            .put("lsq", Long.toString(lastSequenceNumber))
-            .put("RID", Integer.toString(nextRid++))
-            .put("t", "" + retries);
+                .put("VER", Integer.toString(channelVersion))
+                .put("lsq", Long.toString(lastSequenceNumber))
+                .put("RID", Integer.toString(nextRid++))
+                .put("t", "" + retries);
         q.putAll(extraParams);
 
         return q;
+    }
+
+    public void sendForwardMessage(Session session)
+    {
+        String msg = "{\"revision\":" + session.getRevision() + ",\"requestNumber\":0,\"changes\":[[4,[0,[8,\"gdegz4x7zhgc9qqir\",\"abdddeff\",[21,\""+ session.getRevision()+"\"]]]]]}";
+
+        HttpURLConnection connection;
+        URLWithQuery url;
+
+        logger.debug("Sending forward message");
+
+        try {
+            URLQueryBuilder queryBuilder = new URLQueryBuilder();
+            queryBuilder.putAll(extraParams);
+
+            url = new URLWithQuery(baseUrl + "/save", queryBuilder);
+            logger.debug("Url: {}", url.getURL().toString());
+            logger.debug("Msg: {}", msg);
+
+            connection = ConnectionFactory.createConnection(url, "POST");
+            byte[] binaryMsg = msg.getBytes("UTF-8");
+            connection.setRequestProperty("Content-Length", "" + binaryMsg.length);
+            connection.getOutputStream().write(binaryMsg);
+
+            Reader in = new NormalizedJsonReader(connection.getInputStream());
+
+            // Parse response
+            JsonParser jParser = jfactory.createParser(in);
+            ObjectMapper mapper = new ObjectMapper();
+            jParser.setCodec(mapper);
+            SaveRevisionResponse response = jParser.readValueAs(SaveRevisionResponse.class);
+            logger.debug("Received revision response: {}", response.getRevision());
+
+            // Update revision in our session
+            session.setRevision(response.getRevision());
+
+            in.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void openForwardChannel()
@@ -94,25 +136,27 @@ public class BrowserChannel
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
             Message[] messages = jParser.readValueAs(Message[].class);
-            
+
             // Process messages
-            for(Message m : messages) {
-                if(m instanceof SessionMessage) {
-                    channelSessionId = ((SessionMessage)m).getId();
+            for (Message m : messages) {
+                if (m instanceof SessionMessage) {
+                    channelSessionId = ((SessionMessage) m).getId();
+                    logger.debug("Received channelSessionId {}", channelSessionId);
                 } else {
+                    logger.debug("Received event {}", m);
                     // Pass message to handlers
                     fireEvent(new MessageEvent(this, m));
                 }
                 lastSequenceNumber = m.getLastArrayId();
             }
             in.close();
-            
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         logger.debug("channelSessionId: {}", channelSessionId);
         logger.debug("lastSequenceNumber: {}", lastSequenceNumber);
     }
@@ -142,14 +186,14 @@ public class BrowserChannel
             NormalizedJsonReader in = new NormalizedJsonReader(connection.getInputStream(), true);
 
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
-            while(in.nextChunk()) {
+            while (in.nextChunk()) {
                 JsonParser jParser = jfactory.createParser(in);
                 ObjectMapper mapper = new ObjectMapper();
                 jParser.setCodec(mapper);
 
                 Message[] messages = jParser.readValueAs(Message[].class);
-                for(Message m : messages) {
-                    if(m instanceof NoopMessage) {
+                for (Message m : messages) {
+                    if (m instanceof NoopMessage) {
                         logger.debug("NOOP");
                     } else {
                         // Pass message to handlers
@@ -180,8 +224,8 @@ public class BrowserChannel
         try {
             logger.info("Get Host Prefixes");
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder()
-                .put("MODE", "init")
-                .put("zx", RandomUtils.getRandomString());
+                    .put("MODE", "init")
+                    .put("zx", RandomUtils.getRandomString());
 
             URL url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -195,8 +239,8 @@ public class BrowserChannel
 
             logger.info("Buffering Proxy Test");
             queryBuilder = getDefaultQueryBuilder()
-                .put("TYPE", "xmlhttp")
-                .put("zx", RandomUtils.getRandomString());
+                    .put("TYPE", "xmlhttp")
+                    .put("zx", RandomUtils.getRandomString());
 
             url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
             connection = (HttpURLConnection) url.openConnection();
@@ -348,7 +392,7 @@ public class BrowserChannel
     private void fireEvent(MessageEvent event)
     {
         // TODO: fire in separate thread?
-        for(MessageHandler handler : handlers)
+        for (MessageHandler handler : handlers)
             handler.receive(event);
     }
 
@@ -408,12 +452,12 @@ public class BrowserChannel
 
         return urlq;
     }
-    
+
     public void addExtraParameter(String key, String value)
     {
         extraParams.put(key, value);
     }
-    
+
     public void removeExtraParameter(String key)
     {
         extraParams.remove(key);
@@ -421,15 +465,16 @@ public class BrowserChannel
 
     /**
      * Returns an URLQueryBuilder containing the default parameters for this BrowserChannel
+     *
      * @return
      */
     public URLQueryBuilder getDefaultQueryBuilder()
     {
         return new URLQueryBuilder()
-            .putAll(extraParams)
-            .put("VER", Integer.toString(channelVersion))
-            .put("lsq", Long.toString(lastSequenceNumber))
-            .put("RID", Integer.toString(nextRid++))
-            .put("t", "" + retries);
+                .putAll(extraParams)
+                .put("VER", Integer.toString(channelVersion))
+                .put("lsq", Long.toString(lastSequenceNumber))
+                .put("RID", Integer.toString(nextRid++))
+                .put("t", "" + retries);
     }
 }

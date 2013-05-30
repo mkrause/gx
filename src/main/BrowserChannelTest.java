@@ -124,6 +124,8 @@ public class BrowserChannelTest
             channel.openForwardChannel();
             channel.openBackwardChannel();
 
+            channel.sendForwardMessage(session);
+
             System.out.println("done");
             System.exit(0);
         } catch (Exception e) {

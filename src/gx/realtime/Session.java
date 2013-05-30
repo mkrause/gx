@@ -41,5 +41,10 @@ public class Session
     {
         return snapshot;
     }
+
+    public void setRevision(int revision)
+    {
+        this.revision = revision;
+    }
 }
 
