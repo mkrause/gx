@@ -7,7 +7,7 @@ public class CollaborativeList<E> extends CollaborativeObject{
 
 	private ArrayList<E> values;
 	
-	protected CollaborativeList(Model model){
+	public CollaborativeList(Model model){
 		super(model);
 		this.values = new ArrayList<E>();
 		//TODO: determine id of the document.

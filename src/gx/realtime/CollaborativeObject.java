@@ -26,7 +26,7 @@ public abstract class CollaborativeObject extends EventTarget{
 	
 	//Methods
 	
-	protected CollaborativeObject(Model model){
+	public CollaborativeObject(Model model){
 		this.model = model;
 		this.eventHandlers = new HashMap<EventType, Set<EventHandler>>();
 		//TODO: determine id of this object.

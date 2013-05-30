@@ -14,7 +14,7 @@ import com.google.gson.Gson;
  * A collaborative map. A map's key must be a String. The values can contain other Realtime collaborative objects, 
  * custom collaborative objects or Java objects.
  * Changes to the map will automatically be synced with the server and other collaborators. 
- * To listen for changes, add EventListeners for the gapi.drive.realtime.EventType.VALUE_CHANGED event type. 
+ * To listen for changes, add EventListeners for the gx.realtime.EventType.VALUE_CHANGED event type. 
  *
  * @param <V> The type of the values contained by this map. The map's key must be a String.
  */
@@ -29,7 +29,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * Constructor, constructing a map for the given model. This constructor should not be called 
 	 * @param model
 	 */
-	protected CollaborativeMap(Model model){
+	public CollaborativeMap(Model model){
 		super(model);
 		map = new HashMap<String, V>();
 	}
@@ -82,7 +82,6 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The items in this map. Each item is a [key, value] pair.
 	 */
 	public Set<Entry<String, V>> items(){
-		//TODO: test if cloning works
 		Set<Entry<String, V>> result = new HashSet<Entry<String, V>>();
 		Set<Entry<String, V>> entrySet = map.entrySet();
 		
@@ -98,15 +97,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The keys in this map.
 	 */
 	public String[] keys(){
-		String[] result = new String[map.size()];
-		Iterator<String> keys = map.keySet().iterator();
-		
-		int i = 0;
-		while(keys.hasNext()){
-			result[i] = keys.next();
-			i++;
-		}
-		return result;
+		return (String[]) map.keySet().toArray();
 	}
 	
 	/**
@@ -126,7 +117,6 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 */
 	@SuppressWarnings("unchecked")
 	public V[] values(){
-		//TODO: test if this are actually clones.
 		V[] result = (V[]) new Object[map.size()];
 		Collection<V> values = map.values();
 		int i = 0;
