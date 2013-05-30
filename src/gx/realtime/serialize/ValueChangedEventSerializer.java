@@ -22,14 +22,25 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
     public void serialize(ValueChangedEvent event, JsonGenerator jgen, SerializerProvider provider) throws IOException,
             JsonProcessingException
     {
-        // [8,"sessid","property",[21,"new"]]
+        // [4,[0,[8,"objectid","property",[21,"new"]]]]
+        // Print the outer wrapper
+        jgen.writeStartArray();
+        jgen.writeNumber(4);
+
+        // print 0-wrapper
+        jgen.writeStartArray();
+        jgen.writeNumber(0);
+
         jgen.writeStartArray();
         jgen.writeNumber(8);
-        jgen.writeString(event.getSessionId());
+        jgen.writeString(event.getTargetId());
         jgen.writeString(event.getProperty());
         jgen.writeStartArray();
         jgen.writeNumber(21);
         jgen.writeString(event.getNewValue());
+        jgen.writeEndArray();
+        jgen.writeEndArray();
+        // close the two outer wrappers
         jgen.writeEndArray();
         jgen.writeEndArray();
     }

@@ -2,6 +2,7 @@ package gx.browserchannel;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
 import gx.browserchannel.message.serialize.SaveMessageSerializer;
@@ -74,7 +75,14 @@ public class BrowserChannel
         HttpURLConnection connection;
         URLWithQuery url;
 
-        String msg = (new SaveMessageSerializer()).serialize(message);
+        ObjectMapper mapper = new ObjectMapper();
+        String msg;
+        try {
+            msg = mapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         logger.debug("Sending forward message");
 
@@ -84,7 +92,7 @@ public class BrowserChannel
 
             url = new URLWithQuery(baseUrl + "/save", queryBuilder);
             logger.debug("Url: {}", url.getURL().toString());
-            logger.debug("Msg: {}", message);
+            logger.debug("Msg: {}", msg);
 
             connection = ConnectionFactory.createConnection(url, "POST");
             byte[] binaryMsg = msg.getBytes("UTF-8");
@@ -95,7 +103,6 @@ public class BrowserChannel
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
-            ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
             SaveRevisionResponse response = jParser.readValueAs(SaveRevisionResponse.class);
             logger.debug("Received revision response: {}", response.getRevision());

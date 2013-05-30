@@ -24,9 +24,11 @@ import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.NormalizedJsonReader;
 import gx.browserchannel.message.SaveMessage;
 import gx.browserchannel.util.URLWithQuery;
+import gx.realtime.BaseModelEvent;
 import gx.realtime.RealtimeMessageHandler;
 import gx.realtime.Session;
 
+import gx.realtime.ValueChangedEvent;
 import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,10 +128,11 @@ public class BrowserChannelTest
             channel.openForwardChannel();
             channel.openBackwardChannel();
 
-
             // TODO: keep track of the request number this session
-            SaveMessage message = new SaveMessage(session.getRevision(), 0, null);
+            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new", "old");
+            SaveMessage message = new SaveMessage(session.getRevision(), 0, event);
             SaveRevisionResponse response = channel.sendMessage(message);
+
 
             if(response != null) {
                 session.setRevision(response.getRevision());
