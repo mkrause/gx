@@ -15,8 +15,8 @@ public class ValueChangedEventSerializerTest
     @Test
     public void testSerializeValueChangedEvent() throws JsonProcessingException
     {
-        String expected = "[4,[0,[8,\"sessid\",\"property\",[21,\"new\"]]]]";
-        ValueChangedEvent event = new ValueChangedEvent(null, "sessid", "userid", false, "property", "new", "old");
+        String expected = "[4,[0,[8,\"id\",\"property\",[21,\"new\"]]]]";
+        ValueChangedEvent event = new ValueChangedEvent("id", "sessid", "userid", false, "property", "new", "old");
         ObjectMapper mapper = new ObjectMapper();
         String output = mapper.writeValueAsString(event);
 

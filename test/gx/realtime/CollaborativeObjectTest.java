@@ -14,7 +14,7 @@ public class CollaborativeObjectTest {
 
     @Before
     public void setUp(){
-        string = new CollaborativeString(null);
+        string = new CollaborativeString(null, null);
     }
 
 	@Test

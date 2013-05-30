@@ -19,14 +19,14 @@ public class CollaborativeMapTest {
 	
 	@Before
 	public void setUp(){
-		map = new CollaborativeMap<TestObject>(null);
+		map = new CollaborativeMap<TestObject>(null, null);
 		simpleObject = new TestObject(123);
 		testObject = new TestObject(456, simpleObject);
 	}
 	
 	@Test
 	public void testCollaborativeMap(){
-		CollaborativeMap<TestObject> map = new CollaborativeMap<TestObject>(null);
+		CollaborativeMap<TestObject> map = new CollaborativeMap<TestObject>(null, null);
 		assertEquals(0, map.size());
 		assertTrue(map.isEmpty());
 	}
