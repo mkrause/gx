@@ -9,16 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Document extends EventTarget {
+public class Document implements EventTarget {
 	
 	//interfaces
 	public interface SuccessFunction{
 		public void execute(String json);
 	}
 	public interface FailureFunction{
-		public void execute(BaseModelEvent e);
-	}
-	public interface EventHandler{
 		public void execute(BaseModelEvent e);
 	}
 	
@@ -94,10 +91,21 @@ public class Document extends EventTarget {
     	}
     }
     
+    private void handle(EventType type, BaseModelEvent event) {
+        switch (type) {
+        case COLLABORATOR_JOINED:
+            
+            break;
+        }
+    }
+    
     protected void fireEvent(EventType type, BaseModelEvent event) {
+        // First, update our own state based on these events
+        handle(type, event);
+        
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	for(EventHandler handler : handlers){
-    		handler.execute(event);
+    		handler.handleEvent(event);
     	}
     }
 }

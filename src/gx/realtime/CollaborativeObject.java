@@ -1,7 +1,5 @@
 package gx.realtime;
 
-import gx.realtime.Document.EventHandler;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -12,13 +10,8 @@ import java.util.Set;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class CollaborativeObject extends EventTarget{
-
-	//interfaces
-	public interface EventHandler{
-		public void handleEvent(BaseModelEvent e);
-	}
-	
+public abstract class CollaborativeObject implements EventTarget {
+    
 	//Attributes
 	private String id;
 	protected Model model;

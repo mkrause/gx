@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class Model extends EventTarget {
+public class Model implements EventTarget {
 	
 	private Document document;
 	private CollaborativeMap<CollaborativeObject> root;
@@ -101,4 +101,11 @@ public class Model extends EventTarget {
 		return readOnly;
 	}
 
+    public void addEventListener(EventType type, EventHandler handler) {
+        //TODO
+    }
+
+    public void removeEventListener(EventType type, EventHandler handler) {
+        //TODO
+    }
 }

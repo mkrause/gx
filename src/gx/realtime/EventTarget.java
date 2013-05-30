@@ -1,16 +1,7 @@
 package gx.realtime;
 
-public class EventTarget {
-
-	public EventTarget(){
-		
-	}
-	
-	public void addEventListener(/*TODO*/){
-		//TODO
-	}
-	
-	public void removeEventListener(/*TODO*/){
-		//TODO
-	}
+public interface EventTarget {
+    
+    public void addEventListener(EventType type, EventHandler handler);
+    public void removeEventListener(EventType type, EventHandler handler);
 }
