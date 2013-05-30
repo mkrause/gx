@@ -204,7 +204,7 @@ public class RealtimeMessageHandlerTest
     }
 
     private Object getFirstEvent(ObjectChangedEvent e) {
-        assertTrue(e.getEvents().length != 0);
+        assertNotEquals(0, e.getEvents().length);
         return e.getEvents()[0];
     }
 }
