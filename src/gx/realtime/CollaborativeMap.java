@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.gson.Gson;
-
 /**
  * A collaborative map. A map's key must be a String. The values can contain other Realtime collaborative objects, 
  * custom collaborative objects or Java objects.
@@ -134,18 +132,5 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	public int size(){
 		return map.size();
 	}
-	
-	/**
-	 * Internal function used for creating clones of the values of this map.
-	 * This is done by means of JSON serialization to avoid constraining the values of this map to Cloneables.
-	 * @param object The object that needs to be cloned.
-	 * @return A clone of the given object.
-	 */
-	@SuppressWarnings("unchecked")
-	private V clone(V object){
-		Gson gson = new Gson();
-		return (V) gson.fromJson(gson.toJson(object), object.getClass());
-	}
-	
 	
 }

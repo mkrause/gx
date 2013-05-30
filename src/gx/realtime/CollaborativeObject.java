@@ -71,12 +71,11 @@ public abstract class CollaborativeObject extends EventTarget{
     	}
     }
     
-    /*
 	protected <E> E clone(E value){
 		E clone = null;
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
-		
+
 		try {
 			mapper.writeValue(writer, value);
 			clone = mapper.readValue(writer.toString(), new TypeReference<E>(){});
@@ -85,6 +84,5 @@ public abstract class CollaborativeObject extends EventTarget{
 		}
 		return clone;
 	}
-	*/
-	
+
 }
