@@ -3,7 +3,7 @@ package gx.realtime;
 /**
  * @author Rdebokx
  */
-public class DocumentSaveStateChangedEvent implements Event {
+public class DocumentSaveStateChangedEvent extends Event {
 
     private Document document;
     private boolean isSaving;

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * @author Rdebokx
  */
 @JsonDeserialize(using = CollaboratorJoinedEventDeserializer.class)
-public class CollaboratorJoinedEvent implements Event {
+public class CollaboratorJoinedEvent extends Event {
 
     Document document;
     Collaborator collaborator;

@@ -19,8 +19,7 @@ public class CollaborativeObjectTest {
 
 	@Test
 	public void testEventListeners() {
-
-        EventHandler handler = (testEvent) -> {
+        EventHandler<TestEvent> handler = (testEvent) -> {
             TestObject testObject = (TestObject) testEvent.getTarget();
             testObject.setId(testObject.getId() + 1);
         };
@@ -33,7 +32,7 @@ public class CollaborativeObjectTest {
         assertEquals(101, simpleObject.getId());
 
         //test for multiple event types with one handler
-        EventHandler handler2 = (testEvent) -> {
+        EventHandler<TestEvent> handler2 = (testEvent) -> {
             TestObject testObject2 = (TestObject) testEvent.getTarget();
             testObject2.setId(testObject2.getId() + 10);
         };

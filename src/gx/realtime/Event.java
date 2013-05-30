@@ -1,6 +1,4 @@
 package gx.realtime;
 
-public interface Event
-{
-
+public abstract class Event {
 }

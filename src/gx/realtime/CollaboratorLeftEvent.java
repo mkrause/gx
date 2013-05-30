@@ -7,7 +7,7 @@ import gx.realtime.serialize.CollaboratorLeftEventDeserializer;
  * @author Rdebokx
  */
 @JsonDeserialize(using = CollaboratorLeftEventDeserializer.class)
-public class CollaboratorLeftEvent implements Event {
+public class CollaboratorLeftEvent extends Event {
 
     Document document;
     Collaborator collaborator;

@@ -4,17 +4,13 @@ import gx.realtime.serialize.ObjectChangedEventDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-/**
- * @author Rdebokx
- */
-@JsonDeserialize(using = ObjectChangedEventDeserializer.class)
-public abstract class BaseModelEvent implements Event {
+public abstract class BaseModelEvent extends Event {
     protected EventType type;
     protected EventTarget target;
     protected String sessionId;
     protected boolean isLocal;
     protected boolean bubbles;
-
+    
     public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles){
         //TODO: for all subclasses, check whether they should bubble or not.
         this.type = type;
