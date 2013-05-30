@@ -3,6 +3,7 @@ package gx.realtime;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -64,16 +65,18 @@ public class CollaborativeMapTest {
 	
 	@Test
 	public void testValues(){
-		assertEquals(0, map.values().length);
+		assertEquals(0, map.values().size());
 		
 		map.set("123", simpleObject);
 		map.set("456", testObject);
 		
-		TestObject[] values = map.values();
-		assertEquals(2, values.length);
-		
-		TestObject obj1 = values[0];
-		TestObject obj2 = values[1];
+		List<TestObject> values = map.values();
+		assertEquals(2, values.size());
+
+        System.out.println("List: " + values);
+
+		TestObject obj1 = values.get(0);
+		TestObject obj2 = values.get(1);
 		if(obj1.equals("123")){
 			assertEquals(simpleObject, obj1);
 			assertEquals(testObject, obj2);

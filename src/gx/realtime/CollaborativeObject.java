@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -102,7 +104,11 @@ public abstract class CollaborativeObject implements EventTarget {
      * @param <E> The Object type.
      * @return A clone of the given object.
      */
-	protected <E> E clone(E value){
+	protected static <E> E clone(E value){
+        Gson gson = new Gson();
+        return (E) gson.fromJson(gson.toJson(value), value.getClass());
+
+        /*
 		E clone = null;
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
@@ -110,10 +116,11 @@ public abstract class CollaborativeObject implements EventTarget {
 		try {
 			mapper.writeValue(writer, value);
 			clone = mapper.readValue(writer.toString(), new TypeReference<E>(){});
+            //clone = mapper.convertValue(clone, value.getClass());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return clone;
+		*/
 	}
 
 }

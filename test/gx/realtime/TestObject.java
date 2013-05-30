@@ -27,7 +27,12 @@ public class TestObject implements Cloneable, EventTarget {
 		boolean result = false;
 		if(object instanceof TestObject){
 			TestObject that = (TestObject) object;
-			result = this.getId() == that.getId() && this.getChild().equals(that.getChild());
+			result = this.getId() == that.getId();
+            if(this.getChild() != null){
+                result &= this.getChild().equals(that.getChild());
+            } else {
+                result &= that.getChild() == null;
+            }
 		}
 		return result;
 	}

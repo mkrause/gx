@@ -79,4 +79,13 @@ public class CollaborativeObjectTest {
         assertEquals(233, testObject.getId());
 	}
 
+    @Test
+    public void testClone(){
+        TestObject simpleObject = new TestObject(123);
+        TestObject testObject = new TestObject(456, simpleObject);
+        TestObject clone = CollaborativeObject.clone(simpleObject);
+        assertEquals(simpleObject, clone);
+        assertFalse(simpleObject == clone);
+    }
+
 }

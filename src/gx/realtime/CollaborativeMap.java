@@ -1,12 +1,7 @@
 package gx.realtime;
 
-import java.util.AbstractMap;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * A collaborative map. A map's key must be a String. The values can contain other Realtime collaborative objects, 
@@ -109,21 +104,19 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	}
 	
 	/**
-	 * Returns an array containing a copy of the values in this map. 
-	 * Modifications to the returned array do not modify this collaborative map.
+	 * Returns a list containing a copy of the values in this map.
+	 * Modifications to the returned list do not modify this collaborative map.
 	 * @return The values in this map.
 	 */
 	@SuppressWarnings("unchecked")
-	public V[] values(){
-		V[] result = (V[]) new Object[map.size()];
-		Collection<V> values = map.values();
-		int i = 0;
-		
-		for(V value : values){
-			result[i] = clone(value);
-			i++;
-		}
-		return result;
+	public List<V> values(){
+        List<V> result = new ArrayList<V>();
+
+        Collection<V> values = map.values();
+        for(V value : values){
+            result.add(clone(value));
+        }
+        return result;
 	}
 	
 	/**
