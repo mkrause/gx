@@ -3,9 +3,11 @@ package gx.realtime.serialize;
 import java.io.IOException;
 
 import gx.browserchannel.message.MessageHandler;
+import gx.realtime.BaseModelEvent;
 import gx.realtime.CollaboratorJoinedEvent;
 import gx.realtime.CollaboratorLeftEvent;
 import gx.realtime.Event;
+import gx.realtime.ObjectChangedEvent;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -14,7 +16,6 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gx.realtime.ObjectChangedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,16 +50,14 @@ public class EventDeserializer extends JsonDeserializer<Event>
         
         // Read entire event
         event = readEvent(jp, eventType);
-
+        
         // Message type not recognized
-        if(event == null) {
-            return null;
-            // TODO: throw exception 
-        }
-
+        if(event == null)
+            throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
+        
         // Check if next token is array end token
-//        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
-//            throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
+        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
+            throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
         
         return event;
     }
@@ -68,14 +67,12 @@ public class EventDeserializer extends JsonDeserializer<Event>
         // TODO: recognize other message types
         switch(eventType) {
             case 0:
-                return jp.readValueAs(ObjectChangedEvent.class);
+                Event[] events = jp.readValueAs(ObjectChangedEvent[].class);
+                return (events.length == 1) ? events[0] : null;
             case 5:
                 return jp.readValueAs(CollaboratorJoinedEvent.class);
             case 6:
                 return jp.readValueAs(CollaboratorLeftEvent.class);
-            case 7:
-                // create collab object event?
-                return null;
         }
         return null;
     }

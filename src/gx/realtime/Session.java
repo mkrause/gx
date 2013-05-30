@@ -1,6 +1,6 @@
 package gx.realtime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import gx.realtime.operation.Operation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Session
@@ -13,9 +13,8 @@ public class Session
     private String interactionMode;
     @JsonProperty("modelId")
     private String modelId;
-//    @JsonProperty("snapshot")
-    @JsonIgnore
-    private BaseModelEvent[] snapshot;
+    @JsonProperty("snapshot")
+    private Operation[] snapshot;
 
     public String getSessionId()
     {
@@ -37,7 +36,7 @@ public class Session
         return modelId;
     }
     
-    public BaseModelEvent[] getSnapshot()
+    public Operation[] getSnapshot()
     {
         return snapshot;
     }

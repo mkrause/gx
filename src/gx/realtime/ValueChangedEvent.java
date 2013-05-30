@@ -1,13 +1,8 @@
 package gx.realtime;
 
-import gx.realtime.serialize.ValueChangedEventDeserializer;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 /**
  * @author Rdebokx
  */
-@JsonDeserialize(using = ValueChangedEventDeserializer.class)
 public class ValueChangedEvent extends BaseModelEvent {
 
     private String property;

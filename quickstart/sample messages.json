@@ -130,7 +130,7 @@
   [
     14, // AID
     [
-      0, // Message type: ObjectChangedEvent
+      0, // Message type: BaseModelEvent[]
       1367937931301, // Unix timestamp (ms)
       [
         [
@@ -277,15 +277,15 @@
   [
     91, // AID
     [
-      0, // Message type: ObjectChangedEvent
+      0, // Message type: BaseModelEvent[]
       1367937931323, // Unix timestamp (ms)
       [
         [
           [
             [
-              4, // ?
+              4, // BaseModelEvent
               [
-                0, // ?
+                0, // EventData
                 [
                   5, // operation type: TextInsertedEvent (6 means TextDeletedEvent)
                   "gde9cnpj3hg952dy9", // the object id
@@ -351,6 +351,46 @@
           22, // revision
           "39c1e633a0c5ef19", // sid
           1 // requestNumber of this client
+        ]
+      ]
+    ]
+  ]
+]
+
+141
+[
+  [
+    119,
+    [
+      0,
+      1369904539667,
+      [
+        [
+          18,
+          "13ef4ca7ccf", // Unix timestamp (ms) (HEX)
+          "112956879592017678596", // User Id
+          "7e7ae0f70922414", // sid
+          [
+            4,
+            [
+              0,
+              [
+                4,
+                [
+                  0,
+                  [
+                    5,
+                    "gdetrr86rhgnaej6l",
+                    11,
+                    [
+                      1,
+                      "t"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
         ]
       ]
     ]
