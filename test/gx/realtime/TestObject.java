@@ -36,6 +36,11 @@ public class TestObject implements EventTarget, Cloneable {
 		}
 		return result;
 	}
+
+    @Override
+    public String toString(){
+        return "(" + this.id + ", " + this.child + ")";
+    }
 	
 	@Override
 	public TestObject clone(){

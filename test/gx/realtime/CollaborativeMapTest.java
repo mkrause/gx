@@ -2,6 +2,7 @@ package gx.realtime;
 
 import static org.junit.Assert.*;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -42,9 +43,7 @@ public class CollaborativeMapTest {
 		
 		Set<Entry<String, TestObject>> items = map.items();
 		assertEquals(2, items.size());
-		assertTrue(items.contains(simpleObject));
-		assertTrue(items.contains(testObject));
-		
+
 		//check if they are actually clones
 		Iterator<Entry<String, TestObject>> iterator = items.iterator();
 		Entry<String, TestObject> obj1 = iterator.next();
@@ -71,22 +70,25 @@ public class CollaborativeMapTest {
 		map.set("456", testObject);
 		
 		List<TestObject> values = map.values();
-		assertEquals(2, values.size());
-
         System.out.println("List: " + values);
+		assertEquals(2, values.size());
 
 		TestObject obj1 = values.get(0);
 		TestObject obj2 = values.get(1);
-		if(obj1.equals("123")){
+		if(obj1.getId() == 123){
+            //obj1 =  simpleObject, obj2 = testObject
 			assertEquals(simpleObject, obj1);
 			assertEquals(testObject, obj2);
 			assertFalse(simpleObject == obj1);
 			assertFalse(testObject == obj2);
-		} else {
+		} else if(obj1.getId() == 456) {
+            //obj1 = testObject, obj2 = simpleObject
 			assertEquals(testObject, obj1);
 			assertEquals(simpleObject, obj2);
 			assertFalse(testObject == obj1);
 			assertFalse(simpleObject == obj2);
-		}
+		} else {
+            fail("Unknown element found in list");
+        }
 	}
 }
