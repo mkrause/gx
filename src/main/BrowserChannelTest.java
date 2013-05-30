@@ -22,10 +22,12 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.NormalizedJsonReader;
+import gx.browserchannel.message.SaveMessage;
 import gx.browserchannel.util.URLWithQuery;
 import gx.realtime.RealtimeMessageHandler;
 import gx.realtime.Session;
 
+import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,7 +126,14 @@ public class BrowserChannelTest
             channel.openForwardChannel();
             channel.openBackwardChannel();
 
-            channel.sendForwardMessage(session);
+
+            // TODO: keep track of the request number this session
+            SaveMessage message = new SaveMessage(session.getRevision(), 0, null);
+            SaveRevisionResponse response = channel.sendMessage(message);
+
+            if(response != null) {
+                session.setRevision(response.getRevision());
+            }
 
             System.out.println("done");
             System.exit(0);

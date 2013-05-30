@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
+import gx.browserchannel.message.serialize.SaveMessageSerializer;
 import gx.browserchannel.util.ConnectionFactory;
 import gx.browserchannel.util.RandomUtils;
 import gx.browserchannel.util.URLQueryBuilder;
@@ -69,12 +70,12 @@ public class BrowserChannel
         return q;
     }
 
-    public void sendForwardMessage(Session session)
+    public SaveRevisionResponse sendMessage(SaveMessage message)
     {
-        String msg = "{\"revision\":" + session.getRevision() + ",\"requestNumber\":0,\"changes\":[[4,[0,[8,\"gdegz4x7zhgc9qqir\",\"abdddeff\",[21,\""+ session.getRevision()+"\"]]]]]}";
-
         HttpURLConnection connection;
         URLWithQuery url;
+
+        String msg = (new SaveMessageSerializer()).serialize(message);
 
         logger.debug("Sending forward message");
 
@@ -84,11 +85,11 @@ public class BrowserChannel
 
             url = new URLWithQuery(baseUrl + "/save", queryBuilder);
             logger.debug("Url: {}", url.getURL().toString());
-            logger.debug("Msg: {}", msg);
+            logger.debug("Msg: {}", message);
 
             connection = ConnectionFactory.createConnection(url, "POST");
             byte[] binaryMsg = msg.getBytes("UTF-8");
-            connection.setRequestProperty("Content-Length", "" + binaryMsg.length);
+            connection.setRequestProperty("Content-Length", String.valueOf(binaryMsg.length));
             connection.getOutputStream().write(binaryMsg);
 
             Reader in = new NormalizedJsonReader(connection.getInputStream());
@@ -100,15 +101,16 @@ public class BrowserChannel
             SaveRevisionResponse response = jParser.readValueAs(SaveRevisionResponse.class);
             logger.debug("Received revision response: {}", response.getRevision());
 
-            // Update revision in our session
-            session.setRevision(response.getRevision());
-
             in.close();
+
+            // Return the new revision
+            return response;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void openForwardChannel()
@@ -150,7 +152,6 @@ public class BrowserChannel
                 lastSequenceNumber = m.getLastArrayId();
             }
             in.close();
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
