@@ -90,7 +90,12 @@ public abstract class CollaborativeObject implements EventTarget {
      * @param type The event type.
      * @param event The event object, containing any necessary information.
      */
-    public void fireEvent(EventType type, BaseModelEvent event){
+    public void fireEvent(EventType type, BaseModelEvent event) {
+        if (!event.getTarget().equals(getId())) {
+            // We're not the target, so ignore
+            return;
+        }
+        
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	for(EventHandler handler : handlers){
     		handler.handleEvent(event);

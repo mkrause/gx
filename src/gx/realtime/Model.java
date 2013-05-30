@@ -46,21 +46,21 @@ public class Model implements EventTarget {
         return null;
     }
     
-    public <E> CollaborativeList<E> createList(){
+    public <E extends CollaborativeObject> CollaborativeList<E> createList(){
         return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
-    public <E> CollaborativeList<E> createList(E[] opt_initialValue){
+    public <E extends CollaborativeObject> CollaborativeList<E> createList(E[] opt_initialValue){
         CollaborativeList<E> result = createList();
         result.pushAll(opt_initialValue);
         return result;
     }
     
-    public <E> CollaborativeMap<E> createMap(){
+    public <E extends CollaborativeObject> CollaborativeMap<E> createMap(){
         return new CollaborativeMap<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
-    public <E> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
+    public <E extends CollaborativeObject> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
         CollaborativeMap<E> result = createMap();
         Set<Entry<String, E>> entries = opt_initialValue.entrySet();
         for(Entry<String, E> entry : entries){
@@ -118,5 +118,10 @@ public class Model implements EventTarget {
 
     public void removeEventListener(EventType type, EventHandler handler) {
         //TODO
+    }
+
+    protected void fireEvent(EventType type, BaseModelEvent event) {
+        // Pass the event via the root to whoever is the target
+        root.fireEvent(type, event);
     }
 }

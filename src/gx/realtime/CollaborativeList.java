@@ -5,7 +5,7 @@ import gx.util.RandomUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class CollaborativeList<E> extends CollaborativeObject{
+public class CollaborativeList<E extends CollaborativeObject> extends CollaborativeObject {
 
 	private ArrayList<E> values;
 	
@@ -109,5 +109,13 @@ public class CollaborativeList<E> extends CollaborativeObject{
 	public int length(){
 		return values.size();
 	}
-	
+
+    public void fireEvent(EventType type, BaseModelEvent event) {
+        // Propagate to the values in the list first
+        for (E value : values) {
+            //TODO
+        }
+        
+        super.fireEvent(type, event);
+    }
 }

@@ -43,6 +43,10 @@ public class Document implements EventTarget {
         addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent e) -> {
             collaborators.remove(e.getCollaborator());
         });
+
+        addEventListener(EventType.DOCUMENT_SAVE_STATE_CHANGED, (DocumentSaveStateChangedEvent e) -> {
+            //...
+        });
     }
     
     /**
@@ -103,25 +107,15 @@ public class Document implements EventTarget {
     	}
     }
     
-    private void handle(CollaboratorJoinedEvent e) {
-        collaborators.add(e.getCollaborator());
-    }
-    
-    private void handle(EventType type, Event event) {
-        switch (type) {
-        case COLLABORATOR_JOINED:
-            handle((CollaboratorJoinedEvent)event);
-            break;
-        }
-    }
-    
     protected void fireEvent(EventType type, Event event) {
-        // First, update our own state based on these events
-        handle(type, event);
-        
-    	Set<EventHandler> handlers = eventHandlers.get(type);
-    	for(EventHandler handler : handlers){
-    		handler.handleEvent(event);
-    	}
+        // Delegate model events to the model
+        if (event instanceof BaseModelEvent) {
+            getModel().fireEvent(type, (BaseModelEvent)event);
+        } else {
+            Set<EventHandler> handlers = eventHandlers.get(type);
+            for (EventHandler handler : handlers){
+                handler.handleEvent(event);
+            }
+        }
     }
 }
