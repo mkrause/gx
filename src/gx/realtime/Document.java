@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Document extends EventTarget{
+public class Document extends EventTarget {
 	
 	//interfaces
 	public interface SuccessFunction{
@@ -30,7 +30,7 @@ public class Document extends EventTarget{
 	
 	//functions
 	
-	protected Document(BrowserChannel channel){
+	protected Document(BrowserChannel channel) {
 		this.channel = channel;
 		collaborators = new ArrayList<Collaborator>();
 		eventHandlers = new HashMap<EventType, Set<EventHandler>>();
@@ -78,7 +78,7 @@ public class Document extends EventTarget{
         return model;
     }
 
-    public void addEventListener(EventType type, EventHandler handler){
+    public void addEventListener(EventType type, EventHandler handler) {
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	if(handlers == null){
     		handlers = new HashSet<EventHandler>();
@@ -87,14 +87,14 @@ public class Document extends EventTarget{
     	handlers.add(handler);
     }
 
-    public void removeEventListener(EventType type, EventHandler handler){
+    public void removeEventListener(EventType type, EventHandler handler) {
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	if(handlers != null){
     		handlers.remove(handler);
     	}
     }
     
-    protected void fireEvent(EventType type, BaseModelEvent event){
+    protected void fireEvent(EventType type, BaseModelEvent event) {
     	Set<EventHandler> handlers = eventHandlers.get(type);
     	for(EventHandler handler : handlers){
     		handler.execute(event);
