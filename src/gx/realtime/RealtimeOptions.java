@@ -9,7 +9,6 @@ import gx.realtime.RealtimeLoader.HandleErrorsCallback;
 public class RealtimeOptions {
     
     // Attributes
-	private String appId;
     private String clientId;
     private String docId;
 
