@@ -71,6 +71,7 @@ public abstract class CollaborativeObject extends EventTarget{
     	}
     }
     
+    /*
 	protected <E> E clone(E value){
 		E clone = null;
 		ObjectMapper mapper = new ObjectMapper();
@@ -84,5 +85,6 @@ public abstract class CollaborativeObject extends EventTarget{
 		}
 		return clone;
 	}
+	*/
 	
 }
