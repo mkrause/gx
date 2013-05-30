@@ -13,8 +13,8 @@ public class CollaborativeCustomObject extends CollaborativeObject {
 
     private Map<String, CollaborativeValue> fields;
 
-    protected CollaborativeCustomObject(Model model){
-        super(model);
+    protected CollaborativeCustomObject(String id, Model model){
+        super(id, model);
         fields = new HashMap<String, CollaborativeValue>();
     }
 

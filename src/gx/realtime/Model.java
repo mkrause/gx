@@ -1,21 +1,24 @@
 package gx.realtime;
 
+import gx.util.RandomUtils;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 public class Model implements EventTarget {
-    
+
     private Document document;
     private CollaborativeMap<CollaborativeObject> root;
     private boolean initialized;
     private boolean canRedo;
     private boolean canUndo;
     private boolean readOnly;
-    
+
+
     protected Model(Document document){
         this.document = document;
-        this.root = new CollaborativeMap<CollaborativeObject>(this);
+        this.root = new CollaborativeMap<CollaborativeObject>(RandomUtils.getRandomAlphaNumeric(), this);
         initialized = true;
         canRedo = false;
         canUndo = false;
@@ -44,7 +47,7 @@ public class Model implements EventTarget {
     }
     
     public <E> CollaborativeList<E> createList(){
-        return new CollaborativeList<E>(this);
+        return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
     public <E> CollaborativeList<E> createList(E[] opt_initialValue){
@@ -54,7 +57,7 @@ public class Model implements EventTarget {
     }
     
     public <E> CollaborativeMap<E> createMap(){
-        return new CollaborativeMap<E>(this);
+        return new CollaborativeMap<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
     public <E> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
@@ -67,7 +70,7 @@ public class Model implements EventTarget {
     }
     
     public CollaborativeString createString(){
-        return new CollaborativeString(this);
+        return new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
     public CollaborativeString createString(String opt_initialValue){
@@ -75,7 +78,7 @@ public class Model implements EventTarget {
         result.setText(opt_initialValue);
         return result;
     }
-    
+
     public void endCompoundOperation(){
         //TODO
     }

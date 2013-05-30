@@ -12,7 +12,6 @@ public abstract class BaseModelEvent extends Event {
     protected boolean bubbles;
     
     public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles){
-        //TODO: for all subclasses, check whether they should bubble or not.
         this.type = type;
         this.target = target;
         this.sessionId = sessionId;

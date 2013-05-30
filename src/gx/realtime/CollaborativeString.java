@@ -1,11 +1,13 @@
 package gx.realtime;
 
+import gx.util.RandomUtils;
+
 public class CollaborativeString extends CollaborativeObject {
 	
 	private String value;
 	
-	public CollaborativeString(Model model){
-		super(model);
+	public CollaborativeString(String id, Model model){
+		super(id, model);
 	}
 	
 	public void append (String text){
@@ -21,7 +23,7 @@ public class CollaborativeString extends CollaborativeObject {
 	}
 	
 	public IndexReference registerReference(int index, boolean canBeDeleted){
-		return new IndexReference(this.model, index, canBeDeleted);
+		return new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
 	}
 	
 	public void removeRange(int startIndex, int endIndex){

@@ -24,12 +24,13 @@ public abstract class CollaborativeObject implements EventTarget {
     /**
      * CollaborativeObject contains behavior common to all built in collaborative types. This class should not be instantiated directly.
      * Use the create* methods on gx.realtime.Model to create specific types of collaborative objects.
+     * @param id The id of this object, determined by the model.
      * @param model The document model.
      */
-	public CollaborativeObject(Model model){
+	public CollaborativeObject(String id, Model model){
+        this.id = id;
 		this.model = model;
 		this.eventHandlers = new HashMap<EventType, Set<EventHandler>>();
-		//TODO: determine id of this object.
 	}
 
     /**

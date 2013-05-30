@@ -12,8 +12,8 @@ public class IndexReference extends CollaborativeObject{
 	 * + take into account that the index property is public
 	 */
 	
-	public IndexReference(Model model, int index, boolean canBeDeleted){
-		super(model);
+	public IndexReference(String id, Model model, int index, boolean canBeDeleted){
+		super(id, model);
 		this.index = index;
 		this.canBeDeleted = canBeDeleted;
 	}

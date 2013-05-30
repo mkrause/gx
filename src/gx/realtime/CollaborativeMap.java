@@ -22,8 +22,8 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * Constructor, constructing a map for the given model. This constructor should not be called 
 	 * @param model
 	 */
-	public CollaborativeMap(Model model){
-		super(model);
+	public CollaborativeMap(String id, Model model){
+		super(id, model);
 		map = new HashMap<String, V>();
 	}
 	

@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
 import gx.browserchannel.message.serialize.SaveMessageSerializer;
 import gx.browserchannel.util.ConnectionFactory;
-import gx.browserchannel.util.RandomUtils;
+import gx.util.RandomUtils;
 import gx.browserchannel.util.URLQueryBuilder;
 import gx.browserchannel.util.URLWithQuery;
-import gx.realtime.Session;
 import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,7 +121,7 @@ public class BrowserChannel
 
         try {
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder();
-            queryBuilder.put("CVER", clientVersion).put("zx", RandomUtils.getRandomString());
+            queryBuilder.put("CVER", clientVersion).put("zx", RandomUtils.getRandomHexAlphaNumeric());
 
             url = new URLWithQuery(baseUrl + path, queryBuilder);
 
@@ -171,7 +170,7 @@ public class BrowserChannel
         URLQueryBuilder params = getDefaultQueryBuilder();
         params.put("SID", channelSessionId).put("AID", lastSequenceNumber)
                 .put("CI", useChunked ? 1 : 0).put("TYPE", "xmlhttp")
-                .put("zx", RandomUtils.getRandomString()).put("RID", "rpc");
+                .put("zx", RandomUtils.getRandomHexAlphaNumeric()).put("RID", "rpc");
 
         URL url;
         try {
@@ -226,7 +225,7 @@ public class BrowserChannel
             logger.info("Get Host Prefixes");
             URLQueryBuilder queryBuilder = getDefaultQueryBuilder()
                     .put("MODE", "init")
-                    .put("zx", RandomUtils.getRandomString());
+                    .put("zx", RandomUtils.getRandomHexAlphaNumeric());
 
             URL url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -241,7 +240,7 @@ public class BrowserChannel
             logger.info("Buffering Proxy Test");
             queryBuilder = getDefaultQueryBuilder()
                     .put("TYPE", "xmlhttp")
-                    .put("zx", RandomUtils.getRandomString());
+                    .put("zx", RandomUtils.getRandomHexAlphaNumeric());
 
             url = new URLWithQuery(baseUrl + testPath, queryBuilder).getURL();
             connection = (HttpURLConnection) url.openConnection();

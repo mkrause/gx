@@ -1,5 +1,7 @@
 package gx.realtime;
 
+import gx.util.RandomUtils;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -7,8 +9,8 @@ public class CollaborativeList<E> extends CollaborativeObject{
 
 	private ArrayList<E> values;
 	
-	public CollaborativeList(Model model){
-		super(model);
+	public CollaborativeList(String id, Model model){
+		super(id, model);
 		this.values = new ArrayList<E>();
 		//TODO: determine id of the document.
 	}
@@ -76,7 +78,7 @@ public class CollaborativeList<E> extends CollaborativeObject{
 	}
 	
 	public IndexReference registerReference(int index, boolean canBeDeleted){
-		return new IndexReference(this.model, index, canBeDeleted);
+		return new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
 	}
 	
 	public void remove(int index){
