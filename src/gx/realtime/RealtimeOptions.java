@@ -1,5 +1,6 @@
 package gx.realtime;
 
+import gx.realtime.RealtimeLoader.OnDocumentLoadedCallback;
 import gx.realtime.RealtimeLoader.InitializeModelCallback;
 import gx.realtime.RealtimeLoader.HandleErrorsCallback;
 
@@ -8,11 +9,10 @@ import gx.realtime.RealtimeLoader.HandleErrorsCallback;
  */
 public class RealtimeOptions {
     
-    // Attributes
     private String clientId;
     private String docId;
 
-    private RealtimeLoader.OnDocumentLoadedCallback onFileLoaded;
+    private OnDocumentLoadedCallback onFileLoaded;
     private InitializeModelCallback initializeModel;
     private HandleErrorsCallback handleErrors;
 
@@ -33,11 +33,11 @@ public class RealtimeOptions {
         this.docId = docId;
     }
 
-    public RealtimeLoader.OnDocumentLoadedCallback getOnFileLoaded() {
+    public OnDocumentLoadedCallback getOnFileLoaded() {
         return onFileLoaded;
     }
 
-    public void setOnFileLoaded(RealtimeLoader.OnDocumentLoadedCallback onFileLoaded) {
+    public void setOnFileLoaded(OnDocumentLoadedCallback onFileLoaded) {
         this.onFileLoaded = onFileLoaded;
     }
 
