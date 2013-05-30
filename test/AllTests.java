@@ -10,6 +10,8 @@ import gx.realtime.EventTargetTest;
 import gx.realtime.IndexReferenceTest;
 import gx.realtime.ClientTest;
 import gx.realtime.ModelTest;
+import gx.realtime.RealtimeLoaderTest;
+import gx.realtime.RealtimeMessageHandlerTest;
 
 /**
  * Test suite for all non-db errors
@@ -19,14 +21,16 @@ import gx.realtime.ModelTest;
 @RunWith(Suite.class)
 @SuiteClasses({
 	//gx.realtime tests
+	ClientTest.class,
 	CollaborativeListTest.class,
 	CollaborativeMapTest.class,
 	CollaborativeObjectTest.class,
 	CollaborativeStringTest.class,
 	EventTargetTest.class,
 	IndexReferenceTest.class,
-	ClientTest.class,
-	ModelTest.class
+	ModelTest.class,
+	RealtimeLoaderTest.class,
+	RealtimeMessageHandlerTest.class
 })
 
 public class AllTests {
