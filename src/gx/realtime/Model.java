@@ -2,6 +2,7 @@ package gx.realtime;
 
 import gx.util.RandomUtils;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -11,8 +12,8 @@ public class Model implements EventTarget {
     private Document document;
     private CollaborativeMap<CollaborativeObject> root;
     private boolean initialized;
-    private boolean canRedo;
-    private boolean canUndo;
+    private LinkedList<BaseModelEvent> undoableMutations;
+    private LinkedList<BaseModelEvent> redoableMutations;
     private boolean readOnly;
 
 
@@ -20,8 +21,8 @@ public class Model implements EventTarget {
         this.document = document;
         this.root = new CollaborativeMap<CollaborativeObject>(RandomUtils.getRandomAlphaNumeric(), this);
         initialized = true;
-        canRedo = false;
-        canUndo = false;
+        undoableMutations = new LinkedList<BaseModelEvent>();
+        redoableMutations = new LinkedList<BaseModelEvent>();
         readOnly = false;
 
         addDocumentEventHandlers();
@@ -91,21 +92,30 @@ public class Model implements EventTarget {
     public boolean isInitialized(){
         return initialized;
     }
-    
+
+    //TODO: maybe make this public in order to call it from the node that was actually mutated?
+    private void registerMutation(BaseModelEvent e){
+        undoableMutations.push(e);
+    }
+
     public void redo(){
-        //TODO
+        if(this.canRedo()){
+            //TODO: redo last action of redoableMutation stack.
+        }
     }
     
     public void undo(){
-        //TODO
+        if(this.canUndo()){
+            //TODO: undo last action of undoableMutation stack.
+        }
     }
     
     public boolean canRedo(){
-        return canRedo;
+        return redoableMutations.size() > 0;
     }
     
     public boolean canUndo(){
-        return canUndo;
+        return undoableMutations.size() > 0;
     }
     
     public boolean isReadOnly(){
@@ -123,5 +133,6 @@ public class Model implements EventTarget {
     protected void fireEvent(EventType type, BaseModelEvent event) {
         // Pass the event via the root to whoever is the target
         root.fireEvent(type, event);
+        //TODO: registerMutation. Only if event has actually changed an object?
     }
 }
