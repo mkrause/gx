@@ -11,7 +11,6 @@ public class ValueChangedEvent extends BaseModelEvent
     private String newValue;
     private String oldValue;
 
-    /*
     public ValueChangedEvent(String target, String sessionId, String userId, boolean isLocal, String property, String newValue, String oldValue)
     {
         super(EventType.VALUE_CHANGED, target, sessionId, userId, isLocal, false);
@@ -19,7 +18,6 @@ public class ValueChangedEvent extends BaseModelEvent
         this.newValue = newValue;
         this.oldValue = oldValue;
     }
-    */
 
     public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, String newValue, String oldValue)
     {

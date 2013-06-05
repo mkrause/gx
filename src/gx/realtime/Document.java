@@ -106,11 +106,12 @@ public class Document extends EventTarget {
     		handlers.remove(handler);
     	}
     }
-    
+
     protected void fireEvent(EventType type, Event event) {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
-            getModel().fireEvent(type, (BaseModelEvent)event);
+            //TODO: add some callback?
+            getModel().fireEvent((BaseModelEvent)event, null);
         } else {
             Set<EventHandler> handlers = eventHandlers.get(type);
             for (EventHandler handler : handlers){

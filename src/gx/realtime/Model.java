@@ -123,11 +123,11 @@ public class Model extends EventTarget {
     }
 
     @Override
-    public void fireEvent(BaseModelEvent event, Callback callback) {
+    public void fireEvent(BaseModelEvent event, BubbleCallback callback) {
 
-        Callback topCallback = (BaseModelEvent bubbledEvent) ->{
+        BubbleCallback topCallback = () ->{
             super.fireEvent(event, null);
-            callback.excecute(bubbledEvent);
+            callback.excecute();
         };
         root.fireEvent(event, callback);
 

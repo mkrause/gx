@@ -10,8 +10,8 @@ public abstract class EventTarget {
     //TODO: create tests
 
     //Interfaces
-    public interface Callback{
-        public void excecute(BaseModelEvent event);
+    public interface BubbleCallback{
+        public void excecute();
     }
 
 
@@ -63,9 +63,10 @@ public abstract class EventTarget {
      * Dispatches the given event of the given event type to this object. According to the given EventType, the corresponding EventHandlers are executed.
      * This method is only to be called by the gx.realtime.Document.
      * @param event The event object, containing any necessary information.
-     * @param callback The function which will be called on the given event when the event bubbles back up.
+     * @param bubbleCallback The function which will be called on the given event when the event bubbles back up.
      */
-    protected void fireEvent(BaseModelEvent event, Callback callback){
+    protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback){
+        //FIXME: use of callbacks is still incorrect. Fix this.
         if(this.equals(event.getTarget())){
             if(!event.isCaptured()){
                 event.capture();
@@ -74,8 +75,8 @@ public abstract class EventTarget {
                     handler.handleEvent(event);
                 }
             }
-            if(event.bubbles() && callback != null){
-                callback.excecute(event);
+            if(event.bubbles() && bubbleCallback != null){
+                bubbleCallback.excecute();
             }
         }
     }

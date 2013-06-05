@@ -131,18 +131,20 @@ public class CollaborativeMap<V> extends CollaborativeObject{
      * event is passed down to its children.
      * @param event The event object, containing any necessary information.
      */
+    //TODO: update javadoc
     @Override
-    protected void fireEvent(BaseModelEvent event, Callback callback) {
+    protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback) {
+        //TODO: check use of callbacks
         if(!this.equals(event.getTarget())){
             Collection<V> values = map.values();
             for(V value : values){
                 if(value instanceof CollaborativeObject){
-                    ((CollaborativeObject) value).fireEvent(event, callback);
+                    ((CollaborativeObject) value).fireEvent(event, bubbleCallback);
                 }
             }
         }
 
-        super.fireEvent(event, callback);
+        super.fireEvent(event, bubbleCallback);
     }
 	
 }

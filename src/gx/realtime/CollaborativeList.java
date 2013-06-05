@@ -113,20 +113,21 @@ public class CollaborativeList<E> extends CollaborativeObject {
     /**
      * Method dispatching the given event of the given EventType. If this CollaborativeList is not the target of the given event, the
      * event is passed down to its children.
-     * @param type The event type.
      * @param event The event object, containing any necessary information.
      */
+    //TODO: update javadoc
     @Override
-    protected void fireEvent(EventType type, BaseModelEvent event) {
+    protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback) {
         // Propagate to the values in the list first
         if(!this.equals(event.getTarget())){
             for (E value : values) {
                 if(value instanceof CollaborativeObject){
-                    ((CollaborativeObject) value).fireEvent(type, event);
+                    //TODO: make callback?
+                    ((CollaborativeObject) value).fireEvent(event, bubbleCallback);
                 }
             }
         }
         
-        super.fireEvent(type, event);
+        super.fireEvent(event, bubbleCallback);
     }
 }
