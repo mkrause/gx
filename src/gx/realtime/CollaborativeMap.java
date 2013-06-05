@@ -125,5 +125,12 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	public int size(){
 		return map.size();
 	}
+
+    @Override
+    protected void fireEvent(EventType type, BaseModelEvent event) {
+        //TODO: propagate event to children
+
+        super.fireEvent(type, event);
+    }
 	
 }

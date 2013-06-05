@@ -272,6 +272,12 @@ public class CollaborativeListTest {
 		assertTrue(object1 == list.get(3));
 	}
 
+    @Test
+    public void testFireEvent(){
+        //TODO: test if event is passed to children
+        fail("TODO");
+    }
+
 }
 
 class TestObjectComparator implements Comparator<TestObject>{

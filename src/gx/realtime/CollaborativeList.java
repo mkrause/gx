@@ -110,7 +110,8 @@ public class CollaborativeList<E extends CollaborativeObject> extends Collaborat
 		return values.size();
 	}
 
-    public void fireEvent(EventType type, BaseModelEvent event) {
+    @Override
+    protected void fireEvent(EventType type, BaseModelEvent event) {
         // Propagate to the values in the list first
         for (E value : values) {
             //TODO

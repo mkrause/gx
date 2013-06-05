@@ -91,4 +91,10 @@ public class CollaborativeMapTest {
             fail("Unknown element found in list");
         }
 	}
+
+    @Test
+    public void testFireEvent(){
+        //TODO: test if event is passed to children
+        fail("TODO");
+    }
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class Model implements EventTarget {
+public class Model extends EventTarget {
 
     private Document document;
     private CollaborativeMap<CollaborativeObject> root;
@@ -122,17 +122,20 @@ public class Model implements EventTarget {
         return readOnly;
     }
 
-    public void addEventListener(EventType type, EventHandler handler) {
-        //TODO
-    }
+    @Override
+    public void fireEvent(EventType type, BaseModelEvent event) {
+        if(this.equals(event.getTarget())){
+            Set<EventHandler> handlers = this.eventHandlers.get(type);
+            for(EventHandler handler : handlers){
+                handler.handleEvent(event);
+            }
+        } else {
+            root.fireEvent(type, event);
+        }
 
-    public void removeEventListener(EventType type, EventHandler handler) {
-        //TODO
-    }
+        //TODO: how should event bubbling work in this case?
 
-    protected void fireEvent(EventType type, BaseModelEvent event) {
-        // Pass the event via the root to whoever is the target
-        root.fireEvent(type, event);
         //TODO: registerMutation. Only if event has actually changed an object?
+        //TODO: clear redoable stack?
     }
 }
