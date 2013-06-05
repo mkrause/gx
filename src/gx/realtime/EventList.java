@@ -3,10 +3,14 @@ package gx.realtime;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gx.realtime.serialize.EventListDeserializer;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 @JsonDeserialize(using = EventListDeserializer.class)
-public class EventList
+public class EventList implements Iterable<Event>
 {
-    private Event[] events;
+    private List<Event> events;
 
     public EventList()
     {
@@ -20,11 +24,21 @@ public class EventList
 
     public EventList(Event[] events)
     {
+        this.events = Arrays.asList(events);
+    }
+
+    public EventList(List<Event> events)
+    {
         this.events = events;
     }
 
-    public Event[] getEvents()
+    public List<Event> getEvents()
     {
         return events;
+    }
+
+    @Override
+    public Iterator<Event> iterator() {
+        return events.iterator();
     }
 }

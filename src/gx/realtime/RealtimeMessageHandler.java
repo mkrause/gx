@@ -27,7 +27,7 @@ public class RealtimeMessageHandler implements MessageHandler {
         EventList events = parseDataMessage(data);
 
         // Handle events
-        for(Event event : events.getEvents())
+        for(Event event : events)
         {
             // TODO: notify Document of this event
             if(event instanceof CollaboratorJoinedEvent) {
