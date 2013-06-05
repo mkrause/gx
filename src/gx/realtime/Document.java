@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Document implements EventTarget {
+public class Document extends EventTarget {
 	
 	//interfaces
 	public interface SuccessFunction{

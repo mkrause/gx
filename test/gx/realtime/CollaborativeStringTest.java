@@ -2,48 +2,82 @@ package gx.realtime;
 
 import static org.junit.Assert.*;
 
+import gx.realtime.CollaborativeString;
 import org.junit.Test;
 
 public class CollaborativeStringTest {
 
 	@Test
-	public void testCollaborativeString() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testAppend() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetText() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testInsertString() {
-		fail("Not yet implemented");
-	}
+        CollaborativeString string = new CollaborativeString(null, null);
+        string.append("abcdef");
+        assertEquals("abcdef", string.getText());
 
-	@Test
-	public void testRegisterReference() {
-		fail("Not yet implemented");
+        //insert at start
+        string.insertString(0, "");
+        assertEquals("abcdef", string.getText());
+        string.insertString(0, "x");
+        assertEquals("xabcdef", string.getText());
+        string.insertString(0, "yz");
+        assertEquals("yzxabcdef", string.getText());
+
+        //insert midway
+        string.insertString(7, "uvw");
+        assertEquals("yzxabcuvwdef", string.getText());
+
+        //append
+        string.insertString(12, "xyz");
+        assertEquals("yzxabcuvwdefxyz");
+
+        //test with empty string
+        string = new CollaborativeString(null, null);
+        string.insertString(0, "abc");
+        assertEquals("abc", string.getText());
 	}
 
 	@Test
 	public void testRemoveRange() {
-		fail("Not yet implemented");
+        CollaborativeString string = new CollaborativeString(null, null);
+        string.append("abcdefghijklmopqrstuvwxyz");
+
+        //test for removing nothing
+        string.removeRange(0, 0);
+        assertEquals("abcdefghijklmopqrstuvwxyz", string.getText());
+        string.removeRange(5, 5);
+        assertEquals("abcdefghijklmopqrstuvwxyz", string.getText());
+        string.removeRange(25, 25);
+        assertEquals("abcdefghijklmopqrstuvwxyz", string.getText());
+
+        //test for removing at start
+        string.removeRange(0, 1);
+        assertEquals("bcdefghijklmopqrstuvwxyz", string.getText());
+        string.removeRange(0, 5);
+        assertEquals("ghijklmopqrstuvwxyz", string.getText());
+
+        //test for removing midway
+        string.removeRange(5, 1);
+        assertEquals("ghijkmopqrstuvwxyz", string.getText());
+        string.removeRange(5, 3);
+        assertEquals("ghijkqrstuvwxyz", string.getText());
+
+        //test for removing at end
+        string.removeRange(14, 1);
+        assertEquals("ghijkqrstuvwxy", string.getText());
+        string.removeRange(9, 5);
+        assertEquals("ghijkqrst", string.getText());
 	}
 
 	@Test
 	public void testSetText() {
-		fail("Not yet implemented");
-	}
+        CollaborativeString string = new CollaborativeString(null, null);
+        string.setText("abc");
+        assertEquals("abc", string.getText());
+        string.setText("");
+        assertEquals("", string.getText());
 
-	@Test
-	public void testLength() {
-		fail("Not yet implemented");
+        string.setText("abc");
+        string.setText("axbycz");
+        assertEquals("axbycz", string.getText());
 	}
 
 }

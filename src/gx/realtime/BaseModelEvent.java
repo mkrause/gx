@@ -7,7 +7,7 @@ public abstract class BaseModelEvent extends Event
     protected String sessionId;
     protected boolean isLocal;
     protected boolean bubbles;
-    protected String targetId;
+    //protected String targetId;
     protected boolean isCaptured;
 
     /*
@@ -21,6 +21,15 @@ public abstract class BaseModelEvent extends Event
     }
     */
 
+    /**
+     * Constructor, constructing a
+     * @param type
+     * @param target
+     * @param sessionId
+     * @param userId
+     * @param isLocal
+     * @param bubbles
+     */
     public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
         this.type = type;
