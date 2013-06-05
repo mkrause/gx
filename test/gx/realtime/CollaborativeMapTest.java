@@ -95,6 +95,7 @@ public class CollaborativeMapTest {
     @Test
     public void testFireEvent(){
         //TODO: test if event is passed to children
+        //TODO: test if event is only fired once per object (even if the map contains a certain object twice)
         fail("TODO");
     }
 }

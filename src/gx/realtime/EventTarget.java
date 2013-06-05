@@ -54,14 +54,13 @@ public abstract class EventTarget {
      * @param event The event object, containing any necessary information.
      */
     protected void fireEvent(EventType type, BaseModelEvent event){
-        if (!this.equals(event.getTarget())) {
-            // We're not the target, so ignore
-            return;
-        }
-
-        Set<EventHandler> handlers = eventHandlers.get(type);
-        for(EventHandler handler : handlers){
-            handler.handleEvent(event);
+        if(this.equals(event.getTarget()) && event.isCaptured()){
+            event.capture();
+            Set<EventHandler> handlers = eventHandlers.get(type);
+            for(EventHandler handler : handlers){
+                handler.handleEvent(event);
+            }
         }
     }
+
 }

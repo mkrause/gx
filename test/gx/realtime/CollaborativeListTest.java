@@ -275,6 +275,7 @@ public class CollaborativeListTest {
     @Test
     public void testFireEvent(){
         //TODO: test if event is passed to children
+        //TODO: test if event is only fired once per object (even if the list contains a certain object twice)
         fail("TODO");
     }
 

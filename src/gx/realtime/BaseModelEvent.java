@@ -8,6 +8,7 @@ public abstract class BaseModelEvent extends Event
     protected boolean isLocal;
     protected boolean bubbles;
     protected String targetId;
+    protected boolean isCaptured;
 
     /*
     public BaseModelEvent(EventType type, String targetId, String sessionId, String userId, boolean isLocal, boolean bubbles)
@@ -90,4 +91,12 @@ public abstract class BaseModelEvent extends Event
         this.targetId = targetId;
     }
     */
+
+    public boolean isCaptured(){
+        return isCaptured;
+    }
+
+    public void capture(){
+        isCaptured = true;
+    }
 }

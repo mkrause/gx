@@ -5,7 +5,7 @@ import gx.util.RandomUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class CollaborativeList<E extends CollaborativeObject> extends CollaborativeObject {
+public class CollaborativeList<E> extends CollaborativeObject {
 
 	private ArrayList<E> values;
 	
@@ -110,11 +110,21 @@ public class CollaborativeList<E extends CollaborativeObject> extends Collaborat
 		return values.size();
 	}
 
+    /**
+     * Method dispatching the given event of the given EventType. If this CollaborativeList is not the target of the given event, the
+     * event is passed down to its children.
+     * @param type The event type.
+     * @param event The event object, containing any necessary information.
+     */
     @Override
     protected void fireEvent(EventType type, BaseModelEvent event) {
         // Propagate to the values in the list first
-        for (E value : values) {
-            //TODO
+        if(!this.equals(event.getTarget())){
+            for (E value : values) {
+                if(value instanceof CollaborativeObject){
+                    ((CollaborativeObject) value).fireEvent(type, event);
+                }
+            }
         }
         
         super.fireEvent(type, event);

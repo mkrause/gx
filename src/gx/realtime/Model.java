@@ -124,16 +124,11 @@ public class Model extends EventTarget {
 
     @Override
     public void fireEvent(EventType type, BaseModelEvent event) {
-        if(this.equals(event.getTarget())){
-            Set<EventHandler> handlers = this.eventHandlers.get(type);
-            for(EventHandler handler : handlers){
-                handler.handleEvent(event);
-            }
-        } else {
-            root.fireEvent(type, event);
-        }
+        root.fireEvent(type, event);
 
-        //TODO: how should event bubbling work in this case?
+        super.fireEvent(type, event);
+
+        //TODO: implement bubbling?
 
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
