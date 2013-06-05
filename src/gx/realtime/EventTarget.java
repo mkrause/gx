@@ -66,18 +66,25 @@ public abstract class EventTarget {
      * @param bubbleCallback The function which will be called on the given event when the event bubbles back up.
      */
     protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback){
-        //FIXME: use of callbacks is still incorrect. Fix this.
         if(this.equals(event.getTarget())){
             if(!event.isCaptured()){
                 event.capture();
-                Set<EventHandler> handlers = eventHandlers.get(event.getType());
-                for(EventHandler handler : handlers){
-                    handler.handleEvent(event);
-                }
+                executeEventHandlers(event);
             }
             if(event.bubbles() && bubbleCallback != null){
                 bubbleCallback.excecute();
             }
+        }
+    }
+
+    /**
+     * This method executes all the event handlers that are registered for the event type of the given event.
+     * @param event The event for which the event handlers should be executed.
+     */
+    protected void executeEventHandlers(BaseModelEvent event){
+        Set<EventHandler> handlers = eventHandlers.get(event.getType());
+        for(EventHandler handler : handlers){
+            handler.handleEvent(event);
         }
     }
 

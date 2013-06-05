@@ -134,7 +134,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
     //TODO: update javadoc
     @Override
     protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback) {
-        //TODO: check use of callbacks
+        //TODO: check use of callbacks, See CollaborativeList for example.
         if(!this.equals(event.getTarget())){
             Collection<V> values = map.values();
             for(V value : values){
