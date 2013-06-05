@@ -6,10 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
 import gx.browserchannel.util.ConnectionFactory;
-import gx.util.RandomUtils;
 import gx.browserchannel.util.URLQueryBuilder;
 import gx.browserchannel.util.URLWithQuery;
 import gx.realtime.custom.SaveRevisionResponse;
+import gx.util.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +20,13 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Java port of the JavaScript implementation of BrowserChannel.
- * TODO: implement functions in quickstart/js/gx.browserchannel.js
- *
- * @author Erik
  */
 public class BrowserChannel
 {
@@ -36,41 +36,28 @@ public class BrowserChannel
     private String baseUrl;
     private String path;
     private String clientVersion = "1";
-    private URLWithQuery forwardChannelUri;
     private State state = State.INIT;
-    private ChannelRequest forwardChannelRequest;
     private int nextRid;
-    private int lastArrayId;
-    private boolean useChunked;
-    private List<? extends Queue<String>> outgoingMaps;
+    private boolean useChunked = true;
+    private ArrayList<SaveMessage> outgoingMaps;
+
     // Non-JS-BrowserChannel compliant parameters
     private long lastSequenceTimestamp = -1L;
     private long lastSequenceNumber = 0L;
     private String channelSessionId;
     private JsonFactory jfactory = new JsonFactory();
-    private List<MessageHandler> handlers = new ArrayList<MessageHandler>();
-    private Map<String, String> extraParams = new HashMap<String, String>();
+    private List<MessageHandler> handlers = new ArrayList<>();
+    private Map<String, String> extraParams = new HashMap<>();
     private Thread backwardChannel;
     private HttpURLConnection backwardChannelConnection;
     private boolean isClosed = true;
 
+
     public BrowserChannel()
     {
-        outgoingMaps = new LinkedList<LinkedList<String>>();
+        outgoingMaps = new ArrayList<>();
         nextRid = (int) Math.floor(Math.random() * 100000);
         logger.info("Initialized");
-    }
-
-    public URLQueryBuilder getDefaultParamBuilder()
-    {
-        URLQueryBuilder q = new URLQueryBuilder()
-                .put("VER", Integer.toString(channelVersion))
-                .put("lsq", Long.toString(lastSequenceNumber))
-                .put("RID", Integer.toString(nextRid++))
-                .put("t", "" + retries);
-        q.putAll(extraParams);
-
-        return q;
     }
 
     public SaveRevisionResponse sendMessage(SaveMessage message)
@@ -82,6 +69,7 @@ public class BrowserChannel
         String msg;
         try {
             msg = mapper.writeValueAsString(message);
+            logger.debug("Sending message {}", message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
@@ -223,15 +211,17 @@ public class BrowserChannel
 
     private void ensureBackwardChannel()
     {
-        if(backwardChannel == null)
+        if (backwardChannel == null) {
             backwardChannel = new Thread()
             {
-                public void run() {
-                    while(!isClosed) openBackwardChannel();
+                public void run()
+                {
+                    while (!isClosed) openBackwardChannel();
                 }
             };
+        }
 
-        if(!isClosed || backwardChannel.isAlive())
+        if (!isClosed || backwardChannel.isAlive())
             return;
 
         isClosed = false;
@@ -294,11 +284,6 @@ public class BrowserChannel
         return "";
     }
 
-    private boolean okToMakeRequest()
-    {
-        return true;
-    }
-
     public void disconnect()
     {
         logger.info("disconnect()");
@@ -306,7 +291,7 @@ public class BrowserChannel
         // TODO: send disconnect request
 
         isClosed = true;
-        if(backwardChannelConnection != null)
+        if (backwardChannelConnection != null)
             backwardChannelConnection.disconnect();
 
         waitForClosed();
@@ -341,58 +326,7 @@ public class BrowserChannel
 
     public void waitForClosed()
     {
-        while(!isClosed());
-    }
-
-    public State getState()
-    {
-        return state;
-    }
-
-    /**
-     * Gets the Uri used for the connection that sends data to the server.
-     *
-     * @return {goog.Uri} The forward channel URI.
-     */
-    public URLWithQuery getForwardChannelUri(String path)
-    {
-        return createDataUri(null, path);
-    }
-
-    /**
-     * Creates a data Uri applying logic for secondary hostprefix, port
-     * overrides, and versioning.
-     *
-     * @return {goog.Uri} The data URI.
-     */
-    private URLWithQuery createDataUri(String hostPrefix, String path)
-    {
-        String hostName;
-        if (hostPrefix != null) {
-            hostName = hostPrefix + "." + baseUrl;
-        } else {
-            hostName = baseUrl;
-        }
-
-        // Set up parameters
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        // Add the protocol version to the URI.
-        parameters.put("VER", Integer.toString(this.channelVersion));
-
-        // Add the reconnect parameters.
-        // TODO: track additional parameters for reconnecting purposes, if necessary
-        // this.addAdditionalParams_(uri);
-
-        URLWithQuery urlq = null;
-        try {
-            urlq = new URLWithQuery(new URL(hostName + path), parameters);
-        } catch (MalformedURLException e) {
-            logger.error("createDataUri: MalformedURLException");
-            e.printStackTrace();
-        }
-
-        return urlq;
+        while (!isClosed()) ;
     }
 
     public void addExtraParameter(String key, String value)
