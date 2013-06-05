@@ -79,7 +79,7 @@ public abstract class BaseModelEvent extends Event
         isLocal = local;
     }
 
-    public boolean getBubbles()
+    public boolean bubbles()
     {
         return bubbles;
     }

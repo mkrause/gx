@@ -8,10 +8,22 @@ import java.util.Set;
 public abstract class EventTarget {
 
     //TODO: create tests
+
+    //Interfaces
+    public interface Callback{
+        public void excecute(BaseModelEvent event);
+    }
+
+
+    //Attributes
+
     /**
      * Map containing the event handlers of this EventTarget.
      */
     protected Map<EventType, Set<EventHandler>> eventHandlers;
+
+
+    //Methods
 
     /**
      * Consturctor, initializing the event handlers map.
@@ -50,15 +62,20 @@ public abstract class EventTarget {
     /**
      * Dispatches the given event of the given event type to this object. According to the given EventType, the corresponding EventHandlers are executed.
      * This method is only to be called by the gx.realtime.Document.
-     * @param type The event type.
      * @param event The event object, containing any necessary information.
+     * @param callback The function which will be called on the given event when the event bubbles back up.
      */
-    protected void fireEvent(EventType type, BaseModelEvent event){
-        if(this.equals(event.getTarget()) && event.isCaptured()){
-            event.capture();
-            Set<EventHandler> handlers = eventHandlers.get(type);
-            for(EventHandler handler : handlers){
-                handler.handleEvent(event);
+    protected void fireEvent(BaseModelEvent event, Callback callback){
+        if(this.equals(event.getTarget())){
+            if(!event.isCaptured()){
+                event.capture();
+                Set<EventHandler> handlers = eventHandlers.get(event.getType());
+                for(EventHandler handler : handlers){
+                    handler.handleEvent(event);
+                }
+            }
+            if(event.bubbles() && callback != null){
+                callback.excecute(event);
             }
         }
     }

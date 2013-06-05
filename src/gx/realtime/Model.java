@@ -123,12 +123,13 @@ public class Model extends EventTarget {
     }
 
     @Override
-    public void fireEvent(EventType type, BaseModelEvent event) {
-        root.fireEvent(type, event);
+    public void fireEvent(BaseModelEvent event, Callback callback) {
 
-        super.fireEvent(type, event);
-
-        //TODO: implement bubbling?
+        Callback topCallback = (BaseModelEvent bubbledEvent) ->{
+            super.fireEvent(event, null);
+            callback.excecute(bubbledEvent);
+        };
+        root.fireEvent(event, callback);
 
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?

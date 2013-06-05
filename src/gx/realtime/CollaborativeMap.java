@@ -129,21 +129,20 @@ public class CollaborativeMap<V> extends CollaborativeObject{
     /**
      * Method dispatching the given event of the given EventType. If this CollaborativeMap is not the target of the given event, the
      * event is passed down to its children.
-     * @param type The event type.
      * @param event The event object, containing any necessary information.
      */
     @Override
-    protected void fireEvent(EventType type, BaseModelEvent event) {
+    protected void fireEvent(BaseModelEvent event, Callback callback) {
         if(!this.equals(event.getTarget())){
             Collection<V> values = map.values();
             for(V value : values){
                 if(value instanceof CollaborativeObject){
-                    ((CollaborativeObject) value).fireEvent(type, event);
+                    ((CollaborativeObject) value).fireEvent(event, callback);
                 }
             }
         }
 
-        super.fireEvent(type, event);
+        super.fireEvent(event, callback);
     }
 	
 }
