@@ -17,7 +17,6 @@ import static junit.framework.TestCase.fail;
 public class OperationDeserializerTest
 {
     final String emptyType9Operation = "[9]";
-
     private JsonFactory jsonFactory = new JsonFactory();
 
     @Test
@@ -29,7 +28,8 @@ public class OperationDeserializerTest
         assertNotNull("Empty operation of type 9 should be parsed correctly", event);
     }
 
-    private JsonParser getParser(String json) {
+    private JsonParser getParser(String json)
+    {
         JsonParser parser = null;
         try {
             parser = jsonFactory.createParser(json);
