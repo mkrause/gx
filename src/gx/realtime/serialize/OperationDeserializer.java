@@ -42,7 +42,8 @@ public class OperationDeserializer extends JsonDeserializer<Operation>
             throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
         
         // Check if next token is array end token
-        if(!jp.nextToken().equals(JsonToken.END_ARRAY))
+        JsonToken lastToken = jp.nextToken();
+        if(lastToken != null && !lastToken.equals(JsonToken.END_ARRAY))
             throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
         
         return operation;
