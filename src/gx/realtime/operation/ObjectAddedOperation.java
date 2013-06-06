@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 /**
  * Internal event for adding a CollabortiveObject to the model
  * 
- * @author E.S. van der Veen
  */
 @JsonDeserialize(using = ObjectAddedOperationDeserializer.class)
 public class ObjectAddedOperation extends Operation {

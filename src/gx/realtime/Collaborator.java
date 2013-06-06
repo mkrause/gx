@@ -3,7 +3,7 @@ package gx.realtime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author Rdebokx
+ *
  */
 public class Collaborator {
 
