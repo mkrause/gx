@@ -40,8 +40,7 @@ public class LoaderTest
     {
         RealtimeOptions options = new RealtimeOptions();
         options.setClientId(getClientId());
-        //options.setDocId("0B6gFLa0mYRcOc3NKTmtwdV9idHM");
-        options.setDocId("0B64KHUeJZqaMR3cycnd6QmZxUG8");
+        options.setDocId("0B6gFLa0mYRcOUHlpUlFTTm5EaDQ");
 
         RealtimeLoader.OnDocumentLoadedCallback onDocLoaded = mock(RealtimeLoader.OnDocumentLoadedCallback.class);
         options.setOnFileLoaded(onDocLoaded);
