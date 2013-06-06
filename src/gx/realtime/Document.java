@@ -176,12 +176,16 @@ public class Document extends EventTarget {
     protected void fireEvent(Event event) {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
-            //getModel().fireEvent((BaseModelEvent)event);
-            System.out.println("EVENT!");
+            BaseModelEvent modelEvent = (BaseModelEvent)event;
+            if (!modelEvent.isLocal()) {
+                getModel().handleRemoteEvent(modelEvent);
+            }
         } else {
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            for (EventHandler handler : handlers){
-                handler.handleEvent(event);
+            if (handlers != null) {
+                for (EventHandler handler : handlers){
+                    handler.handleEvent(event);
+                }
             }
         }
     }

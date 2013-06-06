@@ -37,29 +37,18 @@ public abstract class EventTarget {
             handlers.remove(handler);
         }
     }
-
+    
     /**
-     * Dispatches the given event of the given event type to this object. According to the given EventType, the corresponding EventHandlers are executed.
+     * Dispatches the given event of the given event type to this object. The corresponding EventHandlers are executed.
      * This method is only to be called by the gx.realtime.Document.
      * @param event The event object, containing any necessary information.
      */
-    protected void fireEvent(BaseModelEvent event){
-        if(this.equals(event.getTarget())){
-            if(!event.isCaptured()){
-                executeEventHandlers(event);
+    protected void fireEvent(BaseModelEvent event) {
+        Set<EventHandler> handlers = eventHandlers.get(event.getType());
+        if(handlers != null){
+            for(EventHandler handler : handlers){
+                handler.handleEvent(event);
             }
         }
     }
-
-    /**
-     * This method executes all the event handlers that are registered for the event type of the given event.
-     * @param event The event for which the event handlers should be executed.
-     */
-    protected void executeEventHandlers(BaseModelEvent event){
-        Set<EventHandler> handlers = eventHandlers.get(event.getType());
-        for(EventHandler handler : handlers){
-            handler.handleEvent(event);
-        }
-    }
-
 }
