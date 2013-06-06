@@ -92,7 +92,12 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The keys in this map.
 	 */
 	public String[] keys(){
-		return (String[]) map.keySet().toArray();
+        Set<String> keys =  map.keySet();
+        String[] result = null;
+        if(keys != null){
+            result = (String[]) keys.toArray();
+        }
+        return result;
 	}
 	
 	/**
