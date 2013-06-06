@@ -122,7 +122,7 @@ public class BrowserChannelTest
             channel.connect(channelUrl);
 
             // Sample event submission, note that the target ID is document-specific
-            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new" + RandomUtils.getRandomAlphaNumeric(), "old");
+            BaseModelEvent event = new ValueChangedEvent("gdei8wy17hhpsusd9", session.getSessionId(), null, false, "ab_de", "new" + RandomUtils.getRandomAlphaNumeric(), "old");
             SaveMessage message = new SaveMessage(event);
             channel.queue(message);
 
