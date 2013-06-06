@@ -2,6 +2,7 @@ package gx.realtime;
 
 import gx.util.RandomUtils;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +16,12 @@ public class Model extends EventTarget {
     private LinkedList<BaseModelEvent> undoableMutations;
     private LinkedList<BaseModelEvent> redoableMutations;
     private boolean readOnly;
-
+    
+    /**
+     * Keep track of all the nodes in the data model, indexed
+     * by their ID.
+     */
+    private Map<String, Object> nodes = new HashMap<>();
 
     protected Model(Document document){
         this.document = document;
@@ -117,18 +123,36 @@ public class Model extends EventTarget {
     public boolean isReadOnly(){
         return readOnly;
     }
-
-    @Override
-    public void fireEvent(BaseModelEvent event) {
-        root.fireEvent(event);
-        
+    
+    public void handleRemoteEvent(BaseModelEvent event) {
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
         // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
+        
+        String targetId = event.getTargetId();
+        Object node = getNode(targetId);
+        
+        if (node == null) {
+            // Unknown target ID, so ignore
+            //TODO: logging
+            return;
+        }
+        
+        if (!(node instanceof EventTarget)) {
+            // Not an event target, so ignore
+            return;
+        }
+
+        EventTarget targetNode = (EventTarget)node;
+        targetNode.fireEvent(event);
     }
     
     protected Document getDocument() {
         return document;
+    }
+    
+    private Object getNode(String id) {
+        return nodes.get(id);
     }
 }
