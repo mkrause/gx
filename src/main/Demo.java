@@ -8,7 +8,9 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import static org.junit.Assert.fail;
 
@@ -17,6 +19,8 @@ import static org.junit.Assert.fail;
  */
 public class Demo
 {
+    private Document document;
+
     public static void main(String[] args)
     {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
@@ -56,12 +60,23 @@ public class Demo
             }
 
             // TODO: Implement some functionality once the model is properly built on application start
+            document = doc;
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
 
         RealtimeLoader loader = new RealtimeLoader(options);
 
         loader.start();
+
+        System.out.println("Press ENTER to disconnect");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            br.readLine();
+        } catch (Exception ex) { }
+
+        if(document != null)
+            document.close();
+        System.out.println("Closed");
     }
 
     /**
