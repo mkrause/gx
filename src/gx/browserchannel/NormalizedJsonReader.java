@@ -17,7 +17,6 @@ import java.io.Reader;
  * <li> split up in chunks if desired. Each top level JSON array is a separate chunk.
  * </ol>
  * 
- * @author E.S. van der Veen
  */
 public class NormalizedJsonReader extends FilterReader
 {
@@ -371,7 +370,6 @@ public class NormalizedJsonReader extends FilterReader
     /**
      * The possible states of the state machine used by the <code>NormalizedJsonReader</code>.
      * 
-     * @author E.S. van der Veen
      */
     private enum State
     {

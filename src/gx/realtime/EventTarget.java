@@ -6,26 +6,11 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class EventTarget {
-
-    //TODO: create tests
-
-
-    //Attributes
-
+    
     /**
      * Map containing the event handlers of this EventTarget.
      */
-    protected Map<EventType, Set<EventHandler>> eventHandlers;
-
-
-    //Methods
-
-    /**
-     * Consturctor, initializing the event handlers map.
-     */
-    public EventTarget(){
-        eventHandlers = new HashMap<EventType, Set<EventHandler>>();
-    }
+    protected Map<EventType, Set<EventHandler>> eventHandlers = new HashMap<EventType, Set<EventHandler>>();
 
     /**
      * Adds an event listener to the event target. The same handler can only be added once per the type.
@@ -34,12 +19,11 @@ public abstract class EventTarget {
      * @param handler The function to handle the event. The handler can also be an object that implements the handleEvent method which takes the event object as argument.
      */
     public <T extends Event> void addEventListener(EventType type, EventHandler<T> handler){
-        Set<EventHandler> handlers = eventHandlers.get(type);
-        if(handlers == null){
-            handlers = new HashSet<EventHandler>();
-            eventHandlers.put(type, handlers);
+        if (!eventHandlers.containsKey(type)){
+            eventHandlers.put(type, new HashSet<EventHandler>());
         }
-        handlers.add(handler);
+        
+        eventHandlers.get(type).add(handler);
     }
 
     /**

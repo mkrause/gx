@@ -22,14 +22,15 @@ public class CollaborativeString extends CollaborativeObject {
 	public CollaborativeString(String id, Model model){
 		super(id, model);
         value = "";
+        //addEventListener(EventType.TEXT_INSERTED);
 	}
 
     /**
      * Appends a string to the end of this one.
      * @param text The new text to append.
      */
-	public void append (String text){
-		value += text;
+	public void append(String text) {
+        //fireEvent(new TextInsertedEvent(this, ..., true));
 	}
 
     /**

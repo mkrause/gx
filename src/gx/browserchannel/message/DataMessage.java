@@ -1,9 +1,8 @@
 package gx.browserchannel.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Date;
 
-public class DataMessage extends Message
+public class DataMessage extends AbstractMessage
 {
     JsonNode content;
 

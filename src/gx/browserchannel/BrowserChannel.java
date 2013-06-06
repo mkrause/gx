@@ -139,10 +139,10 @@ public class BrowserChannel
             JsonParser jParser = jfactory.createParser(in);
             ObjectMapper mapper = new ObjectMapper();
             jParser.setCodec(mapper);
-            Message[] messages = jParser.readValueAs(Message[].class);
+            AbstractMessage[] messages = jParser.readValueAs(AbstractMessage[].class);
 
             // Process messages
-            for (Message m : messages) {
+            for (AbstractMessage m : messages) {
                 if (m instanceof SessionMessage) {
                     channelSessionId = ((SessionMessage) m).getId();
                     logger.debug("Received channelSessionId {}", channelSessionId);
@@ -189,8 +189,8 @@ public class BrowserChannel
 
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
             while (in.nextChunk()) {
-                Message[] messages = parseMessageChunk(in);
-                for (Message m : messages) {
+                AbstractMessage[] messages = parseMessageChunk(in);
+                for (AbstractMessage m : messages) {
                     lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
                     lastSequenceTimestamp = Math.max(lastSequenceTimestamp, m.getTimestamp());
                     if (!(m instanceof NoopMessage)) {
@@ -212,13 +212,13 @@ public class BrowserChannel
      * @return
      * @throws IOException
      */
-    private Message[] parseMessageChunk(NormalizedJsonReader in) throws IOException
+    private AbstractMessage[] parseMessageChunk(NormalizedJsonReader in) throws IOException
     {
         JsonParser jParser = jfactory.createParser(in);
         ObjectMapper mapper = new ObjectMapper();
         jParser.setCodec(mapper);
 
-        return jParser.readValueAs(Message[].class);
+        return jParser.readValueAs(AbstractMessage[].class);
     }
 
     private void ensureBackwardChannel()

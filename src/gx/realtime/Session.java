@@ -3,6 +3,9 @@ package gx.realtime;
 import gx.realtime.operation.Operation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Session
 {
     @JsonProperty("sid")
@@ -36,9 +39,15 @@ public class Session
         return modelId;
     }
     
-    public Operation[] getSnapshot()
+    public List<BaseModelEvent> getSnapshot()
     {
-        return snapshot;
+        boolean isLocal = true;
+        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+        for(Operation operation : snapshot)
+        {
+            events.addAll(operation.toEvents(null, null, isLocal));
+        }
+        return events;
     }
 
     public void setRevision(int revision)
@@ -46,4 +55,3 @@ public class Session
         this.revision = revision;
     }
 }
-

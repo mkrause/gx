@@ -1,13 +1,18 @@
 package gx.realtime.operation;
 
+import gx.realtime.BaseModelEvent;
+import gx.realtime.ObjectAddedEvent;
+import gx.realtime.ObjectType;
 import gx.realtime.serialize.ObjectAddedOperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Internal event for adding a CollabortiveObject to the model
  * 
- * @author E.S. van der Veen
  */
 @JsonDeserialize(using = ObjectAddedOperationDeserializer.class)
 public class ObjectAddedOperation extends Operation {
@@ -21,24 +26,16 @@ public class ObjectAddedOperation extends Operation {
         this.objectId = id;
         this.objectType = type;
     }
+
+    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal)
+    {
+        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+        events.add(new ObjectAddedEvent(objectId, objectType));
+        return events;
+    }
     
     public ObjectAddedOperation(String id, int type)
     {
         this(id, ObjectType.map(type));
-    }
-
-    public enum ObjectType
-    {
-        COLLABORATIVE_MAP;
-        
-        public static ObjectType map(int type)
-        {
-            switch(type)
-            {
-                case 0:
-                return COLLABORATIVE_MAP;
-            }
-            return null;
-        } 
     }
 }

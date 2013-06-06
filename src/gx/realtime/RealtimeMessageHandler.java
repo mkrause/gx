@@ -35,7 +35,8 @@ public class RealtimeMessageHandler implements MessageHandler {
         // Handle events
         for(Event event : events)
         {
-            // TODO: notify Document of this event
+            document.fireEvent(event);
+
             if(event instanceof CollaboratorJoinedEvent) {
                 Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
                 logger.debug("Collaborator joined event: {}", user.getDisplayName());

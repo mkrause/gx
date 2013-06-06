@@ -1,5 +1,5 @@
 package gx.browserchannel.message;
 
-public class NoopMessage extends Message
+public class NoopMessage extends AbstractMessage
 {
 }

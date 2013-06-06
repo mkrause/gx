@@ -12,6 +12,7 @@ public class CollaboratorLeftEvent extends Event {
     public CollaboratorLeftEvent(Document document, Collaborator collaborator) {
         this.document = document;
         this.collaborator = collaborator;
+        this.type = EventType.COLLABORATOR_LEFT;
     }
 
     public static CollaboratorLeftEvent deserialize(Document source, Object serialized){

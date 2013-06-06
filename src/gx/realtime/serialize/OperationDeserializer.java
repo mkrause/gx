@@ -37,7 +37,7 @@ public class OperationDeserializer extends JsonDeserializer<Operation>
         // Read event
         operation = readOperation(jp, operationType);
         
-        // Message type not recognized
+        // AbstractMessage type not recognized
         if(operation == null)
             throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
         

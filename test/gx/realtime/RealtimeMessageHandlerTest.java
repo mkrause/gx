@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.message.DataMessage;
-import gx.browserchannel.message.Message;
+import gx.browserchannel.message.AbstractMessage;
 import gx.browserchannel.message.MessageEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class RealtimeMessageHandlerTest
     public void testReceive_CollabJoinedMessage()
     {
         BrowserChannel mockBrowserChannel = mock(BrowserChannel.class);
-        Message sm = new DataMessage(getJsonNode(collabJoinedMsg));
+        AbstractMessage sm = new DataMessage(getJsonNode(collabJoinedMsg));
         MessageEvent me = new MessageEvent(mockBrowserChannel, sm);
 
         handler.receive(me);
@@ -141,8 +141,8 @@ public class RealtimeMessageHandlerTest
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, e.getClass());
 
-        assertEquals("Should contain one sub event", 1, e.getEvents().length);
-        assertEquals("Event should be of ValuesAddedEvent type", ValuesAddedEvent.class, e.getEvents()[0].getClass());
+        assertEquals("Should contain one sub event", 1, e.getEvents().size());
+        assertEquals("Event should be of ValuesAddedEvent type", ValuesAddedEvent.class, e.getEvents().get(0).getClass());
     }
 
     @Test
@@ -153,8 +153,8 @@ public class RealtimeMessageHandlerTest
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, getFirstEvent(e).getClass());
-        assertTrue("Event should contain multiple events", e.getEvents().length > 0);
-        assertEquals("Events should be of type ValuesAddedEvent", ValuesAddedEvent.class, e.getEvents()[0].getClass());
+        assertTrue("Event should contain multiple events", e.getEvents().size() > 0);
+        assertEquals("Events should be of type ValuesAddedEvent", ValuesAddedEvent.class, e.getEvents().get(0).getClass());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class RealtimeMessageHandlerTest
     }
 
     private Object getFirstEvent(ObjectChangedEvent e) {
-        assertNotEquals(0, e.getEvents().length);
-        return e.getEvents()[0];
+        assertNotEquals(0, e.getEvents().size());
+        return e.getEvents().get(0);
     }
 }

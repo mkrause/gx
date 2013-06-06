@@ -2,7 +2,6 @@ package gx.realtime;
 
 public abstract class BaseModelEvent extends Event
 {
-    protected EventType type;
     protected EventTarget target;
     protected String sessionId;
     protected boolean isLocal;
@@ -35,16 +34,6 @@ public abstract class BaseModelEvent extends Event
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;
-    }
-
-    public EventType getType()
-    {
-        return type;
-    }
-
-    public void setType(EventType type)
-    {
-        this.type = type;
     }
 
     public EventTarget getTarget()
