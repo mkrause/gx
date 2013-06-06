@@ -27,7 +27,7 @@ public class CollaborativeStringTest {
 
         //append
         string.insertString(12, "xyz");
-        assertEquals("yzxabcuvwdefxyz");
+        assertEquals("yzxabcuvwdefxyz", string.getText());
 
         //test with empty string
         string = new CollaborativeString(null, null);

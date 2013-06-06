@@ -2,9 +2,14 @@ package gx.realtime;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class EventTargetTest {
+
+    private CollaborativeString string;
+    private int check = 0;
+
 
     @Before
     public void setUp(){
@@ -14,21 +19,26 @@ public class EventTargetTest {
     @Test
     public void testEventListeners() {
 
-        //TODO: test for base cases: fire event without handlers
-        //TODO: test for base cases: fire event with target not this string.
-        fail("TODO");
-
         EventHandler<TestEvent> handler = (testEvent) -> {
             TestObject testObject = (TestObject) testEvent.getTarget();
             testObject.setId(testObject.getId() + 1);
         };
-
-        string.addEventListener(EventType.TEXT_INSERTED, handler);
+        EventTarget.BubbleCallback bubbleCallback = () -> {
+          check += 10;
+        };
 
         TestObject simpleObject = new TestObject(100);
         TestEvent event = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, true);
-        string.fireEvent(EventType.TEXT_INSERTED, event);
+
+        string.fireEvent(event, bubbleCallback);
+        assertEquals(100, simpleObject.getId());
+        assertEquals(0, check);
+
+        string.addEventListener(EventType.TEXT_INSERTED, handler);
+
+        string.fireEvent(event, bubbleCallback);
         assertEquals(101, simpleObject.getId());
+        assertEquals(10, check);
 
         //test for multiple event types with one handler
         EventHandler<TestEvent> handler2 = (testEvent) -> {
@@ -40,44 +50,53 @@ public class EventTargetTest {
         TestObject testObject = new TestObject(200, simpleObject);
         TestEvent event2 = new TestEvent(EventType.TEXT_DELETED, testObject, "SID", "GxTestSuite", true, true);
 
-        string.fireEvent(EventType.TEXT_DELETED, event2);
-
+        string.fireEvent(event2, bubbleCallback);
         assertEquals(101, simpleObject.getId());
         assertEquals(210, testObject.getId());
+        assertEquals(20, check);
 
-        string.fireEvent(EventType.TEXT_INSERTED, event2);
+        //test without callback
+        string.fireEvent(event2, null);
         assertEquals(101, simpleObject.getId());
         assertEquals(211, testObject.getId());
+        assertEquals(20, check);
 
         //test for adding the same handler to one of the types: should be executed once
         string.addEventListener(EventType.TEXT_INSERTED, handler);
-        string.fireEvent(EventType.TEXT_INSERTED, event);
+        string.fireEvent(event, bubbleCallback);
 
         assertEquals(102, simpleObject.getId());
         assertEquals(211, testObject.getId());
+        assertEquals(30, check);
 
         //test for multiple handlers for multiple event types
         string.addEventListener(EventType.TEXT_INSERTED, handler2);
         string.addEventListener(EventType.TEXT_DELETED, handler);
 
-        string.fireEvent(EventType.TEXT_INSERTED, event);
+        string.fireEvent(event, bubbleCallback);
         assertEquals(113, simpleObject.getId());
         assertEquals(211, testObject.getId());
+        assertEquals(40, check);
 
-        string.fireEvent(EventType.TEXT_DELETED, event);
+        string.fireEvent(event, null);
         assertEquals(124, simpleObject.getId());
         assertEquals(211, testObject.getId());
+        assertEquals(40, check);
 
-        string.fireEvent(EventType.TEXT_INSERTED, event2);
+        string.fireEvent(event2, bubbleCallback);
         assertEquals(124, simpleObject.getId());
         assertEquals(222, testObject.getId());
+        assertEquals(50, check);
 
-        string.fireEvent(EventType.TEXT_DELETED, event2);
+        string.fireEvent(event2, bubbleCallback);
         assertEquals(124, simpleObject.getId());
         assertEquals(233, testObject.getId());
+        assertEquals(60, check);
 
-        //TODO: test on event with target unequal to this string.
-        fail("TODO");
+        //Test with target unequal to this string.
+        string.fireEvent(new TestEvent(EventType.TEXT_DELETED, new TestObject(13), "SID", "GxTestSuite", true, true), bubbleCallback);
+        assertEquals(124, simpleObject.getId());
+        assertEquals(233, testObject.getId());
+        assertEquals(60, check);
     }
-
 }

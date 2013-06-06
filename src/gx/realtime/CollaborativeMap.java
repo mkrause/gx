@@ -130,16 +130,24 @@ public class CollaborativeMap<V> extends CollaborativeObject{
      * Method dispatching the given event of the given EventType. If this CollaborativeMap is not the target of the given event, the
      * event is passed down to its children.
      * @param event The event object, containing any necessary information.
+     * @param bubbleCallback The function which will be called on the given event when the event bubbles back up.
      */
-    //TODO: update javadoc
     @Override
     protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback) {
-        //TODO: check use of callbacks, See CollaborativeList for example.
+        //if this object is the target, execute event handlers and bubble back up
+        super.fireEvent(event, bubbleCallback);
+
+        //if not, propagate event to childeren with callback.
         if(!this.equals(event.getTarget())){
+            BubbleCallback callback = () -> {
+                super.executeEventHandlers(event);
+                bubbleCallback.excecute();
+            };
+
             Collection<V> values = map.values();
             for(V value : values){
                 if(value instanceof CollaborativeObject){
-                    ((CollaborativeObject) value).fireEvent(event, bubbleCallback);
+                    ((CollaborativeObject) value).fireEvent(event, callback);
                 }
             }
         }
