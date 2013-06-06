@@ -12,6 +12,7 @@ public class CollaboratorJoinedEvent extends Event {
     public CollaboratorJoinedEvent(Document document, Collaborator collaborator) {
         this.document = document;
         this.collaborator = collaborator;
+        this.type = EventType.COLLABORATOR_JOINED;
     }
 
     public static CollaboratorJoinedEvent deserialize(Document source, Object serialized){
