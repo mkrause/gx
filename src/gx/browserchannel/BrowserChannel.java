@@ -77,16 +77,14 @@ public class BrowserChannel
 
     protected SaveRevisionResponse send(SaveMessage message)
     {
-        HttpURLConnection connection;
-        URLWithQuery url;
-
+        // Set the current revision number
         message.setRequestNumber(revision);
 
         ObjectMapper mapper = new ObjectMapper();
         String msg;
         try {
-            msg = mapper.writeValueAsString(message);
             logger.debug("Sending message {}", message);
+            msg = mapper.writeValueAsString(message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
@@ -98,16 +96,11 @@ public class BrowserChannel
             URLQueryBuilder queryBuilder = new URLQueryBuilder();
             queryBuilder.putAll(extraParams);
 
-            url = new URLWithQuery(baseUrl + "/save", queryBuilder);
+            URLWithQuery url = new URLWithQuery(baseUrl + "/save", queryBuilder);
             logger.debug("Url: {}", url.getURL().toString());
             logger.debug("Msg: {}", msg);
 
-            connection = ConnectionFactory.createConnection(url, "POST");
-            byte[] binaryMsg = msg.getBytes("UTF-8");
-            connection.setRequestProperty("Content-Length", String.valueOf(binaryMsg.length));
-            connection.getOutputStream().write(binaryMsg);
-
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
+            Reader in = ConnectionFactory.createJsonReader(url, msg);
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -131,7 +124,6 @@ public class BrowserChannel
     {
         logger.info("Forward Channel (POST)");
 
-        HttpURLConnection connection;
         URLWithQuery url;
 
         try {
@@ -140,12 +132,8 @@ public class BrowserChannel
 
             url = new URLWithQuery(baseUrl + path, queryBuilder);
 
-            connection = ConnectionFactory.createConnection(url, "POST");
-            connection.setRequestProperty("Content-Length", "0");
-            connection.getOutputStream().write(new byte[0]);
-
             logger.debug("Sent request, reading input");
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
+            Reader in = ConnectionFactory.createJsonReader(url, "");
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -187,9 +175,9 @@ public class BrowserChannel
                 .put("CI", useChunked ? 1 : 0).put("TYPE", "xmlhttp")
                 .put("zx", RandomUtils.getRandomHexAlphaNumeric()).put("RID", "rpc");
 
-        URL url;
+        URLWithQuery u2;
         try {
-            url = new URLWithQuery(baseUrl + path, params.build()).getURL();
+            u2 = new URLWithQuery(baseUrl + path, params.build());
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.getMessage());
             e.printStackTrace();
@@ -197,10 +185,8 @@ public class BrowserChannel
         }
 
         try {
-            HttpURLConnection backwardChannelConnection = (HttpURLConnection) url.openConnection();
-            NormalizedJsonReader in = new NormalizedJsonReader(backwardChannelConnection.getInputStream(), true);
+            NormalizedJsonReader in = ConnectionFactory.createJsonReader(u2, true);
 
-            logger.debug(url);
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
             while (in.nextChunk()) {
                 Message[] messages = parseMessageChunk(in);
