@@ -117,7 +117,15 @@ public class RealtimeLoader {
         Document doc = new Document(cred, session);
         return doc;
     }
-    
+
+    /**
+     *
+     * @param cred
+     * @param docId
+     * @param onLoaded
+     * @param initializeFn
+     * @param errorFn
+     */
     public void load(
         Credential cred,
         String docId,
@@ -132,7 +140,10 @@ public class RealtimeLoader {
         if(options.getOnFileLoaded() != null)
         options.getOnFileLoaded().onFileLoaded(doc);
     }
-    
+
+    /**
+     * Main method to start the Realtime process
+     */
     public void start() {
         Authorizer authorizer = new Authorizer();
         
