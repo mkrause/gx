@@ -50,7 +50,7 @@ public class BrowserChannel
     private Map<String, String> extraParams = new HashMap<>();
     private Thread backwardChannel;
     private HttpURLConnection backwardChannelConnection;
-    private boolean isClosed = true;
+    private boolean pendingClosed = true;
 
 
     public BrowserChannel()
@@ -146,7 +146,7 @@ public class BrowserChannel
                     // Pass message to handlers
                     fireEvent(new MessageEvent(this, m));
                 }
-                lastSequenceNumber = m.getLastArrayId();
+                lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
             }
             in.close();
         } catch (MalformedURLException e) {
@@ -185,7 +185,7 @@ public class BrowserChannel
 
             logger.debug(url);
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
-            while (!isClosed && in.nextChunk()) {
+            while (in.nextChunk()) {
                 JsonParser jParser = jfactory.createParser(in);
                 ObjectMapper mapper = new ObjectMapper();
                 jParser.setCodec(mapper);
@@ -216,15 +216,15 @@ public class BrowserChannel
             {
                 public void run()
                 {
-                    while (!isClosed) openBackwardChannel();
+                    while (!pendingClosed) openBackwardChannel();
                 }
             };
         }
 
-        if (!isClosed || backwardChannel.isAlive())
+        if (!pendingClosed || backwardChannel.isAlive())
             return;
 
-        isClosed = false;
+        pendingClosed = false;
         backwardChannel.start();
     }
 
@@ -284,15 +284,29 @@ public class BrowserChannel
         return "";
     }
 
+    public void prepareClose()
+    {
+        pendingClosed = true;
+    }
+
     public void disconnect()
     {
-        logger.info("disconnect()");
+        logger.info("Disconnect");
+        prepareClose();
 
-        // TODO: send disconnect request
+        // Send disconnect request to server
+        try {
+            URLQueryBuilder queryBuilder = getDefaultQueryBuilder()
+                    .put("TYPE", "terminate")
+                    .put("SID", channelSessionId)
+                    .put("zx", RandomUtils.getRandomHexAlphaNumeric());
 
-        isClosed = true;
-        if (backwardChannelConnection != null)
-            backwardChannelConnection.disconnect();
+            URL url = new URLWithQuery(baseUrl + path, queryBuilder).getURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.getInputStream().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         waitForClosed();
     }
@@ -321,7 +335,7 @@ public class BrowserChannel
 
     public boolean isClosed()
     {
-        return !backwardChannel.isAlive() && isClosed;
+        return !backwardChannel.isAlive();
     }
 
     public void waitForClosed()

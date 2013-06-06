@@ -95,6 +95,7 @@ public class BrowserChannelTest
     private static Session session;
     private static Credential credential;
     private static JsonFactory jfactory = new JsonFactory();
+    private static BrowserChannel channel;
 
     public static void main(String[] args)
     {
@@ -114,7 +115,7 @@ public class BrowserChannelTest
             // TODO: build document model according to session.snapshot
 
             // Create channel
-            BrowserChannel channel = new BrowserChannel();
+            channel = new BrowserChannel();
             channel.addMessageHandler(new RealtimeMessageHandler());
             channel.addExtraParameter("id", modelId);
             channel.addExtraParameter("access_token", credential.getAccessToken());
@@ -125,20 +126,17 @@ public class BrowserChannelTest
             channel.connect(channelUrl);
 
             // TODO: keep track of the request number this session
-            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new", "old");
-            SaveMessage message = new SaveMessage(session.getRevision(), 0, event);
-            SaveRevisionResponse response = channel.sendMessage(message);
-
-
-            if(response != null) {
-                session.setRevision(response.getRevision());
-            }
+//            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new", "old");
+//            SaveMessage message = new SaveMessage(session.getRevision(), 0, event);
+//            SaveRevisionResponse response = channel.sendMessage(message);
+//            if(response != null) session.setRevision(response.getRevision());
 
             logger.debug("Press ENTER to disconnect");
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             br.readLine();
 
-            channel.disconnect();
+            // Close document and channel
+            close();
 
             System.out.println("done");
             System.exit(0);
@@ -183,8 +181,8 @@ public class BrowserChannelTest
 
         try {
             // Create connection
-            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/gs"), parameters);
-            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
+            URL url = new URLWithQuery(new URL(channelUrl + "/gs"), parameters).getURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             Reader in = new NormalizedJsonReader(connection.getInputStream());
 
             // Parse response
@@ -198,6 +196,29 @@ public class BrowserChannelTest
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static void close()
+    {
+        channel.prepareClose();
+
+        // Set up parameters
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("id", modelId);
+        parameters.put("access_token", credential.getAccessToken());
+        parameters.put("sid", session.getSessionId());
+
+        try {
+            // Create connection
+            URL url = new URLWithQuery(new URL(channelUrl + "/leave"), parameters).getURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.getInputStream().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // This is already done by the request above
+        // channel.disconnect();
     }
 
     /**
