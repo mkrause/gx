@@ -21,6 +21,7 @@ public class CollaborativeString extends CollaborativeObject {
      */
 	public CollaborativeString(String id, Model model){
 		super(id, model);
+        value = "";
 	}
 
     /**
@@ -65,6 +66,7 @@ public class CollaborativeString extends CollaborativeObject {
      * @param endIndex The end index of the range to delete (exclusive).
      */
 	public void removeRange(int startIndex, int endIndex){
+        assert startIndex <= endIndex;
 		value = value.substring(0, startIndex) + value.substring(endIndex);
 	}
 

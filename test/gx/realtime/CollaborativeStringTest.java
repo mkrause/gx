@@ -23,11 +23,11 @@ public class CollaborativeStringTest {
 
         //insert midway
         string.insertString(7, "uvw");
-        assertEquals("yzxabcuvwdef", string.getText());
+        assertEquals("yzxabcduvwef", string.getText());
 
         //append
         string.insertString(12, "xyz");
-        assertEquals("yzxabcuvwdefxyz", string.getText());
+        assertEquals("yzxabcduvwefxyz", string.getText());
 
         //test with empty string
         string = new CollaborativeString(null, null);
@@ -39,6 +39,7 @@ public class CollaborativeStringTest {
 	public void testRemoveRange() {
         CollaborativeString string = new CollaborativeString(null, null);
         string.append("abcdefghijklmopqrstuvwxyz");
+        assertEquals("abcdefghijklmopqrstuvwxyz", string.getText());
 
         //test for removing nothing
         string.removeRange(0, 0);
@@ -55,15 +56,15 @@ public class CollaborativeStringTest {
         assertEquals("ghijklmopqrstuvwxyz", string.getText());
 
         //test for removing midway
-        string.removeRange(5, 1);
+        string.removeRange(5, 6);
         assertEquals("ghijkmopqrstuvwxyz", string.getText());
-        string.removeRange(5, 3);
+        string.removeRange(5, 8);
         assertEquals("ghijkqrstuvwxyz", string.getText());
 
         //test for removing at end
-        string.removeRange(14, 1);
+        string.removeRange(14, 15);
         assertEquals("ghijkqrstuvwxy", string.getText());
-        string.removeRange(9, 5);
+        string.removeRange(9, 14);
         assertEquals("ghijkqrst", string.getText());
 	}
 
