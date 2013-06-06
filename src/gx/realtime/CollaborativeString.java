@@ -8,6 +8,9 @@ public class CollaborativeString extends CollaborativeObject {
      * The contents of this CollaborativeString
      */
 	private String value;
+    
+    private String sessionId;
+    private String userId;
 
     /**
      * Creates a new collaborative string. Unlike regular Java Strings, collaborative strings are mutable. Changes to
@@ -22,15 +25,61 @@ public class CollaborativeString extends CollaborativeObject {
 	public CollaborativeString(String id, Model model){
 		super(id, model);
         value = "";
-        //addEventListener(EventType.TEXT_INSERTED);
+        
+        sessionId = model.getDocument().getSession().getSessionId();
+        userId = model.getDocument().getMe().getUserId();
+        
+        addEventListener(EventType.TEXT_INSERTED, textInsertedHandler());
+        addEventListener(EventType.TEXT_DELETED, textDeletedHandler());
 	}
 
+    /**
+     * Generic handler for TEXT_INSERTED events. Inserts the text in the
+     * specified position, as specified by the event.
+     * @return EventHandler<TextInsertedEvent>
+     */
+    private EventHandler<TextInsertedEvent> textInsertedHandler() {
+        return (TextInsertedEvent event) -> {
+            int index = event.getIndex();
+            String insertedText = event.getText();
+            
+            // Build the new text with the string inserted
+            value = value.substring(0, index)
+                + insertedText
+                + value.substring(index);
+        };
+    }
+    
+    /**
+     * Generic handler for TEXT_DELETED events. Deletes the text from the
+     * string, as specified by the event.
+     * @return EventHandler<TextInsertedEvent>
+     */
+    private EventHandler<TextDeletedEvent> textDeletedHandler() {
+        return (TextDeletedEvent event) -> {
+            int index = event.getIndex();
+            String deletedText = event.getText();
+            
+            // If the text at the specified position is not equal to the
+            // text from the event, something went wrong (so ignore it).
+            String toBeDeleted = value.substring(index, deletedText.length());
+            if (!toBeDeleted.equals(deletedText)) {
+                return;
+            }
+            
+            // Build the new text with the string deleted
+            value = value.substring(0, index)
+                + value.substring(index + deletedText.length());
+        };
+    }
+    
     /**
      * Appends a string to the end of this one.
      * @param text The new text to append.
      */
 	public void append(String text) {
-        //fireEvent(new TextInsertedEvent(this, ..., true));
+        int index = value.length();
+        fireEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
 	}
 
     /**
@@ -47,9 +96,9 @@ public class CollaborativeString extends CollaborativeObject {
      * @param text The new text to insert.
      */
 	public void insertString(int index, String text){
-		value = value.substring(0, index) + text + value.substring(index);
+        fireEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
 	}
-
+    
     /**
      * Creates an IndexReference at the given {@code index}. If {@code canBeDeleted} is set, then a delete over the
      * index will delete the reference. Otherwise the reference will shift to the beginning of the deleted range.
@@ -68,7 +117,11 @@ public class CollaborativeString extends CollaborativeObject {
      */
 	public void removeRange(int startIndex, int endIndex){
         assert startIndex <= endIndex;
-		value = value.substring(0, startIndex) + value.substring(endIndex);
+        
+        int index = startIndex;
+        String text = value.substring(startIndex, endIndex);
+        
+        fireEvent(new TextDeletedEvent(this, sessionId, userId, true, index, text));
 	}
 
     /**
