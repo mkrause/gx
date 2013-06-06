@@ -5,7 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class ModelTest {
-
+    
+    /*
 	@Test
 	public void testModel() {
 		fail("Not yet implemented");
@@ -95,5 +96,5 @@ public class ModelTest {
 	public void testIsReadOnly() {
 		fail("Not yet implemented");
 	}
-
+    */
 }

@@ -35,19 +35,12 @@ public class Model extends EventTarget {
      */
     protected Model(Document document) {
         this.document = document;
-        this.root = new CollaborativeMap<CollaborativeObject>("root", this);
         initialized = false;
+        readOnly = false;
+        
+        root = new CollaborativeMap<CollaborativeObject>("root", this);
         undoableMutations = new LinkedList<BaseModelEvent>();
         redoableMutations = new LinkedList<BaseModelEvent>();
-        readOnly = false;
-
-        addDocumentEventHandlers();
-    }
-    
-    private void addDocumentEventHandlers() {
-        document.addEventListener(EventType.VALUES_ADDED, (ValuesAddedEvent e) -> {
-            System.out.println("VALUES_ADDED");
-        });
     }
     
     public void beginCompoundOperation(String opt_name){
@@ -180,11 +173,58 @@ public class Model extends EventTarget {
         return readOnly;
     }
     
+    private EventHandler<ValuesAddedEvent> getValuesAddedBuilder() {
+        return (event) -> {
+            System.out.println("VALUES_ADDED");
+        };
+    }
+    
+    private EventHandler<ValueChangedEvent> getValueChangedBuilder() {
+        return (event) -> {
+            System.out.println("VALUE_CHANGED");
+        };
+    }
+    
+    private EventHandler<ValuesSetEvent> getValuesSetBuilder() {
+        return (event) -> {
+            System.out.println("VALUES_SET");
+        };
+    }
+    
+    private EventHandler<ValuesRemovedEvent> getValuesRemovedBuilder() {
+        return (event) -> {
+            System.out.println("VALUES_REMOVED");
+        };
+    }
+
+    /**
+     * Build our local data model based on the given remote event.
+     * @param event
+     */
+    private void buildLocalModel(BaseModelEvent event) {
+        switch (event.getType()) {
+        case VALUES_ADDED:
+            getValuesAddedBuilder().handleEvent((ValuesAddedEvent)event);
+            break;
+        case VALUE_CHANGED:
+            getValueChangedBuilder().handleEvent((ValueChangedEvent)event);
+            break;
+        case VALUES_SET:
+            getValuesSetBuilder().handleEvent((ValuesSetEvent)event);
+            break;
+        case VALUES_REMOVED:
+            getValuesRemovedBuilder().handleEvent((ValuesRemovedEvent)event);
+            break;
+        }
+    }
+    
     public void handleRemoteEvent(BaseModelEvent event) {
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
         // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
+
+        buildLocalModel(event);
         
         String targetId = event.getTargetId();
         Object node = getNode(targetId);
@@ -201,6 +241,11 @@ public class Model extends EventTarget {
         }
         
         EventTarget targetNode = (EventTarget)node;
+        
+        // Currently, the event may just contain the target ID (because it need
+        // not have exited in our local model yet), so set it
+        event.setTarget(targetNode);
+        
         targetNode.fireEvent(event);
     }
     

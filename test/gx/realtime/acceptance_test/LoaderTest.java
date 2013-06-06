@@ -50,7 +50,7 @@ public class LoaderTest
         loader.start();
         
         verify(onDocLoaded).onFileLoaded(isA(Document.class));
-
+        
         // close document properly
         // doc.close();
     }
