@@ -27,6 +27,7 @@ public class Document extends EventTarget {
 	private Model model;
 	private BrowserChannel channel;
 	private List<Collaborator> collaborators;
+    private Collaborator me;
 	private Map<EventType, Set<EventHandler>> eventHandlers;
 
     private Credential credential;
@@ -57,7 +58,11 @@ public class Document extends EventTarget {
     
     private void addPrivateEventHandlers() {
         addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent e) -> {
-            collaborators.add(e.getCollaborator());
+            Collaborator collaborator = e.getCollaborator();
+            collaborators.add(collaborator);
+            if (collaborator.isMe()) {
+                me = collaborator;
+            }
         });
         
         addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent e) -> {
