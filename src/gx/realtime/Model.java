@@ -143,7 +143,7 @@ public class Model extends EventTarget {
             // Not an event target, so ignore
             return;
         }
-
+        
         EventTarget targetNode = (EventTarget)node;
         targetNode.fireEvent(event);
     }

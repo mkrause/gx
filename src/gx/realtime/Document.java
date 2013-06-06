@@ -177,7 +177,7 @@ public class Document extends EventTarget {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
             BaseModelEvent modelEvent = (BaseModelEvent)event;
-            if (modelEvent.isLocal()) {
+            if (!modelEvent.isLocal()) {
                 getModel().handleRemoteEvent(modelEvent);
             }
         } else {
