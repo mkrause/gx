@@ -44,10 +44,8 @@ public abstract class EventTarget {
      * @param event The event object, containing any necessary information.
      */
     protected void fireEvent(BaseModelEvent event){
-        if(this.equals(event.getTarget())){
-            if(!event.isCaptured()){
-                executeEventHandlers(event);
-            }
+        if(this.equals(event.getTarget()) && !event.isCaptured()){
+            executeEventHandlers(event);
         }
     }
 
@@ -57,8 +55,10 @@ public abstract class EventTarget {
      */
     protected void executeEventHandlers(BaseModelEvent event){
         Set<EventHandler> handlers = eventHandlers.get(event.getType());
-        for(EventHandler handler : handlers){
-            handler.handleEvent(event);
+        if(handlers != null){
+            for(EventHandler handler : handlers){
+                handler.handleEvent(event);
+            }
         }
     }
 

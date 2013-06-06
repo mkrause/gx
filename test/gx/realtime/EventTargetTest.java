@@ -7,92 +7,79 @@ import org.junit.Test;
 
 public class EventTargetTest {
 
-    private CollaborativeString string;
-    private int check = 0;
-
-    @Before
-    public void setUp(){
-        string = new CollaborativeString(null, null);
-    }
-
     @Test
     public void testEventListeners() {
 
-        EventHandler<TestEvent> handler = (testEvent) -> {
+        TestObject simpleObject = new TestObject(100);
+
+        //Event handlers
+        EventHandler<TestEvent> handler1 = (testEvent) -> {
+            //System.out.println("--EventHandler 1 called.");
             TestObject testObject = (TestObject) testEvent.getTarget();
             testObject.setId(testObject.getId() + 1);
         };
 
-        TestObject simpleObject = new TestObject(100);
-        TestEvent event = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, true);
-
-        string.fireEvent(event);
-        assertEquals(100, simpleObject.getId());
-        assertEquals(0, check);
-
-        string.addEventListener(EventType.TEXT_INSERTED, handler);
-
-        string.fireEvent(event);
-        assertEquals(101, simpleObject.getId());
-        assertEquals(10, check);
-
-        //test for multiple event types with one handler
         EventHandler<TestEvent> handler2 = (testEvent) -> {
+            //System.out.println("--EventHandler2 called.");
             TestObject testObject2 = (TestObject) testEvent.getTarget();
             testObject2.setId(testObject2.getId() + 10);
         };
 
-        string.addEventListener(EventType.TEXT_DELETED, handler2);
-        TestObject testObject = new TestObject(200, simpleObject);
-        TestEvent event2 = new TestEvent(EventType.TEXT_DELETED, testObject, "SID", "GxTestSuite", true, true);
+        //Events
+        TestEvent insertedEvent = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, false);
+        TestEvent deletedEvent = new TestEvent(EventType.TEXT_DELETED, simpleObject, "SID", "GxTestSuite", true, false);
 
-        string.fireEvent(event2);
+        //fire event with no handlers registered.
+        simpleObject.fireEvent(insertedEvent);
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(100, simpleObject.getId());
+
+        //fire events with handler1 registered for inserted event.
+        simpleObject.addEventListener(insertedEvent.getType(), handler1);
+        simpleObject.fireEvent(insertedEvent);
         assertEquals(101, simpleObject.getId());
-        assertEquals(210, testObject.getId());
-        assertEquals(20, check);
-
-        //test without callback
-        string.fireEvent(event2);
+        simpleObject.fireEvent(deletedEvent);
         assertEquals(101, simpleObject.getId());
-        assertEquals(211, testObject.getId());
-        assertEquals(20, check);
 
-        //test for adding the same handler to one of the types: should be executed once
-        string.addEventListener(EventType.TEXT_INSERTED, handler);
-        string.fireEvent(event);
-
+        //fire events with handler1 registered for deleted event.
+        simpleObject.addEventListener(deletedEvent.getType(), handler1);
+        simpleObject.fireEvent(insertedEvent);
         assertEquals(102, simpleObject.getId());
-        assertEquals(211, testObject.getId());
-        assertEquals(30, check);
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(103, simpleObject.getId());
 
-        //test for multiple handlers for multiple event types
-        string.addEventListener(EventType.TEXT_INSERTED, handler2);
-        string.addEventListener(EventType.TEXT_DELETED, handler);
+        //fire events for both handlers registered for inserted event.
+        simpleObject.addEventListener(insertedEvent.getType(), handler2);
+        simpleObject.fireEvent(insertedEvent);
+        assertEquals(114, simpleObject.getId());
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(115, simpleObject.getId());
 
-        string.fireEvent(event);
-        assertEquals(113, simpleObject.getId());
-        assertEquals(211, testObject.getId());
-        assertEquals(40, check);
+        //fire events for duplicate handler1 registered for inserted event.
+        simpleObject.addEventListener(insertedEvent.getType(), handler1);
+        simpleObject.fireEvent(insertedEvent);
+        assertEquals(126, simpleObject.getId());
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(127, simpleObject.getId());
 
-        string.fireEvent(event);
-        assertEquals(124, simpleObject.getId());
-        assertEquals(211, testObject.getId());
-        assertEquals(40, check);
+        //fire events for both handlers registered for both event types.
+        simpleObject.addEventListener(deletedEvent.getType(), handler2);
+        simpleObject.fireEvent(insertedEvent);
+        assertEquals(138, simpleObject.getId());
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(149, simpleObject.getId());
 
-        string.fireEvent(event2);
-        assertEquals(124, simpleObject.getId());
-        assertEquals(222, testObject.getId());
-        assertEquals(50, check);
+        //fire events for duplicate registration of handler2 for deleted type
+        simpleObject.addEventListener(deletedEvent.getType(), handler2);
+        simpleObject.fireEvent(insertedEvent);
+        assertEquals(160, simpleObject.getId());
+        simpleObject.fireEvent(deletedEvent);
+        assertEquals(171, simpleObject.getId());
+    }
 
-        string.fireEvent(event2);
-        assertEquals(124, simpleObject.getId());
-        assertEquals(233, testObject.getId());
-        assertEquals(60, check);
-
-        //Test with target unequal to this string.
-        string.fireEvent(new TestEvent(EventType.TEXT_DELETED, new TestObject(13), "SID", "GxTestSuite", true, true));
-        assertEquals(124, simpleObject.getId());
-        assertEquals(233, testObject.getId());
-        assertEquals(60, check);
+    @Test
+    public void testBubbling(){
+        //TODO
+        fail("TODO");
     }
 }
