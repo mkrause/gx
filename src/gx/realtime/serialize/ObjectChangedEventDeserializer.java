@@ -39,10 +39,12 @@ public class ObjectChangedEventDeserializer extends JsonDeserializer<ObjectChang
         String sessionId = jp.nextTextValue();
         jp.nextToken();
         Operation operation = jp.readValueAs(Operation.class);
+        boolean isLocal = false;
+        List<BaseModelEvent> events = operation.toEvents(sessionId, userId, isLocal);
+        String targetId = events.size() == 0 ? null : events.get(0).getTargetId();
         
         // Create event
-        // TODO: pass a real event target along
-        ObjectChangedEvent event = new ObjectChangedEvent(null, sessionId, userId, false, new BaseModelEvent[]{});
+        ObjectChangedEvent event = new ObjectChangedEvent(targetId, sessionId, userId, isLocal, events);
         
         // Check if next token is array end token
         if(!jp.nextToken().equals(JsonToken.END_ARRAY))

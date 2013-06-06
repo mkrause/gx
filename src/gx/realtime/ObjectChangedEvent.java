@@ -4,22 +4,30 @@ import gx.realtime.serialize.ObjectChangedEventDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
- @JsonDeserialize(using = ObjectChangedEventDeserializer.class)
+import java.util.List;
+
+@JsonDeserialize(using = ObjectChangedEventDeserializer.class)
 public class ObjectChangedEvent extends BaseModelEvent {
 
-    private BaseModelEvent[] events;
+    private List<BaseModelEvent> events;
 
-    public ObjectChangedEvent(EventTarget target, String sessionId, String userId, boolean local, BaseModelEvent[] events){
+    public ObjectChangedEvent(String targetId, String sessionId, String userId, boolean local, List<BaseModelEvent> events){
+        super(EventType.OBJECT_CHANGED, targetId, sessionId, userId, local, true);
+        this.events = events;
+        // bubbles = true
+    }
+
+    public ObjectChangedEvent(EventTarget target, String sessionId, String userId, boolean local, List<BaseModelEvent> events){
         // bubbles = true
         super(EventType.OBJECT_CHANGED, target, sessionId, userId, local, true);
         this.events = events;
     }
 
-    public BaseModelEvent[] getEvents() {
+    public List<BaseModelEvent> getEvents() {
         return events;
     }
 
-    public void setEvents(BaseModelEvent[] events) {
+    public void setEvents(List<BaseModelEvent> events) {
         this.events = events;
     }
 }

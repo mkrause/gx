@@ -25,6 +25,6 @@ public class ObjectChangedEventDeserializerTest extends DeserializerTestHelper
 
         ObjectChangedEvent event = parser.readValueAs(ObjectChangedEvent.class);
         assertNotNull(event);
-        assertTrue(event.getEvents().length > 0);
+        assertTrue(event.getEvents().size() > 0);
     }
 }

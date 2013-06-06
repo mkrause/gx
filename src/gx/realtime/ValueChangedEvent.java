@@ -1,6 +1,7 @@
 package gx.realtime;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import gx.realtime.operation.ValueChangedOperation;
 import gx.realtime.serialize.ValueChangedEventSerializer;
 
 @JsonSerialize(using = ValueChangedEventSerializer.class)
@@ -10,6 +11,7 @@ public class ValueChangedEvent extends BaseModelEvent
     private String property;
     private String newValue;
     private String oldValue;
+    private ValueChangedOperation.ValueType valueType;
 
     public ValueChangedEvent(String target, String sessionId, String userId, boolean isLocal, String property, String newValue, String oldValue)
     {
@@ -55,5 +57,13 @@ public class ValueChangedEvent extends BaseModelEvent
     public void setOldValue(String oldValue)
     {
         this.oldValue = oldValue;
+    }
+
+    public ValueChangedOperation.ValueType getValueType() {
+        return valueType;
+    }
+
+    public void setValueType(ValueChangedOperation.ValueType valueType) {
+        this.valueType = valueType;
     }
 }

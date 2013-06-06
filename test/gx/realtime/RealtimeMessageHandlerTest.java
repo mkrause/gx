@@ -141,8 +141,8 @@ public class RealtimeMessageHandlerTest
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, e.getClass());
 
-        assertEquals("Should contain one sub event", 1, e.getEvents().length);
-        assertEquals("Event should be of ValuesAddedEvent type", ValuesAddedEvent.class, e.getEvents()[0].getClass());
+        assertEquals("Should contain one sub event", 1, e.getEvents().size());
+        assertEquals("Event should be of ValuesAddedEvent type", ValuesAddedEvent.class, e.getEvents().get(0).getClass());
     }
 
     @Test
@@ -153,8 +153,8 @@ public class RealtimeMessageHandlerTest
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, getFirstEvent(e).getClass());
-        assertTrue("Event should contain multiple events", e.getEvents().length > 0);
-        assertEquals("Events should be of type ValuesAddedEvent", ValuesAddedEvent.class, e.getEvents()[0].getClass());
+        assertTrue("Event should contain multiple events", e.getEvents().size() > 0);
+        assertEquals("Events should be of type ValuesAddedEvent", ValuesAddedEvent.class, e.getEvents().get(0).getClass());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class RealtimeMessageHandlerTest
     }
 
     private Object getFirstEvent(ObjectChangedEvent e) {
-        assertNotEquals(0, e.getEvents().length);
-        return e.getEvents()[0];
+        assertNotEquals(0, e.getEvents().size());
+        return e.getEvents().get(0);
     }
 }

@@ -1,8 +1,12 @@
 package gx.realtime.operation;
 
+import gx.realtime.BaseModelEvent;
 import gx.realtime.serialize.CompoundOperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Internal event for adding a CollabortiveObject to the model
@@ -17,5 +21,15 @@ public class CompoundOperation extends Operation {
     {
         this.type = Type.COMPOUND;
         this.operations = operations;
+    }
+
+    @Override
+    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal) {
+        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+        for(Operation operation : operations)
+        {
+            events.addAll(events);
+        }
+        return events;
     }
 }
