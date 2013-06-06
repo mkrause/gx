@@ -35,11 +35,22 @@ public class CollaborativeStringTest {
         assertEquals("abc", string.getText());
 	}
 
+    @Test
+    public void testAppend(){
+        CollaborativeString string = new CollaborativeString(null, null);
+        assertEquals("", string.getText());
+        string.append("abc");
+        assertEquals("abc", string.getText());
+        string.append("");
+        assertEquals("abc", string.getText());
+        string.append("def");
+        assertEquals("abcdef", string.getText());
+    }
+
 	@Test
 	public void testRemoveRange() {
         CollaborativeString string = new CollaborativeString(null, null);
         string.append("abcdefghijklmopqrstuvwxyz");
-        assertEquals("abcdefghijklmopqrstuvwxyz", string.getText());
 
         //test for removing nothing
         string.removeRange(0, 0);
