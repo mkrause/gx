@@ -33,6 +33,10 @@ public class ForwardChannelThread extends Thread
         }
     }
 
+    /**
+     * Consumes the given message and hands the response off to the parent.
+     * @param msg
+     */
     private void consume(SaveMessage msg)
     {
         SaveRevisionResponse response = parent.send(msg);
