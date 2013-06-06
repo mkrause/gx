@@ -1,6 +1,12 @@
 package main;
 
 import gx.realtime.*;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.IOException;
 
@@ -13,6 +19,13 @@ public class Demo
 {
     public static void main(String[] args)
     {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.
+                ROOT_LOGGER_NAME);
+        loggerConfig.setLevel(Level.ERROR);
+        ctx.updateLoggers();
+
         Demo demo = new Demo();
         demo.run();
     }
