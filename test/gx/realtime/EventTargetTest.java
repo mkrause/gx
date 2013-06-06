@@ -4,9 +4,46 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Mockito.*;
 
 public class EventTargetTest {
+    
+    @Test
+    public void testAddEventListener() {
+        EventTarget target = new EventTarget() {};
+        EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
+        target.addEventListener(EventType.OBJECT_CHANGED, handler);
+        
+        target.fireEvent(new ObjectChangedEvent(target, null, null, true, null));
+        
+        verify(handler).handleEvent(isA(ObjectChangedEvent.class));
+    }
+    
+    @Test
+    public void testRemoveEventListener() {
+        EventTarget target = new EventTarget() {};
+        EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
+        target.addEventListener(EventType.OBJECT_CHANGED, handler);
+        
+        // Remove the handler we just added
+        target.removeEventListener(EventType.OBJECT_CHANGED, handler);
+        
+        target.fireEvent(new ObjectChangedEvent(target, null, null, true, null));
+        
+        verify(handler, never()).handleEvent(isA(ObjectChangedEvent.class));
+    }
 
+    @Test
+    public void testRemovingNonexistentEventListenerIsIgnored() {
+        EventTarget target = new EventTarget() {};
+        
+        // Remove the handler (which we never added in the first place)
+        EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
+        target.removeEventListener(EventType.OBJECT_CHANGED, handler);
+        
+        // Expected: no exception thrown
+    }
+    
     @Test
     public void testEventListeners() {
 
@@ -18,7 +55,7 @@ public class EventTargetTest {
             TestObject testObject = (TestObject) testEvent.getTarget();
             testObject.setId(testObject.getId() + 1);
         };
-
+        
         EventHandler<TestEvent> handler2 = (testEvent) -> {
             //System.out.println("--EventHandler2 called.");
             TestObject testObject2 = (TestObject) testEvent.getTarget();
@@ -75,11 +112,5 @@ public class EventTargetTest {
         assertEquals(160, simpleObject.getId());
         simpleObject.fireEvent(deletedEvent);
         assertEquals(171, simpleObject.getId());
-    }
-
-    @Test
-    public void testBubbling(){
-        //TODO
-        fail("TODO");
     }
 }
