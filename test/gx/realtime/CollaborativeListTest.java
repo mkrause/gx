@@ -69,15 +69,10 @@ public class CollaborativeListTest {
 
 	@Test
 	public void testIndexOfEComparatorOfE() {
-        System.out.println("Starting testIndexOfE");
         Comparator<TestObject> comparator = new TestObjectComparator();
-        System.out.println("comparator created. Going to search for simpleObject");
         assertEquals(0, list.indexOf(simpleObject, comparator));
-        System.out.println("simpleObject found.");
         assertEquals(1, list.indexOf(testObject, comparator));
-        System.out.println("testObject found");
         assertEquals(-1, list.indexOf(new TestObject(999), comparator));
-        System.out.println("Random object found.");
     }
 
 	@Test
@@ -85,8 +80,6 @@ public class CollaborativeListTest {
 		list = new CollaborativeList<TestObject>("listId", null);
 
 		//test for no inserts
-		list.insertAll(0, null);
-		assertEquals(0, list.length());
 		list.insertAll(0, new TestObject[0]);
 		assertEquals(0, list.length());
 
@@ -123,11 +116,11 @@ public class CollaborativeListTest {
 		assertTrue(testObject == list.get(5));
 
 		//test for set of inserts in middle (one element)
-		TestObject object3 = new TestObject(3);
+        TestObject object3 = new TestObject(3);
 		TestObject object4 = new TestObject(4);
 		TestObject[] objects3 = new TestObject[2];
-		objects2[0] = object3;
-		objects2[1] = object4;
+		objects3[0] = object3;
+		objects3[1] = object4;
 		list.insertAll(5, objects3);
 		assertEquals(8, list.length());
 		assertTrue(object1 == list.get(0));
@@ -143,8 +136,8 @@ public class CollaborativeListTest {
 		TestObject object5 = new TestObject(5);
 		TestObject object6 = new TestObject(6);
 		TestObject[] objects4 = new TestObject[2];
-		objects2[0] = object5;
-		objects2[1] = object6;
+		objects4[0] = object5;
+		objects4[1] = object6;
 		list.insertAll(8, objects4);
 		testLastList(object1, object2, object3, object4, object5, object6);
 
@@ -202,7 +195,7 @@ public class CollaborativeListTest {
 
 		//remove last
 		list.removeRange(2, 3);
-		assertEquals(2, list.length());
+		assertEquals(3, list.length());
 		assertTrue(simpleObject == list.get(0));
 		assertTrue(object1 == list.get(1));
 	}
@@ -257,8 +250,8 @@ public class CollaborativeListTest {
 		TestObject object1 = new TestObject(1);
 		TestObject object2 = new TestObject(2);
 		TestObject[] objects = new TestObject[2];
-		objects[1] = object1;
-		objects[2] = object2;
+		objects[0] = object1;
+		objects[1] = object2;
 		list.pushAll(objects);
 
 		list.replaceRange(0, objects);
@@ -268,13 +261,24 @@ public class CollaborativeListTest {
 		assertTrue(object1 == list.get(2));
 		assertTrue(object2 == list.get(3));
 
+        //replace middle
+        list.replaceRange(1, objects);
+        assertEquals(4, list.length());
+        assertTrue(object1 == list.get(0));
+        assertTrue(object1 == list.get(1));
+        assertTrue(object2 == list.get(2));
+        assertTrue(object2 == list.get(3));
+
 		//replace last
-		list.replaceRange(3, objects);
+        list.set(3, object1);
+        assertTrue(object1 == list.get(3));
+
+		list.replaceRange(2, objects);
 		assertEquals(4, list.length());
 		assertTrue(object1 == list.get(0));
-		assertTrue(object2 == list.get(1));
+		assertTrue(object1 == list.get(1));
 		assertTrue(object1 == list.get(2));
-		assertTrue(object1 == list.get(3));
+		assertTrue(object2 == list.get(3));
 	}
 
     @Test
