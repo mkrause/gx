@@ -8,14 +8,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * Data model for the document. Contains an object graph that can be referenced
+ * via the root node.
+ */
 public class Model extends EventTarget {
 
     private Document document;
-    private CollaborativeMap<CollaborativeObject> root;
     private boolean initialized;
+    private boolean readOnly;
+    private CollaborativeMap<CollaborativeObject> root;
+    
     private LinkedList<BaseModelEvent> undoableMutations;
     private LinkedList<BaseModelEvent> redoableMutations;
-    private boolean readOnly;
     
     /**
      * Keep track of all the nodes in the data model, indexed
@@ -23,10 +28,15 @@ public class Model extends EventTarget {
      */
     private Map<String, Object> nodes = new HashMap<>();
 
-    protected Model(Document document){
+    /**
+     * Constructor. Should not be called directly, a model can be
+     * retrieved via the document.
+     * @param document
+     */
+    protected Model(Document document) {
         this.document = document;
         this.root = new CollaborativeMap<CollaborativeObject>("root", this);
-        initialized = true;
+        initialized = false;
         undoableMutations = new LinkedList<BaseModelEvent>();
         redoableMutations = new LinkedList<BaseModelEvent>();
         readOnly = false;
