@@ -5,7 +5,7 @@ import gx.browserchannel.message.serialize.SessionMessageDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = SessionMessageDeserializer.class)
-public class SessionMessage extends Message
+public class SessionMessage extends AbstractMessage
 {
     private String sessionId = null;
     private String hostPrefix = null;

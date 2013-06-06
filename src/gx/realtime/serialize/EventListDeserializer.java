@@ -47,7 +47,7 @@ public class EventListDeserializer extends JsonDeserializer<EventList>
         // Read entire event
         events = readEvents(jp, eventType);
         
-        // Message type not recognized
+        // AbstractMessage type not recognized
         if(events == null)
             throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
         

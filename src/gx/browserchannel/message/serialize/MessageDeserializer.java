@@ -11,15 +11,15 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MessageDeserializer extends JsonDeserializer<Message>
+public class MessageDeserializer extends JsonDeserializer<AbstractMessage>
 {
     private final String INVALID_FORMAT = "Invalid message format";
     private final String UNKNOWN_TYPE = "Unknown message type";
     
     @Override
-    public Message deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException
+    public AbstractMessage deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException
     {
-        Message message = null;
+        AbstractMessage message = null;
         int lastArrayId = -1;
 
         // Add mapper
@@ -56,7 +56,7 @@ public class MessageDeserializer extends JsonDeserializer<Message>
             message = readMessage(innerJp, type);
         }
 
-        // Message type not recognized, assume DataMessage
+        // AbstractMessage type not recognized, assume DataMessage
         if(message == null)
             message = new DataMessage(jsonNode);
         
@@ -70,7 +70,7 @@ public class MessageDeserializer extends JsonDeserializer<Message>
         return message;
     }
 
-    private Message readMessage(JsonParser jp, String type) throws JsonProcessingException, IOException
+    private AbstractMessage readMessage(JsonParser jp, String type) throws JsonProcessingException, IOException
     {
         if(type == null)
             return null;

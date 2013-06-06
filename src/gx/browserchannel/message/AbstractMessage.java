@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Date;
 
+/**
+ * Abstract parent of the various BrowserChannel message classes
+ */
 @JsonDeserialize(using = MessageDeserializer.class)
-public abstract class Message
+public abstract class AbstractMessage
 {
     protected int lastArrayId = -1;
     protected long timestamp = -1L;
@@ -35,6 +38,6 @@ public abstract class Message
     @Override
     public String toString()
     {
-        return "Message[AID: " + lastArrayId + ", timestamp: " + timestamp + "]";
+        return "AbstractMessage[AID: " + lastArrayId + ", timestamp: " + timestamp + "]";
     }
 }

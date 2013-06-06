@@ -5,7 +5,7 @@ import gx.browserchannel.message.serialize.SaveMessageSerializer;
 import gx.realtime.BaseModelEvent;
 
 /**
- * Message sent to the API containing the changes that are to be committed
+ * AbstractMessage sent to the API containing the changes that are to be committed
  */
 @JsonSerialize(using = SaveMessageSerializer.class)
 public class SaveMessage

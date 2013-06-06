@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.message.DataMessage;
-import gx.browserchannel.message.Message;
+import gx.browserchannel.message.AbstractMessage;
 import gx.browserchannel.message.MessageEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class RealtimeMessageHandlerTest
     public void testReceive_CollabJoinedMessage()
     {
         BrowserChannel mockBrowserChannel = mock(BrowserChannel.class);
-        Message sm = new DataMessage(getJsonNode(collabJoinedMsg));
+        AbstractMessage sm = new DataMessage(getJsonNode(collabJoinedMsg));
         MessageEvent me = new MessageEvent(mockBrowserChannel, sm);
 
         handler.receive(me);
