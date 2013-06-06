@@ -40,6 +40,7 @@ public class BrowserChannel
     private int nextRid;
     private boolean useChunked = true;
     private LinkedBlockingQueue<SaveMessage> outgoingMessages;
+    private LinkedBlockingQueue<AbstractMessage> incomingMessages;
     // Non-JS-BrowserChannel compliant parameters
     private long lastSequenceTimestamp = -1L;
     private long lastSequenceNumber = 0L;
@@ -58,6 +59,11 @@ public class BrowserChannel
     private boolean pendingClosed = true;
 
     /**
+     * Thread to handle events
+     */
+    private Thread eventWorker;
+
+    /**
      * Current revision number, used to properly send save messages.
      */
     private int revision = -1;
@@ -70,6 +76,7 @@ public class BrowserChannel
     public BrowserChannel(int currentRevision)
     {
         outgoingMessages = new LinkedBlockingQueue<>();
+        incomingMessages = new LinkedBlockingQueue<>();
         nextRid = (int) Math.floor(Math.random() * 100000);
         revision = currentRevision;
         logger.info("Initialized");
@@ -149,7 +156,7 @@ public class BrowserChannel
                 } else {
                     logger.debug("Received event {}", m);
                     // Pass message to handlers
-                    fireEvent(new MessageEvent(this, m));
+                    incomingMessages.add(m);
                 }
                 lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
             }
@@ -195,7 +202,7 @@ public class BrowserChannel
                     lastSequenceTimestamp = Math.max(lastSequenceTimestamp, m.getTimestamp());
                     if (!(m instanceof NoopMessage)) {
                         // Pass message to handlers
-                        fireEvent(new MessageEvent(this, m));
+                        incomingMessages.add(m);
                     }
                 }
             }
@@ -242,14 +249,24 @@ public class BrowserChannel
 
     private void ensureForwardChannel()
     {
-        if (forwardChannel == null) {
+        if (forwardChannel == null)
             forwardChannel = new ForwardChannelThread(this, outgoingMessages);
-        }
 
         if (forwardChannel.isAlive())
             return;
 
         forwardChannel.start();
+    }
+
+    private void startEventWorker()
+    {
+        if (eventWorker == null)
+            eventWorker = new EventWorkerThread(this, incomingMessages);
+
+        if (eventWorker.isAlive())
+            return;
+
+        eventWorker.start();
     }
 
     public void connect(String baseUrl)
@@ -261,6 +278,7 @@ public class BrowserChannel
 
         // Test the connection quality, does not actually seem to do anything else
         connectTest("/test");
+        startEventWorker();
         openForwardChannel();
         ensureBackwardChannel();
         ensureForwardChannel();
@@ -340,11 +358,9 @@ public class BrowserChannel
         handlers.remove(handler);
     }
 
-    private void fireEvent(MessageEvent event)
+    public List<MessageHandler> getMessageHandlers()
     {
-        // TODO: fire in separate thread?
-        for (MessageHandler handler : handlers)
-            handler.receive(event);
+        return handlers;
     }
 
     public boolean isClosed()
