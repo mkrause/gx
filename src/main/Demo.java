@@ -31,6 +31,18 @@ public class Demo
             doc.addEventListener(EventType.COLLABORATOR_JOINED, handler);
             doc.addEventListener(EventType.COLLABORATOR_LEFT, handler);
             doc.addEventListener(EventType.VALUE_CHANGED, handler);
+
+            Model model = doc.getModel();
+            System.out.println("Found model: " + model == null);
+
+            CollaborativeMap<CollaborativeObject> root = model.getRoot();
+            System.out.println("Root id: " + root.getId() + ", size: " + root.size());
+
+            for (String key : root.keys()) {
+                System.out.println("Key: " + key);
+            }
+
+            // TODO: Implement some functionality once the model is properly built on application start
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
 
@@ -41,6 +53,7 @@ public class Demo
 
     /**
      * Get the client ID from the default configuration file.
+     *
      * @return
      */
     private String getClientId()
