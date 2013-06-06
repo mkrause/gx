@@ -10,7 +10,6 @@ public class EventTargetTest {
     private CollaborativeString string;
     private int check = 0;
 
-
     @Before
     public void setUp(){
         string = new CollaborativeString(null, null);
@@ -23,20 +22,17 @@ public class EventTargetTest {
             TestObject testObject = (TestObject) testEvent.getTarget();
             testObject.setId(testObject.getId() + 1);
         };
-        EventTarget.BubbleCallback bubbleCallback = () -> {
-          check += 10;
-        };
 
         TestObject simpleObject = new TestObject(100);
         TestEvent event = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, true);
 
-        string.fireEvent(event, bubbleCallback);
+        string.fireEvent(event);
         assertEquals(100, simpleObject.getId());
         assertEquals(0, check);
 
         string.addEventListener(EventType.TEXT_INSERTED, handler);
 
-        string.fireEvent(event, bubbleCallback);
+        string.fireEvent(event);
         assertEquals(101, simpleObject.getId());
         assertEquals(10, check);
 
@@ -50,20 +46,20 @@ public class EventTargetTest {
         TestObject testObject = new TestObject(200, simpleObject);
         TestEvent event2 = new TestEvent(EventType.TEXT_DELETED, testObject, "SID", "GxTestSuite", true, true);
 
-        string.fireEvent(event2, bubbleCallback);
+        string.fireEvent(event2);
         assertEquals(101, simpleObject.getId());
         assertEquals(210, testObject.getId());
         assertEquals(20, check);
 
         //test without callback
-        string.fireEvent(event2, null);
+        string.fireEvent(event2);
         assertEquals(101, simpleObject.getId());
         assertEquals(211, testObject.getId());
         assertEquals(20, check);
 
         //test for adding the same handler to one of the types: should be executed once
         string.addEventListener(EventType.TEXT_INSERTED, handler);
-        string.fireEvent(event, bubbleCallback);
+        string.fireEvent(event);
 
         assertEquals(102, simpleObject.getId());
         assertEquals(211, testObject.getId());
@@ -73,28 +69,28 @@ public class EventTargetTest {
         string.addEventListener(EventType.TEXT_INSERTED, handler2);
         string.addEventListener(EventType.TEXT_DELETED, handler);
 
-        string.fireEvent(event, bubbleCallback);
+        string.fireEvent(event);
         assertEquals(113, simpleObject.getId());
         assertEquals(211, testObject.getId());
         assertEquals(40, check);
 
-        string.fireEvent(event, null);
+        string.fireEvent(event);
         assertEquals(124, simpleObject.getId());
         assertEquals(211, testObject.getId());
         assertEquals(40, check);
 
-        string.fireEvent(event2, bubbleCallback);
+        string.fireEvent(event2);
         assertEquals(124, simpleObject.getId());
         assertEquals(222, testObject.getId());
         assertEquals(50, check);
 
-        string.fireEvent(event2, bubbleCallback);
+        string.fireEvent(event2);
         assertEquals(124, simpleObject.getId());
         assertEquals(233, testObject.getId());
         assertEquals(60, check);
 
         //Test with target unequal to this string.
-        string.fireEvent(new TestEvent(EventType.TEXT_DELETED, new TestObject(13), "SID", "GxTestSuite", true, true), bubbleCallback);
+        string.fireEvent(new TestEvent(EventType.TEXT_DELETED, new TestObject(13), "SID", "GxTestSuite", true, true));
         assertEquals(124, simpleObject.getId());
         assertEquals(233, testObject.getId());
         assertEquals(60, check);

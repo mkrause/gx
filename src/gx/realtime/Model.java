@@ -119,14 +119,9 @@ public class Model extends EventTarget {
     }
 
     @Override
-    public void fireEvent(BaseModelEvent event, BubbleCallback callback) {
-
-        BubbleCallback topCallback = () ->{
-            super.fireEvent(event, null);
-            callback.excecute();
-        };
-        root.fireEvent(event, callback);
-
+    public void fireEvent(BaseModelEvent event) {
+        root.fireEvent(event);
+        
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
