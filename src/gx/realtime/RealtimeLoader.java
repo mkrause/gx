@@ -126,8 +126,10 @@ public class RealtimeLoader {
         HandleErrorsCallback errorFn
     ) {
         Document doc = getDocument(cred, docId);
-        
-        options.getInitializeModel().initializeModel(doc.getModel());
+
+        if(options.getInitializeModel() != null)
+            options.getInitializeModel().initializeModel(doc.getModel());
+        if(options.getOnFileLoaded() != null)
         options.getOnFileLoaded().onFileLoaded(doc);
     }
     

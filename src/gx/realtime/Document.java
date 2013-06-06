@@ -39,10 +39,10 @@ public class Document extends EventTarget {
 	protected Document(Credential credential, Session session) {
         this.credential = credential;
         this.session = session;
-        this.model = new Model(this);
         this.messageHandler = new RealtimeMessageHandler(this);
         this.collaborators = new ArrayList<Collaborator>();
         this.eventHandlers = new HashMap<EventType, Set<EventHandler>>();
+        this.model = new Model(this);
 
         // Set up browser channel
 		this.channel = new BrowserChannel(session.getRevision());
