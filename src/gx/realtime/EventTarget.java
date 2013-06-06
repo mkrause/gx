@@ -9,11 +9,6 @@ public abstract class EventTarget {
 
     //TODO: create tests
 
-    //Interfaces
-    public interface BubbleCallback{
-        public void excecute();
-    }
-
 
     //Attributes
 
@@ -63,16 +58,11 @@ public abstract class EventTarget {
      * Dispatches the given event of the given event type to this object. According to the given EventType, the corresponding EventHandlers are executed.
      * This method is only to be called by the gx.realtime.Document.
      * @param event The event object, containing any necessary information.
-     * @param bubbleCallback The function which will be called on the given event when the event bubbles back up.
      */
-    protected void fireEvent(BaseModelEvent event, BubbleCallback bubbleCallback){
+    protected void fireEvent(BaseModelEvent event){
         if(this.equals(event.getTarget())){
             if(!event.isCaptured()){
-                event.capture();
                 executeEventHandlers(event);
-            }
-            if(event.bubbles() && bubbleCallback != null){
-                bubbleCallback.excecute();
             }
         }
     }

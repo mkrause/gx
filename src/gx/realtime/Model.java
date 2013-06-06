@@ -19,7 +19,7 @@ public class Model extends EventTarget {
 
     protected Model(Document document){
         this.document = document;
-        this.root = new CollaborativeMap<CollaborativeObject>(RandomUtils.getRandomAlphaNumeric(), this);
+        this.root = new CollaborativeMap<CollaborativeObject>("root", this);
         initialized = true;
         undoableMutations = new LinkedList<BaseModelEvent>();
         redoableMutations = new LinkedList<BaseModelEvent>();
@@ -35,11 +35,11 @@ public class Model extends EventTarget {
     }
     
     public void beginCompoundOperation(String opt_name){
-        //TODO
+        //TODO: make sure that changes that occur are sent in the same batch to the browser channel
     }
     
     public void beginCompoundOperation(){
-        //TODO
+        //TODO: make sure that changes that occur are sent in the same batch to the browser channel
     }
     
     public Object create(/*TODO*/){
@@ -99,15 +99,11 @@ public class Model extends EventTarget {
     }
 
     public void redo(){
-        if(this.canRedo()){
-            //TODO: redo last action of redoableMutation stack.
-        }
+        //TODO: redo last action of redoableMutation stack.
     }
     
     public void undo(){
-        if(this.canUndo()){
-            //TODO: undo last action of undoableMutation stack.
-        }
+        //TODO: undo last action of undoableMutation stack.
     }
     
     public boolean canRedo(){
@@ -123,15 +119,12 @@ public class Model extends EventTarget {
     }
 
     @Override
-    public void fireEvent(BaseModelEvent event, BubbleCallback callback) {
-
-        BubbleCallback topCallback = () ->{
-            super.fireEvent(event, null);
-            callback.excecute();
-        };
-        root.fireEvent(event, callback);
-
+    public void fireEvent(BaseModelEvent event) {
+        root.fireEvent(event);
+        
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
+        //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
+        // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
     }
 }

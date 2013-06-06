@@ -155,7 +155,7 @@ public class Document extends EventTarget {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
             //TODO: add some callback?
-            getModel().fireEvent((BaseModelEvent)event, null);
+            getModel().fireEvent((BaseModelEvent)event);
         } else {
             Set<EventHandler> handlers = eventHandlers.get(type);
             for (EventHandler handler : handlers){

@@ -10,9 +10,9 @@ public class ObjectChangedEvent extends BaseModelEvent {
     private BaseModelEvent[] events;
 
     public ObjectChangedEvent(EventTarget target, String sessionId, String userId, boolean local, BaseModelEvent[] events){
+        // bubbles = true
         super(EventType.OBJECT_CHANGED, target, sessionId, userId, local, true);
         this.events = events;
-        // bubbles = true
     }
 
     public BaseModelEvent[] getEvents() {
