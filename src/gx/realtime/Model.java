@@ -127,4 +127,8 @@ public class Model extends EventTarget {
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
         // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
     }
+    
+    protected Document getDocument() {
+        return document;
+    }
 }
