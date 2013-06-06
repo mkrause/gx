@@ -133,6 +133,14 @@ public class Document extends EventTarget {
     }
 
     /**
+     * Return the collaborator representing the current user.
+     * @return
+     */
+    protected Collaborator getMe() {
+        return me;
+    }
+    
+    /**
      * Set the model of this document. This method should not be used directly,
      * the model is set automatically during the document load process.
      * @param model
