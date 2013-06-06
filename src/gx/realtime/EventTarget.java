@@ -10,7 +10,7 @@ public abstract class EventTarget {
     /**
      * Map containing the event handlers of this EventTarget.
      */
-    protected Map<EventType, Set<EventHandler>> eventHandlers = new HashMap<EventType, Set<EventHandler>>();
+    protected Map<EventType, Set<EventHandler>> eventHandlers = new HashMap<>();
 
     /**
      * Adds an event listener to the event target. The same handler can only be added once per the type.
@@ -20,7 +20,7 @@ public abstract class EventTarget {
      */
     public <T extends Event> void addEventListener(EventType type, EventHandler<T> handler){
         if (!eventHandlers.containsKey(type)){
-            eventHandlers.put(type, new HashSet<EventHandler>());
+            eventHandlers.put(type, new HashSet<>());
         }
         
         eventHandlers.get(type).add(handler);
