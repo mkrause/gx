@@ -37,7 +37,6 @@ public class BrowserChannel
     private String baseUrl;
     private String path;
     private String clientVersion = "1";
-    private State state = State.INIT;
     private int nextRid;
     private boolean useChunked = true;
     private LinkedBlockingQueue<SaveMessage> outgoingMessages;
@@ -48,10 +47,19 @@ public class BrowserChannel
     private JsonFactory jfactory = new JsonFactory();
     private List<MessageHandler> handlers = new ArrayList<>();
     private Map<String, String> extraParams = new HashMap<>();
+    /**
+     * Thread to handle client-server communication
+     */
     private ForwardChannelThread forwardChannel;
+    /**
+     * Thread to handle server-client communication
+     */
     private Thread backwardChannel;
-    private HttpURLConnection backwardChannelConnection;
     private boolean pendingClosed = true;
+
+    /**
+     * Current revision number, used to properly send save messages.
+     */
     private int revision = -1;
 
     /**
@@ -189,23 +197,17 @@ public class BrowserChannel
         }
 
         try {
-            backwardChannelConnection = (HttpURLConnection) url.openConnection();
+            HttpURLConnection backwardChannelConnection = (HttpURLConnection) url.openConnection();
             NormalizedJsonReader in = new NormalizedJsonReader(backwardChannelConnection.getInputStream(), true);
 
             logger.debug(url);
             logger.debug("Getting NOOP every 30 seconds from Google, connection is reset after 1 minute");
             while (in.nextChunk()) {
-                JsonParser jParser = jfactory.createParser(in);
-                ObjectMapper mapper = new ObjectMapper();
-                jParser.setCodec(mapper);
-
-                Message[] messages = jParser.readValueAs(Message[].class);
+                Message[] messages = parseMessageChunk(in);
                 for (Message m : messages) {
                     lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
                     lastSequenceTimestamp = Math.max(lastSequenceTimestamp, m.getTimestamp());
-                    if (m instanceof NoopMessage) {
-                        logger.debug("NOOP");
-                    } else {
+                    if (!(m instanceof NoopMessage)) {
                         // Pass message to handlers
                         fireEvent(new MessageEvent(this, m));
                     }
@@ -216,6 +218,21 @@ public class BrowserChannel
             logger.error("IOException: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Parses a JSON chunk received by the backward channel into a list of Messages.
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    private Message[] parseMessageChunk(NormalizedJsonReader in) throws IOException
+    {
+        JsonParser jParser = jfactory.createParser(in);
+        ObjectMapper mapper = new ObjectMapper();
+        jParser.setCodec(mapper);
+
+        return jParser.readValueAs(Message[].class);
     }
 
     private void ensureBackwardChannel()
