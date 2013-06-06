@@ -32,7 +32,7 @@ public class EventWorkerThread extends Thread
                 consume(messageQueue.take());
             }
         } catch (InterruptedException e) {
-            logger.info("ForwardChannelThread interrupted");
+            logger.info("EventWorkerThread interrupted");
         }
     }
 

@@ -92,7 +92,7 @@ public class Document extends EventTarget {
 
         isClosed = true;
     	eventHandlers = new HashMap<>();
-        channel.prepareClose();
+        channel.disconnect();
 
         // Set up parameters
         Map<String, String> parameters = new HashMap<>();
@@ -107,12 +107,6 @@ public class Document extends EventTarget {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // This is already done by the request above
-        // channel.disconnect();
-
-        // This is already done by the request above
-        // channel.disconnect();
     }
 
     /**

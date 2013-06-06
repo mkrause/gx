@@ -134,11 +134,9 @@ public class BrowserChannelTest
             close();
 
             System.out.println("done");
-            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.exit(1);
     }
 
     private static String retrieveModelId(String driveFileId)
@@ -193,7 +191,8 @@ public class BrowserChannelTest
 
     private static void close()
     {
-        channel.prepareClose();
+        // Disconnect from the channel
+        channel.disconnect();
 
         // Set up parameters
         Map<String, String> parameters = new HashMap<String, String>();
@@ -209,9 +208,6 @@ public class BrowserChannelTest
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // This is already done by the request above
-        // channel.disconnect();
     }
 
     /**

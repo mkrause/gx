@@ -56,7 +56,8 @@ public class BrowserChannel
      * Thread to handle server-client communication
      */
     private Thread backwardChannel;
-    private boolean pendingClosed = true;
+    private boolean pendingClosed = false;
+    private boolean isClosed = true;
 
     /**
      * Thread to handle events
@@ -236,14 +237,17 @@ public class BrowserChannel
                 public void run()
                 {
                     while (!pendingClosed) openBackwardChannel();
+                    isClosed = true;
+                    eventWorker.interrupt();
+                    forwardChannel.interrupt();
+                    logger.debug("Backward channel closed");
                 }
             };
         }
 
-        if (!pendingClosed || backwardChannel.isAlive())
+        if (backwardChannel.isAlive())
             return;
 
-        pendingClosed = false;
         backwardChannel.start();
     }
 
@@ -274,6 +278,8 @@ public class BrowserChannel
         this.baseUrl = baseUrl;
         logger.info("connect()");
 
+        isClosed = false;
+        pendingClosed = false;
         this.path = "/bind";
 
         // Test the connection quality, does not actually seem to do anything else
@@ -321,15 +327,10 @@ public class BrowserChannel
         }
     }
 
-    public void prepareClose()
-    {
-        pendingClosed = true;
-    }
-
     public void disconnect()
     {
         logger.info("Disconnect");
-        prepareClose();
+        pendingClosed = true;
 
         // Send disconnect request to server
         try {
@@ -365,7 +366,7 @@ public class BrowserChannel
 
     public boolean isClosed()
     {
-        return !backwardChannel.isAlive();
+        return isClosed;
     }
 
     public void waitForClosed()
