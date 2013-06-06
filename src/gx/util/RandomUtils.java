@@ -20,7 +20,7 @@ public class RandomUtils
     public static String getRandomAlphaNumeric(){
         String result = "";
         for(int i = 0; i < 15; i++){
-            result += ID_CHARS.charAt((int) Math.round(Math.random() * ID_CHARS.length()));
+            result += ID_CHARS.charAt((int) Math.floor(Math.random() * ID_CHARS.length()));
         }
         return result;
     }
