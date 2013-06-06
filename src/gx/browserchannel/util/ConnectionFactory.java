@@ -1,8 +1,12 @@
 package gx.browserchannel.util;
 
+import gx.browserchannel.NormalizedJsonReader;
+
 import java.io.IOException;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
+import java.net.URL;
 
 /**
  *
@@ -31,5 +35,20 @@ public class ConnectionFactory
         }
 
         return connection;
+    }
+
+    public static NormalizedJsonReader createJsonReader(URLWithQuery url)
+    {
+        NormalizedJsonReader reader = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.getURL().openConnection();
+            reader = new NormalizedJsonReader(connection.getInputStream());
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return reader;
     }
 }

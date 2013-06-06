@@ -23,6 +23,7 @@ import com.google.api.services.drive.model.FileList;
 import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.NormalizedJsonReader;
 import gx.browserchannel.message.SaveMessage;
+import gx.browserchannel.util.ConnectionFactory;
 import gx.browserchannel.util.URLWithQuery;
 import gx.realtime.BaseModelEvent;
 import gx.realtime.RealtimeMessageHandler;
@@ -95,7 +96,7 @@ public class BrowserChannelTest
     public static void main(String[] args)
     {
         try {
-            // TODO: move functionality to separate Loader/Authorizer
+            // TODO: create integration test from this file
 
             credential = authorize();
 
@@ -105,14 +106,14 @@ public class BrowserChannelTest
             // Fetch information
             fileId = getFileId(service);
             modelId = retrieveModelId(fileId);
-            session = createSession();
+            session = createSession(modelId);
 
             // TODO: build document model according to session.snapshot
 
             // Create channel
             channel = new BrowserChannel(session.getRevision());
-            channel.addMessageHandler(new RealtimeMessageHandler());
-            channel.addExtraParameter("id", modelId);
+            channel.addMessageHandler(new RealtimeMessageHandler(null));
+            channel.addExtraParameter("id", session.getModelId());
             channel.addExtraParameter("access_token", credential.getAccessToken());
             channel.addExtraParameter("sid", session.getSessionId());
             logger.debug("Initialized BrowserChannel");
@@ -150,8 +151,7 @@ public class BrowserChannelTest
         try {
             // Create connection
             URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/modelid"), parameters);
-            HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
+            Reader in = ConnectionFactory.createJsonReader(urlq);
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -166,7 +166,7 @@ public class BrowserChannelTest
         }
     }
 
-    private static Session createSession()
+    private static Session createSession(String modelId)
     {
         // Set up parameters
         Map<String, String> parameters = new HashMap<String, String>();
@@ -175,9 +175,8 @@ public class BrowserChannelTest
 
         try {
             // Create connection
-            URL url = new URLWithQuery(new URL(channelUrl + "/gs"), parameters).getURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            Reader in = new NormalizedJsonReader(connection.getInputStream());
+            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/gs"), parameters);
+            Reader in = ConnectionFactory.createJsonReader(urlq);
 
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
@@ -204,9 +203,9 @@ public class BrowserChannelTest
 
         try {
             // Create connection
-            URL url = new URLWithQuery(new URL(channelUrl + "/leave"), parameters).getURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.getInputStream().close();
+            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/leave"), parameters);
+            Reader in = ConnectionFactory.createJsonReader(urlq);
+            in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

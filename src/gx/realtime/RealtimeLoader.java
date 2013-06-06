@@ -5,9 +5,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
-import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.NormalizedJsonReader;
-import gx.browserchannel.util.DriveWrapper;
 import gx.browserchannel.util.URLWithQuery;
 
 import java.io.IOException;
@@ -113,19 +111,10 @@ public class RealtimeLoader {
     }
 
     private Document getDocument(Credential cred, String docId){
-        //DriveWrapper service = new DriveWrapper(cred);
-        //service.connect();
-
         String modelId = retrieveModelId(cred, docId);
         Session session = createSession(cred, modelId);
-        
-        BrowserChannel channel = new BrowserChannel();
-        Document doc = new Document(channel);
-        
-        // Create a model and link it to the document
-        Model model = new Model(doc);
-        doc.setModel(model);
-        
+
+        Document doc = new Document(cred, session);
         return doc;
     }
     
@@ -160,5 +149,9 @@ public class RealtimeLoader {
                 options.getInitializeModel(),
                 options.getHandleErrors()
         );
+    }
+    public static String getChannelUrl()
+    {
+        return channelUrl;
     }
 }

@@ -62,7 +62,7 @@ public class RealtimeMessageHandlerTest
     @Before
     public void setUp() throws IOException
     {
-        handler = new RealtimeMessageHandler();
+        handler = new RealtimeMessageHandler(null);
         jsonFactory = new JsonFactory();
     }
 

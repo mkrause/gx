@@ -11,7 +11,13 @@ import org.apache.logging.log4j.Logger;
 
 public class RealtimeMessageHandler implements MessageHandler {
 
+    private Document document;
     private static Logger logger = LogManager.getLogger(MessageHandler.class);
+
+    public RealtimeMessageHandler(Document doc)
+    {
+        document = doc;
+    }
 
     @Override
     public void receive(MessageEvent e) {
