@@ -386,6 +386,7 @@ public class BrowserChannel
 
     public void processResponse(SaveRevisionResponse response)
     {
-        logger.error("Received new revision number: {}, unable to store it", response.getRevision());
+        logger.error("Received new revision number: {}", response.getRevision());
+        revision = response.getRevision();
     }
 }
