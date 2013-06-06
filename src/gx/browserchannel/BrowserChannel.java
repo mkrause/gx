@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A Java port of the JavaScript implementation of BrowserChannel.
@@ -39,8 +40,7 @@ public class BrowserChannel
     private State state = State.INIT;
     private int nextRid;
     private boolean useChunked = true;
-    private ArrayList<SaveMessage> outgoingMaps;
-
+    private LinkedBlockingQueue<SaveMessage> outgoingMessages;
     // Non-JS-BrowserChannel compliant parameters
     private long lastSequenceTimestamp = -1L;
     private long lastSequenceNumber = 0L;
@@ -48,22 +48,31 @@ public class BrowserChannel
     private JsonFactory jfactory = new JsonFactory();
     private List<MessageHandler> handlers = new ArrayList<>();
     private Map<String, String> extraParams = new HashMap<>();
+    private ForwardChannelThread forwardChannel;
     private Thread backwardChannel;
     private HttpURLConnection backwardChannelConnection;
     private boolean pendingClosed = true;
+    private int revision = -1;
 
-
-    public BrowserChannel()
+    /**
+     * Constructor of the BrowserChannel object
+     *
+     * @param currentRevision current revision
+     */
+    public BrowserChannel(int currentRevision)
     {
-        outgoingMaps = new ArrayList<>();
+        outgoingMessages = new LinkedBlockingQueue<>();
         nextRid = (int) Math.floor(Math.random() * 100000);
+        revision = currentRevision;
         logger.info("Initialized");
     }
 
-    public SaveRevisionResponse sendMessage(SaveMessage message)
+    protected SaveRevisionResponse send(SaveMessage message)
     {
         HttpURLConnection connection;
         URLWithQuery url;
+
+        message.setRequestNumber(revision);
 
         ObjectMapper mapper = new ObjectMapper();
         String msg;
@@ -228,6 +237,18 @@ public class BrowserChannel
         backwardChannel.start();
     }
 
+    private void ensureForwardChannel()
+    {
+        if (forwardChannel == null) {
+            forwardChannel = new ForwardChannelThread(this, outgoingMessages);
+        }
+
+        if (forwardChannel.isAlive())
+            return;
+
+        forwardChannel.start();
+    }
+
     public void connect(String baseUrl)
     {
         this.baseUrl = baseUrl;
@@ -239,6 +260,7 @@ public class BrowserChannel
         connectTest("/test");
         openForwardChannel();
         ensureBackwardChannel();
+        ensureForwardChannel();
     }
 
     public void connectTest(String testPath)
@@ -278,12 +300,6 @@ public class BrowserChannel
         }
     }
 
-    private String dequeueOutgoingMaps()
-    {
-        // TODO: implement dequeueing
-        return "";
-    }
-
     public void prepareClose()
     {
         pendingClosed = true;
@@ -309,11 +325,6 @@ public class BrowserChannel
         }
 
         waitForClosed();
-    }
-
-    public void send(Message message)
-    {
-        // TODO Auto-generated method stub
     }
 
     public void addMessageHandler(MessageHandler handler)
@@ -366,5 +377,15 @@ public class BrowserChannel
                 .put("lsq", Long.toString(lastSequenceTimestamp))
                 .put("RID", Integer.toString(nextRid++))
                 .put("t", "" + retries);
+    }
+
+    public void queue(SaveMessage message)
+    {
+        outgoingMessages.add(message);
+    }
+
+    public void processResponse(SaveRevisionResponse response)
+    {
+        logger.error("Received new revision number: {}, unable to store it", response.getRevision());
     }
 }

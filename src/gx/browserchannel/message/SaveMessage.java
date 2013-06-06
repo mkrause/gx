@@ -11,13 +11,11 @@ import gx.realtime.BaseModelEvent;
 public class SaveMessage
 {
     private int revision;
-    private int requestNumber;
+    private int requestNumber = 0;
     private BaseModelEvent event;
 
-    public SaveMessage(int revision, int requestNumber, BaseModelEvent event)
+    public SaveMessage(BaseModelEvent event)
     {
-        this.revision = revision;
-        this.requestNumber = requestNumber;
         this.event = event;
     }
 

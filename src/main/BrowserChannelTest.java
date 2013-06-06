@@ -27,9 +27,8 @@ import gx.browserchannel.util.URLWithQuery;
 import gx.realtime.BaseModelEvent;
 import gx.realtime.RealtimeMessageHandler;
 import gx.realtime.Session;
-
 import gx.realtime.ValueChangedEvent;
-import gx.realtime.custom.SaveRevisionResponse;
+import gx.util.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +38,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class BrowserChannelTest
 {
@@ -83,11 +81,8 @@ public class BrowserChannelTest
      * Location of the credential file of the user.
      */
     private static String CREDENTIAL_FILE;
-
     private static Logger logger = LogManager.getLogger(BrowserChannelTest.class);
-
     private static long appId;
-    
     // Properties for realtime loader
     private static String channelUrl = "https://drive.google.com/otservice";
     private static String fileId;
@@ -101,7 +96,7 @@ public class BrowserChannelTest
     {
         try {
             // TODO: move functionality to separate Loader/Authorizer
-            
+
             credential = authorize();
 
             Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
@@ -111,25 +106,24 @@ public class BrowserChannelTest
             fileId = getFileId(service);
             modelId = retrieveModelId(fileId);
             session = createSession();
-            
+
             // TODO: build document model according to session.snapshot
 
             // Create channel
-            channel = new BrowserChannel();
+            channel = new BrowserChannel(session.getRevision());
             channel.addMessageHandler(new RealtimeMessageHandler());
             channel.addExtraParameter("id", modelId);
             channel.addExtraParameter("access_token", credential.getAccessToken());
             channel.addExtraParameter("sid", session.getSessionId());
             logger.debug("Initialized BrowserChannel");
-            
+
             // Open channel
             channel.connect(channelUrl);
 
-            // TODO: keep track of the request number this session
-//            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new", "old");
-//            SaveMessage message = new SaveMessage(session.getRevision(), 0, event);
-//            SaveRevisionResponse response = channel.sendMessage(message);
-//            if(response != null) session.setRevision(response.getRevision());
+            // Sample event submission, note that the target ID is document-specific
+            BaseModelEvent event = new ValueChangedEvent("gdegz4x7zhgc9qqir", session.getSessionId(), null, false, "ab_de", "new" + RandomUtils.getRandomAlphaNumeric(), "old");
+            SaveMessage message = new SaveMessage(event);
+            channel.queue(message);
 
             logger.debug("Press ENTER to disconnect");
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -334,7 +328,7 @@ public class BrowserChannelTest
         service.files().insert(body).execute();
         return body.getId();
     }
-    
+
     private static class ModelResponse
     {
         @JsonProperty("modelId")
