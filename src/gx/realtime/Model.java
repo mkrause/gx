@@ -47,21 +47,21 @@ public class Model extends EventTarget {
         return null;
     }
     
-    public <E extends CollaborativeObject> CollaborativeList<E> createList(){
+    public <E> CollaborativeList<E> createList(){
         return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
-    public <E extends CollaborativeObject> CollaborativeList<E> createList(E[] opt_initialValue){
+    public <E> CollaborativeList<E> createList(E[] opt_initialValue){
         CollaborativeList<E> result = createList();
         result.pushAll(opt_initialValue);
         return result;
     }
     
-    public <E extends CollaborativeObject> CollaborativeMap<E> createMap(){
+    public <E> CollaborativeMap<E> createMap(){
         return new CollaborativeMap<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
     
-    public <E extends CollaborativeObject> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
+    public <E> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
         CollaborativeMap<E> result = createMap();
         Set<Entry<String, E>> entries = opt_initialValue.entrySet();
         for(Entry<String, E> entry : entries){

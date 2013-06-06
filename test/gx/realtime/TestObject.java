@@ -4,7 +4,7 @@ public class TestObject extends EventTarget implements Cloneable {
 
 	private int id;
 	private TestObject child;
-    
+
 	public TestObject(int id){
         this.id = id;
 	}
@@ -13,7 +13,7 @@ public class TestObject extends EventTarget implements Cloneable {
 		this(id);
 		this.child = child;
 	}
-	
+
 	public int getId(){
 		return id;
 	}
