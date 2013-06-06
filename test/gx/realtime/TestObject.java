@@ -44,7 +44,13 @@ public class TestObject extends EventTarget implements Cloneable {
 	
 	@Override
 	public TestObject clone(){
-		return new TestObject(this.getId(), this.getChild().clone());
+        TestObject result = null;
+        if(this.getChild() != null){
+            result = new TestObject(this.getId(), this.getChild().clone());
+        } else {
+            result = new TestObject(this.getId());
+        }
+        return result;
 	}
 
     public void setId(int id) {

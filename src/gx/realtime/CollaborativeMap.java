@@ -1,5 +1,7 @@
 package gx.realtime;
 
+import gx.realtime.serialize.Cloner;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -79,7 +81,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 		Set<Entry<String, V>> entrySet = map.entrySet();
 		
 		for(Entry<String, V> entry : entrySet){
-			result.add(new AbstractMap.SimpleEntry<String, V>(entry.getKey(), clone(entry.getValue())));
+			result.add(new AbstractMap.SimpleEntry<String, V>(entry.getKey(), Cloner.clone(entry.getValue())));
 		}
 		return result;
 	}
@@ -114,7 +116,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 
         Collection<V> values = map.values();
         for(V value : values){
-            result.add(clone(value));
+            result.add(Cloner.clone(value));
         }
         return result;
 	}

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import gx.realtime.CollaborativeString;
 import gx.realtime.EventType;
+import gx.realtime.serialize.Cloner;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Assert.*;
@@ -16,7 +17,7 @@ public class CollaborativeObjectTest {
     public void testClone(){
         TestObject simpleObject = new TestObject(123);
         TestObject testObject = new TestObject(456, simpleObject);
-        TestObject clone = CollaborativeObject.clone(simpleObject);
+        TestObject clone = Cloner.clone(simpleObject);
         assertEquals(simpleObject, clone);
         assertFalse(simpleObject == clone);
     }
