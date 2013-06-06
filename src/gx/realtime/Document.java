@@ -44,6 +44,7 @@ public class Document extends EventTarget {
         this.collaborators = new ArrayList<Collaborator>();
         this.eventHandlers = new HashMap<EventType, Set<EventHandler>>();
         this.model = new Model(this);
+        processSnapshot();
 
         // Set up browser channel
 		this.channel = new BrowserChannel(session.getRevision());
@@ -55,7 +56,15 @@ public class Document extends EventTarget {
         addPrivateEventHandlers();
         this.channel.connect(RealtimeLoader.getChannelUrl());
     }
-    
+
+    private void processSnapshot() {
+        List<BaseModelEvent> events = this.session.getSnapshot();
+        for(BaseModelEvent event : events)
+        {
+            fireEvent(event);
+        }
+    }
+
     private void addPrivateEventHandlers() {
         addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent e) -> {
             Collaborator collaborator = e.getCollaborator();
