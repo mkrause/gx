@@ -19,7 +19,7 @@ public class SaveMessageSerializerTest
         String expected = "{\"revision\":1,\"requestNumber\":2,\"changes\":[[4,[0,[8,\"id\",\"property\",[21,\"new\"]]]]]}";
         ValueChangedEvent event = new ValueChangedEvent("id", "sessid", "userid", false, "property", "new", "old");
 
-        SaveMessage m = new SaveMessage(1, 2, event);
+        SaveMessage m = new SaveMessage(event);
 
         ObjectMapper mapper = new ObjectMapper();
         String output = mapper.writeValueAsString(m);
