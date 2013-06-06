@@ -15,7 +15,7 @@ import static junit.framework.TestCase.fail;
 /**
  *
  */
-public class ValueChangedEventDeserializerTest
+public class ValueChangedEventDeserializerTest extends DeserializerTestHelper
 {
     final String singleJson = "[5,\"gde99vx3khg7uko2g\",3,[0,[21,\"fooz\"]]]";
     private JsonFactory jsonFactory = new JsonFactory();
@@ -29,18 +29,5 @@ public class ValueChangedEventDeserializerTest
         assertNotNull(event);
         assertEquals("fooz", event.getNewValue());
         assertEquals(21, event.getProperty());
-    }
-
-    private JsonParser getParser(String json)
-    {
-        JsonParser parser = null;
-        try {
-            parser = jsonFactory.createParser(json);
-            parser.setCodec(new ObjectMapper());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Invalid JSON: ||START||" + json + "||END||");
-        }
-        return parser;
     }
 }

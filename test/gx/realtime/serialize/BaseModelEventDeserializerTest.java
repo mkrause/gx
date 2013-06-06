@@ -14,11 +14,9 @@ import static junit.framework.TestCase.fail;
 /**
  *
  */
-public class BaseModelEventDeserializerTest
+public class BaseModelEventDeserializerTest extends DeserializerTestHelper
 {
     final String singleJson = "[0,[5,\"gde99vx3khg7uko2g\",0,[0,[21,\"bar\"]]]]";
-
-    private JsonFactory jsonFactory = new JsonFactory();
 
     @Test
     public void testDeserialize_single() throws Exception
@@ -29,15 +27,5 @@ public class BaseModelEventDeserializerTest
         assertNotNull(event);
     }
 
-    private JsonParser getParser(String json) {
-        JsonParser parser = null;
-        try {
-            parser = jsonFactory.createParser(json);
-            parser.setCodec(new ObjectMapper());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Invalid JSON: ||START||" + json + "||END||");
-        }
-        return parser;
-    }
+
 }

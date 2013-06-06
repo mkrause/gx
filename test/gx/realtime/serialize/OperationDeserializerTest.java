@@ -14,7 +14,7 @@ import static junit.framework.TestCase.fail;
 /**
  *
  */
-public class OperationDeserializerTest
+public class OperationDeserializerTest extends DeserializerTestHelper
 {
     final String emptyType9Operation = "[9]";
     private JsonFactory jsonFactory = new JsonFactory();
@@ -26,18 +26,5 @@ public class OperationDeserializerTest
 
         Operation event = parser.readValueAs(Operation.class);
         assertNotNull("Empty operation of type 9 should be parsed correctly", event);
-    }
-
-    private JsonParser getParser(String json)
-    {
-        JsonParser parser = null;
-        try {
-            parser = jsonFactory.createParser(json);
-            parser.setCodec(new ObjectMapper());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Invalid JSON: ||START||" + json + "||END||");
-        }
-        return parser;
     }
 }

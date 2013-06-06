@@ -13,7 +13,7 @@ import static junit.framework.TestCase.*;
 /**
  *
  */
-public class ObjectChangedEventDeserializerTest
+public class ObjectChangedEventDeserializerTest extends DeserializerTestHelper
 {
     final String singleJson = "[17,\"13ed12879c5\",\"111138071136429601111\",\"7e1c20fc1848fe70\",[4,[0,[8,\"gdegz4x7zhgc9qqir\",\"foo\"]]]]";
     private JsonFactory jsonFactory = new JsonFactory();
@@ -26,18 +26,5 @@ public class ObjectChangedEventDeserializerTest
         ObjectChangedEvent event = parser.readValueAs(ObjectChangedEvent.class);
         assertNotNull(event);
         assertTrue(event.getEvents().length > 0);
-    }
-
-    private JsonParser getParser(String json)
-    {
-        JsonParser parser = null;
-        try {
-            parser = jsonFactory.createParser(json);
-            parser.setCodec(new ObjectMapper());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Invalid JSON: ||START||" + json + "||END||");
-        }
-        return parser;
     }
 }
