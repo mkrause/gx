@@ -111,7 +111,48 @@ public class Model extends EventTarget {
     public void undo(){
         //TODO: undo last action of undoableMutation stack.
     }
-    
+
+    private BaseModelEvent constructRevertEvent(BaseModelEvent event){
+        switch (event.getType()) {
+            case TEXT_INSERTED:
+                //TEXT_DELETED
+                break;
+            case TEXT_DELETED:
+                //TEXT_INSERTED
+                break;
+            case COLLABORATOR_JOINED:
+                //COLLABORATOR_LEFT
+                break;
+            case COLLABORATOR_LEFT:
+                //COLLABORATOR_JOINED
+                break;
+            case DOCUMENT_SAVE_STATE_CHANGED:
+                //DOCUMENT_SAVE_STATE_CHANGED?
+                break;
+            case OBJECT_ADDED:
+                //OBJECT_CHANGED?
+                break;
+            case OBJECT_CHANGED:
+                //OBJECT_CHANGED
+                break;
+            case REFERENCE_SHIFTED:
+                //REFERENCE_SHIFTED?
+                break;
+            case VALUES_ADDED:
+                //VALUES_REMOVED
+                break;
+            case VALUES_REMOVED:
+                //VALUES_ADDED
+                break;
+            case VALUES_SET:
+                //VALUE_SET?
+                break;
+            case VALUE_CHANGED:
+                //VALUE_CHANGED?
+                break;
+        }
+    }
+
     public boolean canRedo(){
         return redoableMutations.size() > 0;
     }

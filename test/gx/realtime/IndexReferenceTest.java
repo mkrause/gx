@@ -11,14 +11,4 @@ public class IndexReferenceTest {
 		fail("Not yet implemented");
 	}
 
-	@Test
-	public void testCanBeDeleted() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCollaborativeObject() {
-		fail("Not yet implemented");
-	}
-
 }
