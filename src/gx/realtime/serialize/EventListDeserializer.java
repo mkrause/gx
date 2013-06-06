@@ -39,7 +39,7 @@ public class EventListDeserializer extends JsonDeserializer<EventList>
 
         // Read type
         eventType = jp.nextIntValue(-1);
-        
+
         // Read timestamp
         timestamp = jp.nextLongValue(-1);
         jp.nextToken();
@@ -65,6 +65,17 @@ public class EventListDeserializer extends JsonDeserializer<EventList>
             case 0:
                 Event[] events = jp.readValueAs(ObjectChangedEvent[].class);
                 return new EventList(events);
+            case 1:
+                // Skip the weird object we receive every now and then by just stepping over the input
+                // {
+                jp.nextToken();
+                // "CONTENT_MODIFICATION_DATE":
+                jp.getText();
+                // true
+                jp.nextBooleanValue();
+                // }
+                jp.nextTextValue();
+                return new EventList();
             case 5:
                 return new EventList(jp.readValueAs(CollaboratorJoinedEvent.class));
             case 6:
