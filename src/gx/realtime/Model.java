@@ -113,12 +113,16 @@ public class Model extends EventTarget {
     }
 
     private BaseModelEvent constructRevertEvent(BaseModelEvent event){
+        BaseModelEvent result = null;
         switch (event.getType()) {
             case TEXT_INSERTED:
-                //TEXT_DELETED
+                TextInsertedEvent tiEvent = (TextInsertedEvent) event;
+                result = new TextDeletedEvent((CollaborativeString) tiEvent.getTarget(), tiEvent.getSessionId(), tiEvent.getUserId(), tiEvent.isLocal(), tiEvent.getIndex(), tiEvent.getText());
                 break;
             case TEXT_DELETED:
                 //TEXT_INSERTED
+                TextDeletedEvent tdEvent = (TextDeletedEvent) event;
+                result = new TextInsertedEvent((CollaborativeString) tdEvent.getTarget(), tdEvent.getSessionId(), tdEvent.getUserId(), tdEvent.isLocal(), tdEvent.getIndex(), tdEvent.getText());
                 break;
             case COLLABORATOR_JOINED:
                 //COLLABORATOR_LEFT
@@ -151,6 +155,7 @@ public class Model extends EventTarget {
                 //VALUE_CHANGED?
                 break;
         }
+        return result;
     }
 
     public boolean canRedo(){

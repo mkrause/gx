@@ -7,6 +7,7 @@ public abstract class BaseModelEvent extends Event
     protected boolean isLocal;
     protected boolean bubbles;
     protected String targetId;
+    protected String userId;
 
     public BaseModelEvent(EventType type, String targetId, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
@@ -15,6 +16,7 @@ public abstract class BaseModelEvent extends Event
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;
+        this.userId = userId;
     }
 
     /**
@@ -33,6 +35,7 @@ public abstract class BaseModelEvent extends Event
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;
+        this.userId = userId;
     }
 
     public EventTarget getTarget()
@@ -83,5 +86,9 @@ public abstract class BaseModelEvent extends Event
     public void setTargetId(String targetId)
     {
         this.targetId = targetId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }
