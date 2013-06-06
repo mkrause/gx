@@ -91,13 +91,8 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * Modifications to the returned array do not modify this collaborative map.
 	 * @return The keys in this map.
 	 */
-	public String[] keys(){
-        Set<String> keys =  map.keySet();
-        String[] result = null;
-        if(keys != null){
-            result = (String[]) keys.toArray();
-        }
-        return result;
+	public Collection<String> keys(){
+        return map.keySet();
 	}
 	
 	/**
