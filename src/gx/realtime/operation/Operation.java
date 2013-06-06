@@ -13,6 +13,7 @@ public abstract class Operation
     {
         OBJECT_ADDED,
         VALUE_CHANGED,
-        COMPOUND
+        COMPOUND,
+        ACK
     }
 }

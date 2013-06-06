@@ -58,6 +58,8 @@ public class OperationDeserializer extends JsonDeserializer<Operation>
             return jp.readValueAs(ObjectAddedOperation.class);
         case 8:
             return jp.readValueAs(ValueChangedOperation.class);
+        case 9:
+            return new AcknowledgementOperation();
         }
         return null;
     }
