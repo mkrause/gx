@@ -1,6 +1,5 @@
 package gx.realtime;
 
-import com.sun.jdi.InvocationException;
 import gx.util.RandomUtils;
 
 import java.lang.reflect.InvocationTargetException;
