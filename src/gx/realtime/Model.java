@@ -196,6 +196,7 @@ public class Model extends EventTarget {
 
     private EventHandler<ObjectAddedEvent> getObjectAddedBuilder() {
         return (event) -> {
+            //TODO: need to retrieve the class of the object to create somehow (currently limit to CollaborativeMap)
             CollaborativeObject collabObject = create(event.getTargetId(), CollaborativeMap.class);
             nodes.put(event.getTargetId(), collabObject);
             System.out.println("OBJECT_ADDED: " + event.getTargetId());
