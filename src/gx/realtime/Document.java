@@ -59,9 +59,8 @@ public class Document extends EventTarget {
 
     private void processSnapshot() {
         List<BaseModelEvent> events = this.session.getSnapshot();
-        for(BaseModelEvent event : events)
-        {
-            fireEvent(event);
+        for (BaseModelEvent event : events) {
+            handleRemoteEvent(event);
         }
     }
 
@@ -167,13 +166,11 @@ public class Document extends EventTarget {
     	}
     }
 
-    protected void fireEvent(Event event) {
+    protected void handleRemoteEvent(Event event) {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
             BaseModelEvent modelEvent = (BaseModelEvent)event;
-            if (!modelEvent.isLocal()) {
-                getModel().handleRemoteEvent(modelEvent);
-            }
+            getModel().handleRemoteEvent(modelEvent);
         } else {
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null) {
@@ -183,7 +180,7 @@ public class Document extends EventTarget {
             }
         }
     }
-
+    
     public Session getSession() {
         return session;
     }

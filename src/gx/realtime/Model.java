@@ -1,7 +1,9 @@
 package gx.realtime;
 
+import com.sun.jdi.InvocationException;
 import gx.util.RandomUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,10 +52,29 @@ public class Model extends EventTarget {
     public void beginCompoundOperation(){
         //TODO: make sure that changes that occur are sent in the same batch to the browser channel
     }
+
+    public <T extends CollaborativeObject> T create(Class<T> collabType) {
+        return create(RandomUtils.getRandomAlphaNumeric(), collabType);
+    }
     
-    public Object create(/*TODO*/){
-        //TODO
-        return null;
+    private <T extends CollaborativeObject> T create(String id, Class<T> collabType) {
+        T collabObj;
+        try {
+            collabObj = collabType.getConstructor(String.class, Model.class).newInstance(id, this);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return collabObj;
     }
     
     public <E> CollaborativeList<E> createList(){
@@ -175,7 +196,9 @@ public class Model extends EventTarget {
 
     private EventHandler<ObjectAddedEvent> getObjectAddedBuilder() {
         return (event) -> {
-            System.out.println("OBJECT_ADDED");
+            CollaborativeObject collabObject = create(event.getTargetId(), CollaborativeMap.class);
+            nodes.put(event.getTargetId(), collabObject);
+            System.out.println("OBJECT_ADDED: " + event.getTargetId());
         };
     }
     

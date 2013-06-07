@@ -36,7 +36,7 @@ public class RealtimeMessageHandler implements MessageHandler {
         for(Event event : events)
         {
             if(document != null)
-                document.fireEvent(event);
+                document.handleRemoteEvent(event);
 
             if(event instanceof CollaboratorJoinedEvent) {
                 Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();

@@ -41,7 +41,7 @@ public class Session
     
     public List<BaseModelEvent> getSnapshot()
     {
-        boolean isLocal = true;
+        boolean isLocal = false;
         List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
         for(Operation operation : snapshot)
         {
