@@ -172,6 +172,12 @@ public class Model extends EventTarget {
     public boolean isReadOnly(){
         return readOnly;
     }
+
+    private EventHandler<ObjectAddedEvent> getObjectAddedBuilder() {
+        return (event) -> {
+            System.out.println("OBJECT_ADDED");
+        };
+    }
     
     private EventHandler<ValuesAddedEvent> getValuesAddedBuilder() {
         return (event) -> {
@@ -203,6 +209,9 @@ public class Model extends EventTarget {
      */
     private void buildLocalModel(BaseModelEvent event) {
         switch (event.getType()) {
+        case OBJECT_ADDED:
+            getObjectAddedBuilder().handleEvent((ObjectAddedEvent)event);
+            break;
         case VALUES_ADDED:
             getValuesAddedBuilder().handleEvent((ValuesAddedEvent)event);
             break;
