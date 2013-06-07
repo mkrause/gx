@@ -3,7 +3,6 @@ package main;
 import gx.realtime.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -17,7 +16,7 @@ import static org.junit.Assert.fail;
 /**
  * Demo application using the framework
  */
-public class Demo
+public class DemoCliApp
 {
     private Document document;
 
@@ -30,7 +29,7 @@ public class Demo
         loggerConfig.setLevel(Level.ERROR);
         ctx.updateLoggers();
 
-        Demo demo = new Demo();
+        DemoCliApp demo = new DemoCliApp();
         demo.run();
     }
 
@@ -47,6 +46,7 @@ public class Demo
             };
             doc.addEventListener(EventType.COLLABORATOR_JOINED, handler);
             doc.addEventListener(EventType.COLLABORATOR_LEFT, handler);
+            doc.addEventListener(EventType.OBJECT_ADDED, handler);
             doc.addEventListener(EventType.VALUE_CHANGED, handler);
 
             Model model = doc.getModel();
