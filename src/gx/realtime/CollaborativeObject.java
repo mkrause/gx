@@ -33,10 +33,18 @@ public abstract class CollaborativeObject extends EventTarget {
 	}
 
     /**
+     * Update our local data model based on the given remote event.
+     * @param event
+     */
+    protected void updateModel(BaseModelEvent event) {
+        // By default, do nothing
+    }
+    
+    /**
      * Returns the object id.
      * @return The id.
      */
-	public String getId(){
+	public String getId() {
 		return id;
 	}
 

@@ -51,7 +51,8 @@ public class LoaderTest
         
         verify(onDocLoaded).onFileLoaded(isA(Document.class));
         
-        // close document properly
-        // doc.close();
+        // Close the document properly
+        Document doc = loader.getDocument();
+        doc.close();
     }
 }

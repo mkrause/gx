@@ -30,11 +30,11 @@ public class RealtimeLoader {
     public interface HandleErrorsCallback {
         void handleErrors(Exception e);
     }
-
-    // Properties for realtime loader
+    
     private static String channelUrl = "https://drive.google.com/otservice";
     private static JsonFactory jfactory = new JsonFactory();
-
+    private Document doc;
+    
     private static class ModelResponse {
         @JsonProperty("modelId")
         private String modelId;
@@ -48,6 +48,14 @@ public class RealtimeLoader {
     
     public RealtimeLoader(RealtimeOptions options) {
         this.options = options;
+    }
+
+    /**
+     * Return the document after it has been loaded.
+     * @return
+     */
+    public Document getDocument() {
+        return doc;
     }
 
     /**
@@ -110,14 +118,14 @@ public class RealtimeLoader {
         }
     }
 
-    private Document getDocument(Credential cred, String docId){
+    private Document buildDocument(Credential cred, String docId){
         String modelId = retrieveModelId(cred, docId);
         Session session = createSession(cred, modelId);
 
         Document doc = new Document(cred, session);
         return doc;
     }
-
+    
     /**
      *
      * @param cred
@@ -133,7 +141,7 @@ public class RealtimeLoader {
         InitializeModelCallback initializeFn,
         HandleErrorsCallback errorFn
     ) {
-        Document doc = getDocument(cred, docId);
+        doc = buildDocument(cred, docId);
 
         if(options.getInitializeModel() != null)
             options.getInitializeModel().initializeModel(doc.getModel());
@@ -163,6 +171,7 @@ public class RealtimeLoader {
                 options.getHandleErrors()
         );
     }
+    
     public static String getChannelUrl()
     {
         return channelUrl;

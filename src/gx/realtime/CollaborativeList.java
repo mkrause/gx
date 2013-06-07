@@ -237,4 +237,24 @@ public class CollaborativeList<E> extends CollaborativeObject {
     public void setLength(int length){
         values = values.subList(0, length);
     }
+
+    @Override
+    protected void updateModel(BaseModelEvent event) {
+        switch (event.getType()) {
+            case VALUES_ADDED:
+                ValuesAddedEvent valuesAddedEvent = (ValuesAddedEvent)event;
+                //TODO: fix cast to generic E
+                insertAll(valuesAddedEvent.getIndex(), (E[])valuesAddedEvent.getValues());
+                break;
+            case VALUES_SET:
+                ValuesSetEvent valuesSetEvent = (ValuesSetEvent)event;
+                //TODO: fix cast to generic E
+                replaceRange(valuesSetEvent.getIndex(), (E[])valuesSetEvent.getNewValues());
+                break;
+            case VALUES_REMOVED:
+                ValuesRemovedEvent valuesRemovedEvent = (ValuesRemovedEvent)event;
+                removeRange(valuesRemovedEvent.getIndex(), valuesRemovedEvent.getValues().length);
+                break;
+        }
+    }
 }

@@ -192,61 +192,72 @@ public class Model extends EventTarget {
     public boolean isReadOnly(){
         return readOnly;
     }
-
+    
     private EventHandler<ObjectAddedEvent> getObjectAddedBuilder() {
         return (event) -> {
-            //TODO: need to retrieve the class of the object to create somehow (currently limit to CollaborativeMap)
-            CollaborativeObject collabObject = create(event.getTargetId(), CollaborativeMap.class);
-            nodes.put(event.getTargetId(), collabObject);
-            System.out.println("OBJECT_ADDED: " + event.getTargetId());
+            String id = event.getTargetId();
+            System.out.println("OBJECT_ADDED: " + id);
+            CollaborativeObject collabObject = create(id, event.getObjectType());
+            nodes.put(id, collabObject);
+            
+            // Update the root node if we're adding an object with the
+            // special "root" ID
+            if (id.equals("root")) {
+                root = (CollaborativeMap)collabObject;
+            }
         };
     }
     
     private EventHandler<ValuesAddedEvent> getValuesAddedBuilder() {
         return (event) -> {
-            System.out.println("VALUES_ADDED");
+            String id = event.getTargetId();
+            System.out.println("VALUES_ADDED: " + id);
+            
+            
         };
     }
     
     private EventHandler<ValueChangedEvent> getValueChangedBuilder() {
         return (event) -> {
-            System.out.println("VALUE_CHANGED");
+            String id = event.getTargetId();
+            System.out.println("VALUE_CHANGED: " + id);
         };
     }
     
     private EventHandler<ValuesSetEvent> getValuesSetBuilder() {
         return (event) -> {
-            System.out.println("VALUES_SET");
+            String id = event.getTargetId();
+            System.out.println("VALUES_SET: " + id);
         };
     }
     
     private EventHandler<ValuesRemovedEvent> getValuesRemovedBuilder() {
         return (event) -> {
-            System.out.println("VALUES_REMOVED");
+            String id = event.getTargetId();
+            System.out.println("VALUES_REMOVED: " + id);
         };
     }
 
     /**
-     * Build our local data model based on the given remote event.
+     * Update our local data model based on the given remote event.
      * @param event
      */
-    private void buildLocalModel(BaseModelEvent event) {
-        switch (event.getType()) {
-        case OBJECT_ADDED:
-            getObjectAddedBuilder().handleEvent((ObjectAddedEvent)event);
-            break;
-        case VALUES_ADDED:
-            getValuesAddedBuilder().handleEvent((ValuesAddedEvent)event);
-            break;
-        case VALUE_CHANGED:
-            getValueChangedBuilder().handleEvent((ValueChangedEvent)event);
-            break;
-        case VALUES_SET:
-            getValuesSetBuilder().handleEvent((ValuesSetEvent)event);
-            break;
-        case VALUES_REMOVED:
-            getValuesRemovedBuilder().handleEvent((ValuesRemovedEvent)event);
-            break;
+    private void updateModel(BaseModelEvent event) {
+        String id = event.getTargetId();
+        if (event.getType().equals(EventType.OBJECT_ADDED)) {
+            System.out.println("OBJECT_ADDED: " + id);
+            ObjectAddedEvent objectAddedEvent = (ObjectAddedEvent)event;
+            CollaborativeObject collabObject = create(id, objectAddedEvent.getObjectType());
+            nodes.put(id, collabObject);
+
+            // Update the root node if we're adding an object with the
+            // special "root" ID
+            if (id.equals("root")) {
+                root = (CollaborativeMap)collabObject;
+            }
+        } else {
+            CollaborativeObject collabObject = (CollaborativeObject)nodes.get(id);
+            collabObject.updateModel(event);
         }
     }
     
@@ -256,7 +267,7 @@ public class Model extends EventTarget {
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
         // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
 
-        buildLocalModel(event);
+        updateModel(event);
         
         String targetId = event.getTargetId();
         Object node = getNode(targetId);
@@ -287,5 +298,9 @@ public class Model extends EventTarget {
     
     private Object getNode(String id) {
         return nodes.get(id);
+    }
+    
+    public String toString() {
+        return "Model(nodes=" + nodes + ")";
     }
 }

@@ -128,6 +128,17 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 		return map.size();
 	}
 
+    @Override
+    protected void updateModel(BaseModelEvent event) {
+        switch (event.getType()) {
+            case VALUE_CHANGED:
+                ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
+                //TODO: getNewValue() returns a String, but we want an instance of V
+                set(valuesChangedEvent.getProperty(), (V)valuesChangedEvent.getNewValue());
+                break;
+        }
+    }
+    
     /**
      * Method dispatching the given event of the given EventType. If this CollaborativeMap is not the target of the given event, the
      * event is passed down to its children.
