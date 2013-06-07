@@ -201,7 +201,11 @@ public class BrowserChannel
                 for (AbstractMessage m : messages) {
                     lastSequenceNumber = Math.max(lastSequenceNumber, m.getLastArrayId());
                     lastSequenceTimestamp = Math.max(lastSequenceTimestamp, m.getTimestamp());
-                    if (!(m instanceof NoopMessage)) {
+                    if (m instanceof StopMessage) {
+                        // Add support for legacy stop message
+                        pendingClosed = true;
+                    }
+                    else if (!(m instanceof NoopMessage)) {
                         // Pass message to handlers
                         incomingMessages.add(m);
                     }
