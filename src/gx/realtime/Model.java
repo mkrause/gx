@@ -239,7 +239,7 @@ public class Model extends EventTarget {
     }
 
     /**
-     * Update our local data model based on the given remote event.
+     * Update our local data model based on the given (remote) event.
      * @param event
      */
     private void updateModel(BaseModelEvent event) {
@@ -260,8 +260,13 @@ public class Model extends EventTarget {
             collabObject.updateModel(event);
         }
     }
-    
-    public void handleRemoteEvent(BaseModelEvent event) {
+
+    /**
+     * Take an incoming remot event, and use it to update our local
+     * model and fire it to the target object if possible.
+     * @param event
+     */
+    protected void handleRemoteEvent(BaseModelEvent event) {
         //TODO: registerMutation. Only if event has actually changed an object?
         //TODO: clear redoable stack?
         //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.

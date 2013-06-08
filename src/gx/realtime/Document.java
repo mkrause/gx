@@ -166,6 +166,10 @@ public class Document extends EventTarget {
     	}
     }
 
+    /**
+     * Take an incoming event coming from a remote host.
+     * @param event
+     */
     protected void handleRemoteEvent(Event event) {
         // Delegate model events to the model
         if (event instanceof BaseModelEvent) {
