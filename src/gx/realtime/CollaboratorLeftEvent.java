@@ -23,4 +23,8 @@ public class CollaboratorLeftEvent extends Event {
     public Collaborator getCollaborator(){
         return collaborator;
     }
+
+    public Document getDocument(){
+        return document;
+    }
 }

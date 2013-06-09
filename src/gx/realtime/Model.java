@@ -124,6 +124,10 @@ public class Model extends EventTarget {
 
     //TODO: maybe make this public in order to call it from the node that was actually mutated?
     private void registerMutation(BaseModelEvent e){
+        /*TODO: check if BaseModelEvent should be revertable.
+         * Base this on the types which can be reverted according to the constructRevertEvent method.
+         * Note that some events should not be revertable such as a Collaborator_joined event.
+         */
         undoableMutations.push(e);
     }
 
@@ -143,39 +147,38 @@ public class Model extends EventTarget {
                 result = new TextDeletedEvent((CollaborativeString) tiEvent.getTarget(), tiEvent.getSessionId(), tiEvent.getUserId(), tiEvent.isLocal(), tiEvent.getIndex(), tiEvent.getText());
                 break;
             case TEXT_DELETED:
-                //TEXT_INSERTED
                 TextDeletedEvent tdEvent = (TextDeletedEvent) event;
                 result = new TextInsertedEvent((CollaborativeString) tdEvent.getTarget(), tdEvent.getSessionId(), tdEvent.getUserId(), tdEvent.isLocal(), tdEvent.getIndex(), tdEvent.getText());
                 break;
-            case COLLABORATOR_JOINED:
-                //COLLABORATOR_LEFT
-                break;
-            case COLLABORATOR_LEFT:
-                //COLLABORATOR_JOINED
-                break;
-            case DOCUMENT_SAVE_STATE_CHANGED:
-                //DOCUMENT_SAVE_STATE_CHANGED?
-                break;
             case OBJECT_ADDED:
                 //OBJECT_CHANGED?
+                //TODO: should this actually be undoable? Or will this event always be followed by a different object.
                 break;
             case OBJECT_CHANGED:
-                //OBJECT_CHANGED
+                //OBJECT_CHANGED - As this is actually a wrapper event for other events, this should not have a reverse event.
                 break;
             case REFERENCE_SHIFTED:
-                //REFERENCE_SHIFTED?
+                //REFERENCE_SHIFTED - shift back
+                ReferenceShiftedEvent rsEvent = (ReferenceShiftedEvent) event;
+                result = new ReferenceShiftedEvent((IndexReference) rsEvent.getTarget(), rsEvent.getNewIndex(), rsEvent.getOldIndex(), rsEvent.getSessionId(), rsEvent.getUserId(), rsEvent.isLocal());
                 break;
             case VALUES_ADDED:
-                //VALUES_REMOVED
+                ValuesAddedEvent vaEvent = (ValuesAddedEvent) event;
+                result = new ValuesRemovedEvent((CollaborativeList) vaEvent.getTarget(), vaEvent.getSessionId(), vaEvent.getUserId(), vaEvent.isLocal(), vaEvent.getIndex(), vaEvent.getValues());
                 break;
             case VALUES_REMOVED:
-                //VALUES_ADDED
+                ValuesRemovedEvent vrEvent = (ValuesRemovedEvent) event;
+                result = new ValuesAddedEvent((CollaborativeList) vrEvent.getTarget(), vrEvent.getSessionId(), vrEvent.getUserId(), vrEvent.isLocal(), vrEvent.getIndex(), vrEvent.getValues());
                 break;
             case VALUES_SET:
-                //VALUE_SET?
+                //VALUES_SET - set back
+                ValuesSetEvent vsEvent = (ValuesSetEvent) event;
+                result = new ValuesSetEvent((CollaborativeList) vsEvent.getTarget(), vsEvent.getSessionId(), vsEvent.getUserId(), vsEvent.isLocal(), vsEvent.getIndex(), vsEvent.getNewValues(), vsEvent.getOldValues());
                 break;
             case VALUE_CHANGED:
-                //VALUE_CHANGED?
+                //VALUE_CHANGED - change back
+                ValueChangedEvent vcEvent = (ValueChangedEvent) event;
+                result = new ValueChangedEvent(vcEvent.getTarget(), vcEvent.getSessionId(), vcEvent.getUserId(), vcEvent.isLocal(), vcEvent.getProperty(), vcEvent.getOldValue(), vcEvent.getNewValue());
                 break;
         }
         return result;
