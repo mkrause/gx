@@ -1,6 +1,6 @@
 package gx.realtime;
 
-public class TextInsertedEvent extends BaseModelEvent {
+public class TextInsertedEvent extends RevertableEvent {
 
     private int index;
     private String text;
@@ -25,5 +25,10 @@ public class TextInsertedEvent extends BaseModelEvent {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public BaseModelEvent getReverseEvent(){
+        return new TextDeletedEvent((CollaborativeString) target, sessionId, userId, isLocal, index, text);
     }
 }

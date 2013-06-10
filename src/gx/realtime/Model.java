@@ -128,6 +128,7 @@ public class Model extends EventTarget {
          * Base this on the types which can be reverted according to the constructRevertEvent method.
          * Note that some events should not be revertable such as a Collaborator_joined event.
          */
+
         undoableMutations.push(e);
     }
 
@@ -140,16 +141,7 @@ public class Model extends EventTarget {
     }
 
     private BaseModelEvent constructRevertEvent(BaseModelEvent event){
-        BaseModelEvent result = null;
-        switch (event.getType()) {
-            case TEXT_INSERTED:
-                TextInsertedEvent tiEvent = (TextInsertedEvent) event;
-                result = new TextDeletedEvent((CollaborativeString) tiEvent.getTarget(), tiEvent.getSessionId(), tiEvent.getUserId(), tiEvent.isLocal(), tiEvent.getIndex(), tiEvent.getText());
-                break;
-            case TEXT_DELETED:
-                TextDeletedEvent tdEvent = (TextDeletedEvent) event;
-                result = new TextInsertedEvent((CollaborativeString) tdEvent.getTarget(), tdEvent.getSessionId(), tdEvent.getUserId(), tdEvent.isLocal(), tdEvent.getIndex(), tdEvent.getText());
-                break;
+        /*
             case OBJECT_ADDED:
                 //OBJECT_CHANGED?
                 //TODO: should this actually be undoable? Or will this event always be followed by a different object.
@@ -182,6 +174,8 @@ public class Model extends EventTarget {
                 break;
         }
         return result;
+        */
+        return null;
     }
 
     public boolean canRedo(){
