@@ -12,6 +12,7 @@ public abstract class RevertableEvent extends BaseModelEvent {
 
     /**
      * This function returns an event that, when executed, reverts the effects of this event.
+     * Note that the register property of the returned BaseModelEvent is set to false to it won't get registered on the undo stack of the model.
      * @return An event that, when executed, reerts the effects of this event.
      */
     public abstract BaseModelEvent getReverseEvent();

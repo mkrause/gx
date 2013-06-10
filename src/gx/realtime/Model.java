@@ -22,6 +22,12 @@ public class Model extends EventTarget {
     
     private LinkedList<RevertableEvent> undoableMutations;
     private LinkedList<RevertableEvent> redoableMutations;
+
+    /**
+     * Event queue for current compound operation
+     */
+    private LinkedList<BaseModelEvent> eventQueue;
+    private boolean compoundOperationInProgress;
     
     /**
      * Keep track of all the nodes in the data model, indexed
@@ -44,12 +50,12 @@ public class Model extends EventTarget {
         redoableMutations = new LinkedList();
     }
     
-    public void beginCompoundOperation(String opt_name){
-        //TODO: make sure that changes that occur are sent in the same batch to the browser channel
+    public void beginCompoundOperation() {
+        eventQueue = new LinkedList();
     }
-    
-    public void beginCompoundOperation(){
-        //TODO: make sure that changes that occur are sent in the same batch to the browser channel
+
+    public void beginCreationCompoundOperation(){
+        //TODO
     }
 
     public <T extends CollaborativeObject> T create(Class<T> collabType) {
@@ -109,8 +115,18 @@ public class Model extends EventTarget {
         return result;
     }
 
-    public void endCompoundOperation(){
-        //TODO
+    public void endCompoundOperation() throws NoCompoundOperationInProgressException {
+        if(!compoundOperationInProgress){
+            throw new NoCompoundOperationInProgressException();
+        } else {
+            compoundOperationInProgress = false;
+            while(eventQueue.size() > 0){
+                BaseModelEvent event = eventQueue.pop();
+                this.fireEvent(event);
+            }
+            //reset
+            eventQueue = null;
+        }
     }
     
     public CollaborativeMap<CollaborativeObject> getRoot(){
@@ -132,11 +148,11 @@ public class Model extends EventTarget {
         boolean oldRedo = canRedo();
 
         RevertableEvent redoableEvent = redoableMutations.pop();
-        handleRemoteEvent(redoableEvent);
+        fireEvent(redoableEvent);
 
         if(oldUndo != canUndo() || oldRedo || canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event.
+            //TODO: fire event on document?
         }
     }
     
@@ -146,12 +162,13 @@ public class Model extends EventTarget {
 
         RevertableEvent undoableEvent = undoableMutations.pop();
         BaseModelEvent reverseEvent = undoableEvent.getReverseEvent();
+        reverseEvent.setRegister(false);
         redoableMutations.push(undoableEvent);
-        handleRemoteEvent(reverseEvent, false);
+        fireEvent(reverseEvent);
 
         if(oldUndo != canUndo() || oldRedo != canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event
+            //TODO: fire event on document?
         }
     }
 
@@ -239,51 +256,50 @@ public class Model extends EventTarget {
      * Take an incoming remote event, and use it to update our local
      * model and fire it to the target object if possible.
      * @param event
-     * @param register True iff this event should be registered as an undoable event (if possible).
      */
-    protected void handleRemoteEvent(BaseModelEvent event, boolean register) {
-        if(register){
-            registerMutation(event);
-            redoableMutations.clear();
-            UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event on ...?
-        }
-
+    protected void handleRemoteEvent(BaseModelEvent event) {
         updateModel(event);
-        
+
         String targetId = event.getTargetId();
         Object node = getNode(targetId);
-        
+
         if (node == null) {
             // Unknown target ID, so ignore
             //TODO: logging
             return;
         }
-        
+
         if (!(node instanceof EventTarget)) {
             // Not an event target, so ignore
             return;
         }
-        
+
         EventTarget targetNode = (EventTarget)node;
-        
+
         // Currently, the event may just contain the target ID (because it need
         // not have exited in our local model yet), so set it
         event.setTarget(targetNode);
-        
-        targetNode.fireEvent(event);
+        fireEvent(event);
     }
 
-    /**
-     * Take an incoming remote event, and use it to update our local
-     * model and fire it to the target object if possible. The event will be registered as an undoable action
-     * iff it is revertable.
-     * @param event
-     */
-    protected void handleRemoteEvent(BaseModelEvent event){
-        handleRemoteEvent(event, true);
+    @Override
+    public void fireEvent(BaseModelEvent event){
+        if(compoundOperationInProgress){
+            eventQueue.push(event);
+        } else {
+            super.fireEvent(event);
+
+            event.getTarget().fireEvent(event);
+
+            if(event.getRegister()){
+                registerMutation(event);
+                redoableMutations.clear();
+                UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+                //TODO: fire event on document?
+            }
+        }
     }
-    
+
     protected Document getDocument() {
         return document;
     }
@@ -294,5 +310,8 @@ public class Model extends EventTarget {
     
     public String toString() {
         return "Model(nodes=" + nodes + ")";
+    }
+
+    private class NoCompoundOperationInProgressException extends Exception {
     }
 }
