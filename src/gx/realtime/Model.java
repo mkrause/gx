@@ -74,10 +74,23 @@ public class Model extends EventTarget {
         //TODO
     }
 
+    /**
+     * Creates and returns a new collaborative object. This can be used to create custom collaborative objects. For built in types, use the specific create* functions.
+     * @param collabType The type of the CollaborativeObject.
+     * @param <T> The generic type of the CollaborativeObject, if applicable.
+     * @return A newly created CollaborativeObject.
+     */
     public <T extends CollaborativeObject> T create(Class<T> collabType) {
         return create(RandomUtils.getRandomAlphaNumeric(), collabType);
     }
-    
+
+    /**
+     * Creates and returns a new collaborative object. This can be used to create custom collaborative objects. For built in types, use the specific create* functions.
+     * @param id The id that should be assigned to the newly created CollaborativeObject.
+     * @param collabType The type of the CollabObject.
+     * @param <T> The generic type of the CollabObject, if applicable.
+     * @return A newly created CollaborativeObject.
+     */
     private <T extends CollaborativeObject> T create(String id, Class<T> collabType) {
         T collabObj;
         try {
@@ -97,21 +110,43 @@ public class Model extends EventTarget {
         }
         return collabObj;
     }
-    
+
+    /**
+     * Creates an empty Collaborative List.
+     * @param <E> The generic type of the Collaborative List that should be created.
+     * @return A new empty Collaborative List.
+     */
     public <E> CollaborativeList<E> createList(){
         return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
-    
-    public <E> CollaborativeList<E> createList(E[] opt_initialValue){
+
+    /**
+     * Creates a Collaborative List with the given initial values.
+     * @param opt_initialValue Initial value for the list.
+     * @param <E> The generic type of the newly created list.
+     * @return A Collaborative List with the given initial values.
+     */
+    public <E> CollaborativeList<E> createList(List<E> opt_initialValue){
         CollaborativeList<E> result = createList();
         result.pushAll(opt_initialValue);
         return result;
     }
-    
+
+    /**
+     * Creates an empty Collaborative Map.
+     * @param <E> The generic type of the values in the map.
+     * @return A newly created empty Collaborative Map.
+     */
     public <E> CollaborativeMap<E> createMap(){
         return new CollaborativeMap<E>(RandomUtils.getRandomAlphaNumeric(), this);
     }
-    
+
+    /**
+     * Creates a collaborative map with the given values as initial content.
+     * @param opt_initialValue Initial value for the map.
+     * @param <E> The generic type of the values in the map.
+     * @return A newly created Collaborative Map with the given values as initial content.
+     */
     public <E> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
         CollaborativeMap<E> result = createMap();
         Set<Entry<String, E>> entries = opt_initialValue.entrySet();
@@ -120,17 +155,30 @@ public class Model extends EventTarget {
         }
         return result;
     }
-    
+
+    /**
+     * Creates a collaborative string.
+     * @return A collaborative string.
+     */
     public CollaborativeString createString(){
         return new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
     }
-    
+
+    /**
+     * Creates a collaborative string with the given initial value.
+     * @param opt_initialValue Sets the initial value for this string.
+     * @return A collaborative string with the given initial value.
+     */
     public CollaborativeString createString(String opt_initialValue){
         CollaborativeString result = createString();
         result.setText(opt_initialValue);
         return result;
     }
 
+    /**
+     * Ends a compound operation. This method will throw an exception if no compound operation is in progress.
+     * @throws NoCompoundOperationInProgressException
+     */
     public void endCompoundOperation() throws NoCompoundOperationInProgressException {
         if(compoundOperation == null || !compoundOperation.isInProgress()){
             throw new NoCompoundOperationInProgressException();

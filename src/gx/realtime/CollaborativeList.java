@@ -102,7 +102,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param index The index at which to insert.
      * @param values The values to insert.
      */
-	public void insertAll(int index, ArrayList<E> values){
+	public void insertAll(int index, List<E> values){
 		for(E value : values){
 			this.insert(index, value);
 			index++;
@@ -148,7 +148,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * Adds an array of values to the end of the list.
      * @param values The values to add.
      */
-	public void pushAll(E[] values){
+	public void pushAll(List<E> values){
 		for(E value : values){
 			this.values.add(value);
 		}
@@ -199,7 +199,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param index The index to set at.
      * @param values The values to insert.
      */
-	public void replaceRange(int index, ArrayList<E> values){
+	public void replaceRange(int index, List<E> values){
 		for(E value : values){
 			this.set(index, value);
 			index++;
