@@ -43,7 +43,7 @@ public class Model extends EventTarget {
         this.document = document;
         initialized = false;
         readOnly = false;
-        
+
         root = new CollaborativeMap<CollaborativeObject>("root", this);
         undoableMutations = new LinkedList();
         redoableMutations = new LinkedList();
@@ -189,15 +189,29 @@ public class Model extends EventTarget {
             compoundOperation = null;
         }
     }
-    
+
+    /**
+     * Returns the root of the object model.
+     * @return The root of the object model.
+     */
     public CollaborativeMap<CollaborativeObject> getRoot(){
         return root;
     }
-    
+
+    /**
+     * Returns whether the model is initialized.
+     * @return Whether the model is initialized.
+     */
     public boolean isInitialized(){
         return initialized;
     }
 
+    /**
+     * This method is a wrapper function for storing BaseModelEvents on the undoableMutations stack.
+     * It checks whether the given BaseModelEvent is revertable. Iff so, it pushes it on the stack, clears the redo stack and fires an
+     * UndoRedoStateChangedEvent iff the canUndo or canRedo state has changed.
+     * @param e The event that should be registered.
+     */
     private void registerMutation(BaseModelEvent e){
         if(e instanceof RevertableEvent){
             undoableMutations.push((RevertableEvent) e);
@@ -207,6 +221,9 @@ public class Model extends EventTarget {
         }
     }
 
+    /**
+     * Redo the last thing the active collaborator undid.
+     */
     public void redo(){
         boolean oldUndo = canUndo();
         boolean oldRedo = canRedo();
@@ -219,7 +236,10 @@ public class Model extends EventTarget {
             //TODO: fire event on document?
         }
     }
-    
+
+    /**
+     * Undo the last thing the active collaborator did.
+     */
     public void undo(){
         boolean oldUndo = canUndo();
         boolean oldRedo = canRedo();
@@ -235,25 +255,34 @@ public class Model extends EventTarget {
         }
     }
 
+    /**
+     * @return True iff the model can currently redo.
+     */
     public boolean canRedo(){
         return redoableMutations.size() > 0;
     }
-    
+
+    /**
+     * @return True if the model can currently undo.
+     */
     public boolean canUndo(){
         return undoableMutations.size() > 0;
     }
-    
+
+    /**
+     * @return The mode of the document. If true, the document is readonly. If false it is editable.
+     */
     public boolean isReadOnly(){
         return readOnly;
     }
-    
+
     private EventHandler<ObjectAddedEvent> getObjectAddedBuilder() {
         return (event) -> {
             String id = event.getTargetId();
             System.out.println("OBJECT_ADDED: " + id);
             CollaborativeObject collabObject = create(id, event.getObjectType());
             nodes.put(id, collabObject);
-            
+
             // Update the root node if we're adding an object with the
             // special "root" ID
             if (id.equals("root")) {
@@ -261,30 +290,30 @@ public class Model extends EventTarget {
             }
         };
     }
-    
+
     private EventHandler<ValuesAddedEvent> getValuesAddedBuilder() {
         return (event) -> {
             String id = event.getTargetId();
             System.out.println("VALUES_ADDED: " + id);
-            
-            
+
+
         };
     }
-    
+
     private EventHandler<ValueChangedEvent> getValueChangedBuilder() {
         return (event) -> {
             String id = event.getTargetId();
             System.out.println("VALUE_CHANGED: " + id);
         };
     }
-    
+
     private EventHandler<ValuesSetEvent> getValuesSetBuilder() {
         return (event) -> {
             String id = event.getTargetId();
             System.out.println("VALUES_SET: " + id);
         };
     }
-    
+
     private EventHandler<ValuesRemovedEvent> getValuesRemovedBuilder() {
         return (event) -> {
             String id = event.getTargetId();
@@ -375,14 +404,24 @@ public class Model extends EventTarget {
         fireEvent(event, true);
     }
 
+    /**
+     * @return The document of this Model.
+     */
     protected Document getDocument() {
         return document;
     }
-    
+
+    /**
+     * @param id The if of the node we are looking for.
+     * @return The node with the given id iff found. Null otherwise.
+     */
     private Object getNode(String id) {
         return nodes.get(id);
     }
-    
+
+    /**
+     * @return A String representation of this Model.
+     */
     public String toString() {
         return "Model(nodes=" + nodes + ")";
     }
