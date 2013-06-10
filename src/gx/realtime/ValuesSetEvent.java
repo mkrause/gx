@@ -2,11 +2,11 @@ package gx.realtime;
 
 import java.util.ArrayList;
 
-public class ValuesSetEvent extends RevertableEvent {
+public class ValuesSetEvent<E> extends RevertableEvent {
 
     private int index;
-    private ArrayList<Object> oldValues;
-    private ArrayList<Object> newValues;
+    private ArrayList<E> oldValues;
+    private ArrayList<E> newValues;
 
     /**
      * Event fired when items in a collaborative list are changed in place.
@@ -18,7 +18,7 @@ public class ValuesSetEvent extends RevertableEvent {
      * @param oldValues The old values.
      * @param newValues The new values.
      */
-    public ValuesSetEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, ArrayList<Object> oldValues, ArrayList<Object> newValues){
+    public ValuesSetEvent(CollaborativeList<E> target, String sessionId, String userId, boolean isLocal, int index, ArrayList<E> oldValues, ArrayList<E> newValues){
         super(EventType.VALUES_SET, target, sessionId, userId, isLocal, false);
         this.index = index;
         this.oldValues = oldValues;
@@ -43,7 +43,7 @@ public class ValuesSetEvent extends RevertableEvent {
     /**
      * @return The old values in the CollaborativeList.
      */
-    public ArrayList<Object> getOldValues() {
+    public ArrayList<E> getOldValues() {
         return oldValues;
     }
 
@@ -51,14 +51,14 @@ public class ValuesSetEvent extends RevertableEvent {
      * Set the values that were changed in the CollaborativeList.
      * @param oldValues The values that were changed in the CollaborativeList.
      */
-    public void setOldValues(ArrayList<Object> oldValues) {
+    public void setOldValues(ArrayList<E> oldValues) {
         this.oldValues = oldValues;
     }
 
     /**
      * @return The new values in the CollaborativeList.
      */
-    public ArrayList<Object> getNewValues() {
+    public ArrayList<E> getNewValues() {
         return newValues;
     }
 
@@ -66,7 +66,7 @@ public class ValuesSetEvent extends RevertableEvent {
      * Set the new values in the CollaborativeList.
      * @param newValues The new values in the CollaborativeList.
      */
-    public void setNewValues(ArrayList<Object> newValues) {
+    public void setNewValues(ArrayList<E> newValues) {
         this.newValues = newValues;
     }
 

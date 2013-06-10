@@ -102,7 +102,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param index The index at which to insert.
      * @param values The values to insert.
      */
-	public void insertAll(int index, E[] values){
+	public void insertAll(int index, ArrayList<E> values){
 		for(E value : values){
 			this.insert(index, value);
 			index++;
@@ -199,7 +199,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param index The index to set at.
      * @param values The values to insert.
      */
-	public void replaceRange(int index, E[] values){
+	public void replaceRange(int index, ArrayList<E> values){
 		for(E value : values){
 			this.set(index, value);
 			index++;
@@ -244,16 +244,16 @@ public class CollaborativeList<E> extends CollaborativeObject {
             case VALUES_ADDED:
                 ValuesAddedEvent valuesAddedEvent = (ValuesAddedEvent)event;
                 //TODO: fix cast to generic E
-                insertAll(valuesAddedEvent.getIndex(), (E[])valuesAddedEvent.getValues());
+                insertAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
                 break;
             case VALUES_SET:
                 ValuesSetEvent valuesSetEvent = (ValuesSetEvent)event;
                 //TODO: fix cast to generic E
-                replaceRange(valuesSetEvent.getIndex(), (E[])valuesSetEvent.getNewValues());
+                replaceRange(valuesSetEvent.getIndex(), valuesSetEvent.getNewValues());
                 break;
             case VALUES_REMOVED:
                 ValuesRemovedEvent valuesRemovedEvent = (ValuesRemovedEvent)event;
-                removeRange(valuesRemovedEvent.getIndex(), valuesRemovedEvent.getValues().length);
+                removeRange(valuesRemovedEvent.getIndex(), valuesRemovedEvent.getValues().size());
                 break;
         }
     }
