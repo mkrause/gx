@@ -50,17 +50,31 @@ public class DemoCliApp
             doc.addEventListener(EventType.VALUE_CHANGED, handler);
 
             Model model = doc.getModel();
-            System.out.println("Found model: " + model == null);
-
-            CollaborativeMap<CollaborativeObject> root = model.getRoot();
-            System.out.println("Root id: " + root.getId() + ", size: " + root.size());
-
-            for (String key : root.keys()) {
-                System.out.println("Key: " + key);
-            }
+            System.out.println("Found model: " + model != null);
 
             // TODO: Implement some functionality once the model is properly built on application start
             document = doc;
+
+            // Get the model root
+            CollaborativeMap<CollaborativeObject> root = model.getRoot();
+            System.out.println("Root id: " + root.getId() + ", size: " + root.size());
+
+            // Iterate over the keys and grab some key
+            String key = null;
+            for (String k : root.keys()) {
+                System.out.println("Key: " + k);
+
+                if (key == null)
+                    key = k;
+            }
+
+
+            if(key != null) {
+                // Try to get the key value
+                CollaborativeObject foo = root.get(key);
+
+                System.out.println("Found collaborativeObject: " + foo.toString());
+            }
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
 
