@@ -94,6 +94,9 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param value The value to add.
      */
 	public void insert(int index, E value){
+        if(value instanceof EventTarget){
+            ((EventTarget) value).addParent(this);
+        }
 		values.add(index, value);
 	}
 
@@ -140,6 +143,9 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @return The new array length.
      */
 	public int push(E value){
+        if(value instanceof EventTarget){
+            ((EventTarget) value).addParent(this);
+        }
 		values.add(value);
 		return this.length();
 	}
@@ -150,7 +156,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      */
 	public void pushAll(List<E> values){
 		for(E value : values){
-			this.values.add(value);
+			this.push(value);
 		}
 	}
 
@@ -170,7 +176,10 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @param index The index of the item to remove.
      */
 	public void remove(int index){
-		values.remove(index);
+		E removed = values.remove(index);
+        if(removed instanceof EventTarget){
+            ((EventTarget) removed).removeParent(this);
+        }
 	}
 
     /**
@@ -180,7 +189,7 @@ public class CollaborativeList<E> extends CollaborativeObject {
      */
 	public void removeRange(int startIndex, int endIndex){
 		while(startIndex < endIndex){
-			values.remove(startIndex);
+			this.remove(startIndex);
 			endIndex--;
 		}
 	}
@@ -191,6 +200,9 @@ public class CollaborativeList<E> extends CollaborativeObject {
      * @return Whether the item was removed.
      */
 	public boolean removeValue(E value){
+        if(value instanceof EventTarget){
+            ((EventTarget) value).removeParent(this);
+        }
 		return values.remove(value);
 	}
 

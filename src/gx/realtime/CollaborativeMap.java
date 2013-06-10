@@ -21,7 +21,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	private HashMap<String, V> map;
 	
 	/**
-	 * Constructor, constructing a map for the given model. This constructor should not be called 
+	 * Constructor, constructing a map for the given model. This constructor should not be called
 	 * @param model
 	 */
 	public CollaborativeMap(String id, Model model){
@@ -42,7 +42,11 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The value that was mapped to this key, or null if there was no existing value.
 	 */
 	public V delete(String key){
-		return map.remove(key);
+		V result = map.remove(key);
+        if(result instanceof EventTarget){
+            ((EventTarget) result).removeParent(this);
+        }
+        return result;
 	}
 	
 	/**
@@ -72,7 +76,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	}
 	
 	/**
-	 * Returns an array containing a copy of the items in this map. 
+	 * Returns a set containing a copy of the items in this map.
 	 * Modifications to the returned Set do not modify this collaborative map.
 	 * @return The items in this map. Each item is a [key, value] pair.
 	 */
@@ -102,6 +106,9 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The old map value, if any, that used to be mapped to the given key.
 	 */
 	public V set(String key, V value){
+        if(value instanceof EventTarget){
+            ((EventTarget) value).addParent(this);
+        }
 		return map.put(key, value);
 	}
 	

@@ -15,7 +15,12 @@ public abstract class EventTarget
      * All event handlers, indexed by event type.
      */
     protected Map<EventType, Set<EventHandler>> eventHandlers = new HashMap<>();
-    
+
+    /**
+     * The parent of this eventTarget.
+     */
+    protected Set<EventTarget> parents = new HashSet();
+
     /**
      * Adds an event listener to the event target. The same handler can only
      * be added once per the type. Even if you add the same handler multiple
@@ -55,6 +60,7 @@ public abstract class EventTarget
     /**
      * Dispatches the given event of the given event type to this object.
      * The corresponding EventHandlers are executed.
+     * If the event is bubbling, the event is passed to the parents of this EventTarget afterwards.
      * @param event The event object, containing any necessary information.
      */
     protected void fireEvent(BaseModelEvent event)
@@ -65,5 +71,26 @@ public abstract class EventTarget
                 handler.handleEvent(event);
             }
         }
+        if(event.bubbles()){
+            for(EventTarget parent : parents){
+                parent.fireEvent(event);
+            }
+        }
+    }
+
+    /**
+     * Add a parent of this EventTarget.
+     * @param parent The parent of this EventTarget.
+     */
+    public void addParent(EventTarget parent){
+        parents.add(parent);
+    }
+
+    /**
+     * Remove the given EventTarget from the set of parents.
+     * @param parent The parent that should be removed.
+     */
+    public void removeParent(EventTarget parent){
+        parents.remove(parent);
     }
 }
