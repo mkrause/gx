@@ -1,6 +1,6 @@
 package gx.realtime;
 
-public class ReferenceShiftedEvent extends BaseModelEvent {
+public class ReferenceShiftedEvent extends RevertableEvent {
 
     private int oldIndex;
     private int newIndex;
@@ -25,5 +25,9 @@ public class ReferenceShiftedEvent extends BaseModelEvent {
 
     public void setNewIndex(int newIndex) {
         this.newIndex = newIndex;
+    }
+
+    public BaseModelEvent getReverseEvent(){
+        return new ReferenceShiftedEvent((IndexReference) target, newIndex, oldIndex, sessionId, userId, isLocal);
     }
 }

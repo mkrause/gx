@@ -5,8 +5,7 @@ import gx.realtime.operation.ValueChangedOperation;
 import gx.realtime.serialize.ValueChangedEventSerializer;
 
 @JsonSerialize(using = ValueChangedEventSerializer.class)
-public class ValueChangedEvent extends BaseModelEvent
-{
+public class ValueChangedEvent extends RevertableEvent {
 
     private String property;
     private String newValue;
@@ -65,5 +64,9 @@ public class ValueChangedEvent extends BaseModelEvent
 
     public void setValueType(ValueChangedOperation.ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    public BaseModelEvent getReverseEvent(){
+        return new ValueChangedEvent(target, sessionId, userId, isLocal, property, oldValue, newValue);
     }
 }

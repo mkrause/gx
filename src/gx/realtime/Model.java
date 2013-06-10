@@ -20,8 +20,8 @@ public class Model extends EventTarget {
     private boolean readOnly;
     private CollaborativeMap<CollaborativeObject> root;
     
-    private LinkedList<BaseModelEvent> undoableMutations;
-    private LinkedList<BaseModelEvent> redoableMutations;
+    private LinkedList<RevertableEvent> undoableMutations;
+    private LinkedList<RevertableEvent> redoableMutations;
     
     /**
      * Keep track of all the nodes in the data model, indexed
@@ -40,8 +40,8 @@ public class Model extends EventTarget {
         readOnly = false;
         
         root = new CollaborativeMap<CollaborativeObject>("root", this);
-        undoableMutations = new LinkedList<BaseModelEvent>();
-        redoableMutations = new LinkedList<BaseModelEvent>();
+        undoableMutations = new LinkedList();
+        redoableMutations = new LinkedList();
     }
     
     public void beginCompoundOperation(String opt_name){
@@ -114,7 +114,6 @@ public class Model extends EventTarget {
     }
     
     public CollaborativeMap<CollaborativeObject> getRoot(){
-        //TODO: make sure that the documents in this root element are updated
         return root;
     }
     
@@ -122,60 +121,38 @@ public class Model extends EventTarget {
         return initialized;
     }
 
-    //TODO: maybe make this public in order to call it from the node that was actually mutated?
     private void registerMutation(BaseModelEvent e){
-        /*TODO: check if BaseModelEvent should be revertable.
-         * Base this on the types which can be reverted according to the constructRevertEvent method.
-         * Note that some events should not be revertable such as a Collaborator_joined event.
-         */
-
-        undoableMutations.push(e);
+        if(e instanceof RevertableEvent){
+            undoableMutations.push((RevertableEvent) e);
+        }
     }
 
     public void redo(){
-        //TODO: redo last action of redoableMutation stack.
+        boolean oldUndo = canUndo();
+        boolean oldRedo = canRedo();
+
+        RevertableEvent redoableEvent = redoableMutations.pop();
+        handleRemoteEvent(redoableEvent);
+
+        if(oldUndo != canUndo() || oldRedo || canRedo()){
+            UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+            //TODO: fire event.
+        }
     }
     
     public void undo(){
-        //TODO: undo last action of undoableMutation stack.
-    }
+        boolean oldUndo = canUndo();
+        boolean oldRedo = canRedo();
 
-    private BaseModelEvent constructRevertEvent(BaseModelEvent event){
-        /*
-            case OBJECT_ADDED:
-                //OBJECT_CHANGED?
-                //TODO: should this actually be undoable? Or will this event always be followed by a different object.
-                break;
-            case OBJECT_CHANGED:
-                //OBJECT_CHANGED - As this is actually a wrapper event for other events, this should not have a reverse event.
-                break;
-            case REFERENCE_SHIFTED:
-                //REFERENCE_SHIFTED - shift back
-                ReferenceShiftedEvent rsEvent = (ReferenceShiftedEvent) event;
-                result = new ReferenceShiftedEvent((IndexReference) rsEvent.getTarget(), rsEvent.getNewIndex(), rsEvent.getOldIndex(), rsEvent.getSessionId(), rsEvent.getUserId(), rsEvent.isLocal());
-                break;
-            case VALUES_ADDED:
-                ValuesAddedEvent vaEvent = (ValuesAddedEvent) event;
-                result = new ValuesRemovedEvent((CollaborativeList) vaEvent.getTarget(), vaEvent.getSessionId(), vaEvent.getUserId(), vaEvent.isLocal(), vaEvent.getIndex(), vaEvent.getValues());
-                break;
-            case VALUES_REMOVED:
-                ValuesRemovedEvent vrEvent = (ValuesRemovedEvent) event;
-                result = new ValuesAddedEvent((CollaborativeList) vrEvent.getTarget(), vrEvent.getSessionId(), vrEvent.getUserId(), vrEvent.isLocal(), vrEvent.getIndex(), vrEvent.getValues());
-                break;
-            case VALUES_SET:
-                //VALUES_SET - set back
-                ValuesSetEvent vsEvent = (ValuesSetEvent) event;
-                result = new ValuesSetEvent((CollaborativeList) vsEvent.getTarget(), vsEvent.getSessionId(), vsEvent.getUserId(), vsEvent.isLocal(), vsEvent.getIndex(), vsEvent.getNewValues(), vsEvent.getOldValues());
-                break;
-            case VALUE_CHANGED:
-                //VALUE_CHANGED - change back
-                ValueChangedEvent vcEvent = (ValueChangedEvent) event;
-                result = new ValueChangedEvent(vcEvent.getTarget(), vcEvent.getSessionId(), vcEvent.getUserId(), vcEvent.isLocal(), vcEvent.getProperty(), vcEvent.getOldValue(), vcEvent.getNewValue());
-                break;
+        RevertableEvent undoableEvent = undoableMutations.pop();
+        BaseModelEvent reverseEvent = undoableEvent.getReverseEvent();
+        redoableMutations.push(undoableEvent);
+        handleRemoteEvent(reverseEvent, false);
+
+        if(oldUndo != canUndo() || oldRedo != canRedo()){
+            UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+            //TODO: fire event
         }
-        return result;
-        */
-        return null;
     }
 
     public boolean canRedo(){
@@ -259,15 +236,18 @@ public class Model extends EventTarget {
     }
 
     /**
-     * Take an incoming remot event, and use it to update our local
+     * Take an incoming remote event, and use it to update our local
      * model and fire it to the target object if possible.
      * @param event
+     * @param register True iff this event should be registered as an undoable event (if possible).
      */
-    protected void handleRemoteEvent(BaseModelEvent event) {
-        //TODO: registerMutation. Only if event has actually changed an object?
-        //TODO: clear redoable stack?
-        //TODO: fire UndoRedoStateChangedEvent when canRedo or canUndo state changes.
-        // https://developers.google.com/drive/realtime/handle-events#undo_and_redo_state_events
+    protected void handleRemoteEvent(BaseModelEvent event, boolean register) {
+        if(register){
+            registerMutation(event);
+            redoableMutations.clear();
+            UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+            //TODO: fire event on ...?
+        }
 
         updateModel(event);
         
@@ -292,6 +272,16 @@ public class Model extends EventTarget {
         event.setTarget(targetNode);
         
         targetNode.fireEvent(event);
+    }
+
+    /**
+     * Take an incoming remote event, and use it to update our local
+     * model and fire it to the target object if possible. The event will be registered as an undoable action
+     * iff it is revertable.
+     * @param event
+     */
+    protected void handleRemoteEvent(BaseModelEvent event){
+        handleRemoteEvent(event, true);
     }
     
     protected Document getDocument() {

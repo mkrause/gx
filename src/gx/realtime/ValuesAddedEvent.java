@@ -1,6 +1,6 @@
 package gx.realtime;
 
-public class ValuesAddedEvent extends BaseModelEvent {
+public class ValuesAddedEvent extends RevertableEvent {
 
     private int index;
     private Object[] values;
@@ -25,5 +25,9 @@ public class ValuesAddedEvent extends BaseModelEvent {
 
     public void setValues(Object[] values) {
         this.values = values;
+    }
+
+    public BaseModelEvent getReverseEvent(){
+        return new ValuesRemovedEvent((CollaborativeList) target, sessionId, userId, isLocal, index, values);
     }
 }
