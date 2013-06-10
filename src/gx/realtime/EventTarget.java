@@ -65,15 +65,18 @@ public abstract class EventTarget
      */
     protected void fireEvent(BaseModelEvent event)
     {
-        Set<EventHandler> handlers = eventHandlers.get(event.getType());
-        if (handlers != null){
-            for (EventHandler handler : handlers){
-                handler.handleEvent(event);
+        if(event.isFirstVisit(this)){
+            event.addBubbledNode(this);
+            Set<EventHandler> handlers = eventHandlers.get(event.getType());
+            if (handlers != null){
+                for (EventHandler handler : handlers){
+                    handler.handleEvent(event);
+                }
             }
-        }
-        if(event.bubbles()){
-            for(EventTarget parent : parents){
-                parent.fireEvent(event);
+            if(event.bubbles()){
+                for(EventTarget parent : parents){
+                    parent.fireEvent(event);
+                }
             }
         }
     }

@@ -345,7 +345,7 @@ public class Model extends EventTarget {
     }
 
     /**
-     * Take an incoming remote event, and use it to update our local
+     * Take an incoming remote event (event recieved from browserchannel), and use it to update our local
      * model and fire it to the target object if possible.
      * @param event
      */
