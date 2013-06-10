@@ -53,7 +53,7 @@ public class ValuesRemovedEvent extends RevertableEvent {
     }
 
     @Override
-    public BaseModelEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent(){
         return new ValuesAddedEvent((CollaborativeList) target, sessionId, userId, isLocal, index, values);
     }
 }

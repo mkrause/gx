@@ -8,7 +8,6 @@ public abstract class BaseModelEvent extends Event
     protected boolean bubbles;
     protected String targetId;
     protected String userId;
-    protected boolean register = true;
 
     public BaseModelEvent(EventType type, String targetId, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
@@ -93,11 +92,4 @@ public abstract class BaseModelEvent extends Event
         return userId;
     }
 
-    protected void setRegister(boolean register){
-        this.register = register;
-    }
-
-    public boolean getRegister(){
-        return register;
-    }
 }

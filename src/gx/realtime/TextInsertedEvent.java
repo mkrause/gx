@@ -51,7 +51,7 @@ public class TextInsertedEvent extends RevertableEvent {
     }
 
     @Override
-    public BaseModelEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent(){
         return new TextDeletedEvent((CollaborativeString) target, sessionId, userId, isLocal, index, text);
     }
 }

@@ -51,7 +51,7 @@ public class ReferenceShiftedEvent extends RevertableEvent {
     }
 
     @Override
-    public BaseModelEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent(){
         return new ReferenceShiftedEvent((IndexReference) target, newIndex, oldIndex, sessionId, userId, isLocal);
     }
 }

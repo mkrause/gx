@@ -3,11 +3,8 @@ package gx.realtime;
 import gx.util.RandomUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Data model for the document. Contains an object graph that can be referenced
@@ -19,16 +16,18 @@ public class Model extends EventTarget {
     private boolean initialized;
     private boolean readOnly;
     private CollaborativeMap<CollaborativeObject> root;
-    
+
+    /**
+     * Undo / Redo stacks
+     */
     private LinkedList<RevertableEvent> undoableMutations;
     private LinkedList<RevertableEvent> redoableMutations;
 
     /**
-     * Event queue for current compound operation
+     * Current compound operation.
      */
-    private LinkedList<BaseModelEvent> eventQueue;
-    private boolean compoundOperationInProgress;
-    
+    private CompoundOperation compoundOperation;
+
     /**
      * Keep track of all the nodes in the data model, indexed
      * by their ID.
@@ -49,9 +48,26 @@ public class Model extends EventTarget {
         undoableMutations = new LinkedList();
         redoableMutations = new LinkedList();
     }
-    
+
+    /**
+     * Starts a compound operation. When beginCompoundOperation() is called, all subsequent edits to the data model will be batched together in the
+     * undo stack and revision history until endCompoundOperation() is called. Compound operations may be nested inside other compound operations.
+     * Note that the compound operation MUST start and end in the same synchronous execution block. If this invariant is violated, the data model
+     * will become invalid and all future changes will fail.
+     */
     public void beginCompoundOperation() {
-        eventQueue = new LinkedList();
+        compoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true);
+    }
+
+    /**
+     * Starts a compound operation. If a name is given, that name will be recorded in the mutation for use in revision history, undo menus, etc.
+     * When beginCompoundOperation() is called, all subsequent edits to the data model will be batched together in the undo stack and revision history until
+     * endCompoundOperation() is called. Compound operations may be nested inside other compound operations. Note that the compound operation
+     * MUST start and end in the same synchronous execution block. If this invariant is violated, the data model will become invalid and all future changes will fail.
+     * @param opt_name The name for this compount operation.
+     */
+    public void beginCompoundOperation(String opt_name){
+        compoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true, opt_name);
     }
 
     public void beginCreationCompoundOperation(){
@@ -116,16 +132,13 @@ public class Model extends EventTarget {
     }
 
     public void endCompoundOperation() throws NoCompoundOperationInProgressException {
-        if(!compoundOperationInProgress){
+        if(compoundOperation == null || !compoundOperation.isInProgress()){
             throw new NoCompoundOperationInProgressException();
         } else {
-            compoundOperationInProgress = false;
-            while(eventQueue.size() > 0){
-                BaseModelEvent event = eventQueue.pop();
-                this.fireEvent(event);
-            }
+            compoundOperation.setInProgress(false);
+            fireEvent(compoundOperation, true);
             //reset
-            eventQueue = null;
+            compoundOperation = null;
         }
     }
     
@@ -140,6 +153,9 @@ public class Model extends EventTarget {
     private void registerMutation(BaseModelEvent e){
         if(e instanceof RevertableEvent){
             undoableMutations.push((RevertableEvent) e);
+            redoableMutations.clear();
+            UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+            //TODO: fire event on document?
         }
     }
 
@@ -162,9 +178,8 @@ public class Model extends EventTarget {
 
         RevertableEvent undoableEvent = undoableMutations.pop();
         BaseModelEvent reverseEvent = undoableEvent.getReverseEvent();
-        reverseEvent.setRegister(false);
+        fireEvent(reverseEvent, false);
         redoableMutations.push(undoableEvent);
-        fireEvent(reverseEvent);
 
         if(oldUndo != canUndo() || oldRedo != canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
@@ -282,22 +297,34 @@ public class Model extends EventTarget {
         fireEvent(event);
     }
 
-    @Override
-    public void fireEvent(BaseModelEvent event){
-        if(compoundOperationInProgress){
-            eventQueue.push(event);
+    //TODO: maybe break down this method to reduce the cyclomatic complexity.
+    public void fireEvent(BaseModelEvent event, boolean register){
+        if(event instanceof CompoundOperation){
+            CompoundOperation cOperation = (CompoundOperation) event;
+            List<RevertableEvent> events = cOperation.getEvents();
+            for(RevertableEvent cEvent : events){
+                this.fireEvent(cEvent, false);
+            }
+
+            if(register){
+                registerMutation(cOperation);
+            }
+        } else if(compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent){
+            compoundOperation.addEvent((RevertableEvent) event);
         } else {
             super.fireEvent(event);
 
             event.getTarget().fireEvent(event);
 
-            if(event.getRegister()){
+            if(register){
                 registerMutation(event);
-                redoableMutations.clear();
-                UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-                //TODO: fire event on document?
             }
         }
+    }
+
+    @Override
+    public void fireEvent(BaseModelEvent event){
+        fireEvent(event, true);
     }
 
     protected Document getDocument() {

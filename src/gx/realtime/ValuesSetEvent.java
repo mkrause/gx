@@ -71,7 +71,7 @@ public class ValuesSetEvent extends RevertableEvent {
     }
 
     @Override
-    public BaseModelEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent(){
         return new ValuesSetEvent((CollaborativeList) target, sessionId, userId, isLocal, index, newValues, oldValues);
     }
 }

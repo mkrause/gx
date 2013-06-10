@@ -105,7 +105,7 @@ public class ValueChangedEvent extends RevertableEvent {
     }
 
     @Override
-    public BaseModelEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent(){
         return new ValueChangedEvent(target, sessionId, userId, isLocal, property, oldValue, newValue);
     }
 }
