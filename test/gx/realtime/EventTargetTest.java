@@ -113,4 +113,10 @@ public class EventTargetTest {
         simpleObject.fireEvent(deletedEvent);
         assertEquals(171, simpleObject.getId());
     }
+
+    @Test
+    public void testEventBubbling(){
+        //TODO
+        fail("TODO");
+    }
 }

@@ -5,29 +5,22 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class ModelTest {
-    
-	@Test
-	public void testModel() {
-		fail("Not yet implemented");
-	}
+
+    @Test
+    public void testCreationCompoundOperation(){
+        fail("TODO");
+    }
 
 	@Test
-	public void testBeginCompoundOperationString() {
-		fail("Not yet implemented");
-	}
+    public void testCompoundOperations(){
+        //TODO
 
-	@Test
-	public void testBeginCompoundOperation() {
-		fail("Not yet implemented");
-	}
+        //test with no operation in progress
+        fail("TODO");
+    }
 
 	@Test
 	public void testCreate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateList() {
 		fail("Not yet implemented");
 	}
 
@@ -37,17 +30,7 @@ public class ModelTest {
 	}
 
 	@Test
-	public void testCreateMap() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testCreateMapMapOfStringE() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateString() {
 		fail("Not yet implemented");
 	}
 
@@ -57,37 +40,10 @@ public class ModelTest {
 	}
 
 	@Test
-	public void testEndCompoundOperation() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetRoot() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testIsInitialized() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testRedo() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testUndo() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCanRedo() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCanUndo() {
+	public void testUndoRedo() {
+        //TODO
+        //including canUndo and canRedo
+        //including compound operations (maybe different method?)
 		fail("Not yet implemented");
 	}
 
@@ -95,4 +51,17 @@ public class ModelTest {
 	public void testIsReadOnly() {
 		fail("Not yet implemented");
 	}
+
+    @Test
+    public void testFireRemoteEvent(){
+        fail("TODO");
+    }
+
+    @Test
+    public void testFireEvent(){
+        //TODO
+
+        //implicitly tested by others?
+        fail("TODO");
+    }
 }
