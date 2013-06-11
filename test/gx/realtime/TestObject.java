@@ -3,7 +3,7 @@ package gx.realtime;
 public class TestObject extends EventTarget implements Cloneable {
 
 	private int id;
-	private TestObject child;
+    private Set<TestObject> children;
 
 	public TestObject(int id){
         this.id = id;
@@ -11,7 +11,9 @@ public class TestObject extends EventTarget implements Cloneable {
 	
 	public TestObject(int id, TestObject child){
 		this(id);
-		this.child = child;
+        children = new HashSet();
+        children.add(child);
+        child.addParent(this);
 	}
 
 	public int getId(){
@@ -21,6 +23,16 @@ public class TestObject extends EventTarget implements Cloneable {
 	public TestObject getChild(){
 		return child;
 	}
+
+    public void addChild(TestObject object){
+        children.add(object);
+        object.addParent(this);
+    }
+
+    public void removeChild(TestObject object){
+        children.remove(object);
+        object.removeParent(this);
+    }
 	
 	@Override
 	public boolean equals(Object object){

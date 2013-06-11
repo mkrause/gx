@@ -2,11 +2,25 @@ package gx.realtime;
 
 import static org.junit.Assert.*;
 
+import gx.realtime.EventType;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 public class EventTargetTest {
+
+    //Event handlers
+    private EventHandler<TestEvent> handler1 = (testEvent) -> {
+        //System.out.println("--EventHandler 1 called.");
+        TestObject testObject = (TestObject) testEvent.getTarget();
+        testObject.setId(testObject.getId() + 1);
+    };
+
+    private EventHandler<TestEvent> handler2 = (testEvent) -> {
+        //System.out.println("--EventHandler2 called.");
+        TestObject testObject2 = (TestObject) testEvent.getTarget();
+        testObject2.setId(testObject2.getId() + 10);
+    };
     
     @Test
     public void testAddEventListener() {
@@ -48,19 +62,6 @@ public class EventTargetTest {
     public void testEventListeners() {
 
         TestObject simpleObject = new TestObject(100);
-
-        //Event handlers
-        EventHandler<TestEvent> handler1 = (testEvent) -> {
-            //System.out.println("--EventHandler 1 called.");
-            TestObject testObject = (TestObject) testEvent.getTarget();
-            testObject.setId(testObject.getId() + 1);
-        };
-        
-        EventHandler<TestEvent> handler2 = (testEvent) -> {
-            //System.out.println("--EventHandler2 called.");
-            TestObject testObject2 = (TestObject) testEvent.getTarget();
-            testObject2.setId(testObject2.getId() + 10);
-        };
 
         //Events
         TestEvent insertedEvent = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, false);
@@ -116,7 +117,52 @@ public class EventTargetTest {
 
     @Test
     public void testEventBubbling(){
-        //TODO
-        fail("TODO");
+        //"bubbling" without any parents
+        TestObject object1 = new TestObject(10);
+        TestEvent event = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", true, true);
+        object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
+
+        object1.fireEvent(event);
+        assertEquals(11, object1.getId());
+
+        //one parent
+        TestObject object2 = new TestObject(110);
+        object1.addChild(object2);
+
+        object2.fireEvent(event);
+        assertEquals(12, object1.getId());
+        assertEquals(110, object2.getId());
+
+        //3 parents of object2
+        TestObject object3 = new TestObject(210);
+        object3.addChild(object2);
+        TestObject object4 = new TestObject(310);
+        object4.addChild(object2);
+        object2.fireEvent(event);
+        assertEquals(13, object1.getId());
+        assertEquals(210, object3.getId());
+        assertEquals(310, object4.getId());
+
+        //two layers of parents, object 5 is leaf node.
+        TestObject object5 = new TestObject(410);
+        object2.addChild(object5);
+        TestObject object6 = new TestObject(510);
+        object6.addChild(object5);
+
+        object5.fireEvent(event);
+        assertEquals(14, object1.getId());
+        assertEquals(210, object3.getId());
+        assertEquals(310, object4.getId());
+        assertEquals(410, object5.getId());
+        assertEquals(510, object6.getId());
+
+        //test if not fired twice
+        object1.addChild(object5);
+        object5.fireEvent(event);
+        assertEquals(15, object1.getId());
+        assertEquals(210, object3.getId());
+        assertEquals(310, object4.getId());
+        assertEquals(410, object5.getId());
+        assertEquals(510, object6.getId());
     }
 }
