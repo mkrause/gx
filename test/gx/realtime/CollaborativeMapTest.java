@@ -102,6 +102,7 @@ public class CollaborativeMapTest {
     @Test
     public void testBasicOperations(){
         //test if basic operations are executed according to the default event listeners for this object.
+        //also test for impossible operations
         fail("TODO");
     }
 }
