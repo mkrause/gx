@@ -119,7 +119,7 @@ public class EventTargetTest {
     public void testEventBubbling(){
         //"bubbling" without any parents
         TestObject object1 = new TestObject(10);
-        TestEvent event = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", true, true);
+        TestEvent event = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", "UID", true, true);
         object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
 
         object1.fireEvent(event);

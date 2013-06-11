@@ -80,13 +80,13 @@ public class CollaborativeListTest {
 		list = new CollaborativeList<TestObject>("listId", null);
 
 		//test for no inserts
-		list.insertAll(0, new TestObject[0]);
+		list.insertAll(0, new ArrayList<TestObject>());
 		assertEquals(0, list.length());
 
 		//test for set of inserts at start
-		TestObject[] objects = new TestObject[2];
-		objects[0] = simpleObject;
-		objects[1] = testObject;
+		ArrayList<TestObject> objects = new ArrayList();
+        objects.add(simpleObject);
+        objects.add(testObject);
 		list.insertAll(0, objects);
 		assertEquals(2, list.length());
 		assertTrue(simpleObject == list.get(0));
@@ -103,9 +103,9 @@ public class CollaborativeListTest {
 		//test for inserting list at beginning
 		TestObject object1 = new TestObject(1);
 		TestObject object2 = new TestObject(2);
-		TestObject[] objects2 = new TestObject[2];
-		objects2[0] = object1;
-		objects2[1] = object2;
+        ArrayList<TestObject> objects2 = new ArrayList();
+        objects2.add(object1);
+        objects2.add(object2);
 		list.insertAll(0, objects2);
 		assertEquals(6, list.length());
 		assertTrue(object1 == list.get(0));
@@ -118,9 +118,9 @@ public class CollaborativeListTest {
 		//test for set of inserts in middle (one element)
         TestObject object3 = new TestObject(3);
 		TestObject object4 = new TestObject(4);
-		TestObject[] objects3 = new TestObject[2];
-		objects3[0] = object3;
-		objects3[1] = object4;
+		ArrayList<TestObject> objects3 = new ArrayList();
+        objects3.add(object3);
+        objects3.add(object4);
 		list.insertAll(5, objects3);
 		assertEquals(8, list.length());
 		assertTrue(object1 == list.get(0));
@@ -135,18 +135,18 @@ public class CollaborativeListTest {
 		//test for set of inserts at end
 		TestObject object5 = new TestObject(5);
 		TestObject object6 = new TestObject(6);
-		TestObject[] objects4 = new TestObject[2];
-		objects4[0] = object5;
-		objects4[1] = object6;
+        ArrayList<TestObject> objects4 = new ArrayList();
+        objects4.add(object5);
+        objects4.add(object5);
 		list.insertAll(8, objects4);
 		testLastList(object1, object2, object3, object4, object5, object6);
 
 		//test for no inserts
-		list.insertAll(0, new TestObject[0]);
+		list.insertAll(0, new ArrayList<TestObject>());
 		testLastList(object1, object2, object3, object4, object5, object6);
-		list.insertAll(5, new TestObject[0]);
+		list.insertAll(5, new ArrayList<TestObject>());
 		testLastList(object1, object2, object3, object4, object5, object6);
-		list.insertAll(10, new TestObject[0]);
+		list.insertAll(10, new ArrayList<TestObject>());
 		testLastList(object1, object2, object3, object4, object5, object6);
 	}
 
@@ -244,14 +244,14 @@ public class CollaborativeListTest {
 	@Test
 	public void testReplaceRange() {
 		//Test with empty array
-		list.replaceRange(0, new TestObject[0]);
+		list.replaceRange(0, new ArrayList<TestObject>());
 
 		//Replace first x element
 		TestObject object1 = new TestObject(1);
 		TestObject object2 = new TestObject(2);
-		TestObject[] objects = new TestObject[2];
-		objects[0] = object1;
-		objects[1] = object2;
+        ArrayList<TestObject> objects = new ArrayList();
+        objects.add(object1);
+        objects.add(object2);
 		list.pushAll(objects);
 
 		list.replaceRange(0, objects);
@@ -285,9 +285,9 @@ public class CollaborativeListTest {
     public void testSetLength(){
         TestObject object1 = new TestObject(1);
         TestObject object2 = new TestObject(2);
-        TestObject[] objects = new TestObject[2];
-        objects[0] = object1;
-        objects[1] = object2;
+        ArrayList<TestObject> objects = new ArrayList();
+        objects.add(object1);
+        objects.add(object2);
         list.pushAll(objects);
 
         list.setLength(2);

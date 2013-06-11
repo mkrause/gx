@@ -9,6 +9,8 @@ import org.junit.Test;
 
 public class ModelTest {
 
+    private int undoRedoChangeCount = 0;
+
     //Event handlers
     private EventHandler<TestEvent> handler1 = (testEvent) -> {
         //System.out.println("--EventHandler 1 called.");
@@ -55,6 +57,7 @@ public class ModelTest {
 		fail("Not yet implemented");
 	}
 
+
 	@Test
 	public void testUndoRedo() {
         Model model = new Model(null);
@@ -62,7 +65,7 @@ public class ModelTest {
         assertFalse(model.canRedo());
 
         //track UNDO_REDO_CHANGE_EVENT;
-        int undoRedoChangeCount = 0;
+
         EventHandler<TestEvent> changeHandler = (event) -> {
             //System.out.println("--EventHandler 1 called.");
             undoRedoChangeCount++;
@@ -113,12 +116,12 @@ public class ModelTest {
         model.undo();
         assertFalse(model.canUndo());
         assertTrue(model.canRedo());
-        assertEquals(6, undoRedoChangeCount)
+        assertEquals(6, undoRedoChangeCount);
 
         //fire another event
         TextDeletedEvent deletedEvent = new TextDeletedEvent(string, "SID", "UID", true, 11, " World");
         string.fireEvent(deletedEvent);
-        assertEquals("Hello!");
+        assertEquals("Hello!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
         assertEquals(7, undoRedoChangeCount);
@@ -145,7 +148,7 @@ public class ModelTest {
         model.undo();
         assertEquals("Hello!", string.getText());
         assertTrue(model.canUndo());
-        asesrtTrue(model.canRedo());
+        assertTrue(model.canRedo());
         assertEquals(10, undoRedoChangeCount);
 
         model.undo();

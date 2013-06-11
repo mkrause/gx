@@ -1,5 +1,8 @@
 package gx.realtime;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class TestObject extends EventTarget implements Cloneable {
 
 	private int id;
@@ -20,9 +23,17 @@ public class TestObject extends EventTarget implements Cloneable {
 		return id;
 	}
 	
-	public TestObject getChild(){
-		return child;
+	public Set<TestObject> getChildren(){
+		return children;
 	}
+
+    public TestObject getChild(){
+        TestObject result = null;
+        if(children.size() == 1){
+            result = children.iterator().next();
+        }
+        return result;
+    }
 
     public void addChild(TestObject object){
         children.add(object);
@@ -51,7 +62,7 @@ public class TestObject extends EventTarget implements Cloneable {
 
     @Override
     public String toString(){
-        return "(" + this.id + ", " + this.child + ")";
+        return "(" + this.id + ", " + this.children + ")";
     }
 	
 	@Override

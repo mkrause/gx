@@ -13,11 +13,6 @@ import gx.realtime.ModelTest;
 import gx.realtime.RealtimeLoaderTest;
 import gx.realtime.RealtimeMessageHandlerTest;
 
-/**
- * Test suite for all non-db errors
- * @author Rdebokx
- *
- */
 @RunWith(Suite.class)
 @SuiteClasses({
 	//gx.realtime tests
