@@ -212,12 +212,12 @@ public class Model extends EventTarget {
      * UndoRedoStateChangedEvent iff the canUndo or canRedo state has changed.
      * @param e The event that should be registered.
      */
-    private void registerMutation(BaseModelEvent e){
+    private void registerMutation(Event e){
         if(e instanceof RevertableEvent){
             undoableMutations.push((RevertableEvent) e);
             redoableMutations.clear();
-            UndoRedoStateChangedEvent erscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event on document?
+            UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+            this.fireEvent(urscEvent);
         }
     }
 
@@ -233,7 +233,7 @@ public class Model extends EventTarget {
 
         if(oldUndo != canUndo() || oldRedo || canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event on document?
+            this.fireEvent(urscEvent);
         }
     }
 
@@ -251,7 +251,7 @@ public class Model extends EventTarget {
 
         if(oldUndo != canUndo() || oldRedo != canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            //TODO: fire event on document?
+            this.fireEvent(urscEvent);
         }
     }
 
@@ -374,23 +374,15 @@ public class Model extends EventTarget {
         fireEvent(event);
     }
 
-    //TODO: maybe break down this method to reduce the cyclomatic complexity.
-    public void fireEvent(BaseModelEvent event, boolean register){
+    public void fireEvent(Event event, boolean register){
         if(event instanceof CompoundOperation){
-            CompoundOperation cOperation = (CompoundOperation) event;
-            List<RevertableEvent> events = cOperation.getEvents();
-            for(RevertableEvent cEvent : events){
-                this.fireEvent(cEvent, false);
-            }
+            executeCompountOperation((CompoundOperation) event, register);
 
-            if(register){
-                registerMutation(cOperation);
-            }
         } else if(compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent){
             compoundOperation.addEvent((RevertableEvent) event);
+
         } else {
             super.fireEvent(event);
-
             event.getTarget().fireEvent(event);
 
             if(register){
@@ -399,8 +391,19 @@ public class Model extends EventTarget {
         }
     }
 
+    private void executeCompountOperation(CompoundOperation event, boolean register){
+        List<RevertableEvent> events = event.getEvents();
+        for(RevertableEvent cEvent : events){
+            this.fireEvent(cEvent, false);
+        }
+
+        if(register){
+            registerMutation(event);
+        }
+    }
+
     @Override
-    public void fireEvent(BaseModelEvent event){
+    public void fireEvent(Event event){
         fireEvent(event, true);
     }
 

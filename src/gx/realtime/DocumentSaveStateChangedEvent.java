@@ -7,6 +7,7 @@ public class DocumentSaveStateChangedEvent extends Event {
     private boolean isPending;
 
     public DocumentSaveStateChangedEvent(Document document, boolean isSaving, boolean isPending){
+        super(document);
         this.document = document;
         this.isSaving = isSaving;
         this.isPending = isPending;

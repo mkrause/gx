@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(using = CollaboratorJoinedEventDeserializer.class)
 public class CollaboratorJoinedEvent extends Event {
 
-    Document document;
     Collaborator collaborator;
 
     public CollaboratorJoinedEvent(Document document, Collaborator collaborator) {
-        this.document = document;
+        super(document);
         this.collaborator = collaborator;
         this.type = EventType.COLLABORATOR_JOINED;
     }

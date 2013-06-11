@@ -152,7 +152,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
      * @param event The event object, containing any necessary information.
      */
     @Override
-    protected void fireEvent(BaseModelEvent event) {
+    protected void fireEvent(Event event) {
         //if this object is the target, execute event handlers and bubble back up
         super.fireEvent(event);
 

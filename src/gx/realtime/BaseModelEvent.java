@@ -1,22 +1,30 @@
 package gx.realtime;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public abstract class BaseModelEvent extends Event
 {
-    protected EventTarget target;
+
     protected String sessionId;
     protected boolean isLocal;
     protected boolean bubbles;
     protected String targetId;
     protected String userId;
 
+    private Set<EventTarget> bubbledNodes;
+
     public BaseModelEvent(EventType type, String targetId, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
+        super(null);
         this.type = type;
         this.targetId = targetId;
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;
         this.userId = userId;
+
+        bubbledNodes = new HashSet();
     }
 
     /**
@@ -30,22 +38,12 @@ public abstract class BaseModelEvent extends Event
      */
     public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
+        super(target);
         this.type = type;
-        this.target = target;
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;
         this.userId = userId;
-    }
-
-    public EventTarget getTarget()
-    {
-        return target;
-    }
-
-    public void setTarget(EventTarget target)
-    {
-        this.target = target;
     }
 
     public String getSessionId()
@@ -90,6 +88,14 @@ public abstract class BaseModelEvent extends Event
 
     public String getUserId() {
         return userId;
+    }
+
+    public void addBubbledNode(EventTarget node){
+        bubbledNodes.add(node);
+    }
+
+    public boolean isFirstVisit(EventTarget node){
+        return !bubbledNodes.contains(node);
     }
 
 }

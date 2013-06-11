@@ -92,4 +92,10 @@ public class CollaborativeStringTest {
         assertEquals("axbycz", string.getText());
 	}
 
+    @Test
+    public void testBasicOperations(){
+        //test if basic operations are executed according to the default event listeners for this object.
+        fail("TODO");
+    }
+
 }

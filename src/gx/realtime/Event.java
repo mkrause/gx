@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Event {
+
     protected EventType type;
+    protected EventTarget target;
 
-    private Set<EventTarget> bubbledNodes;
-
-    public Event(){
-        bubbledNodes = new HashSet();
+    public Event(EventTarget target){
+        this.target = target;
     }
 
     public EventType getType()
@@ -22,11 +22,13 @@ public abstract class Event {
         this.type = type;
     }
 
-    public void addBubbledNode(EventTarget node){
-        bubbledNodes.add(node);
+    public EventTarget getTarget()
+    {
+        return target;
     }
 
-    public boolean isFirstVisit(EventTarget node){
-        return !bubbledNodes.contains(node);
+    public void setTarget(EventTarget target)
+    {
+        this.target = target;
     }
 }

@@ -1,13 +1,12 @@
 package gx.realtime;
 
-public class UndoRedoStateChangedEvent {
+public class UndoRedoStateChangedEvent extends Event{
 
-    private Model model;
     private boolean canRedo;
     private boolean canUndo;
 
     public UndoRedoStateChangedEvent(Model model, boolean canRedo, boolean canUndo) {
-        this.model = model;
+        super(model);
         this.canRedo = canRedo;
         this.canUndo = canUndo;
     }

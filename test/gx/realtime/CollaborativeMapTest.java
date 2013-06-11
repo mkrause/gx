@@ -98,4 +98,10 @@ public class CollaborativeMapTest {
         //TODO: test if event is only fired once per object (even if the map contains a certain object twice)
         fail("TODO");
     }
+
+    @Test
+    public void testBasicOperations(){
+        //test if basic operations are executed according to the default event listeners for this object.
+        fail("TODO");
+    }
 }
