@@ -1,4 +1,4 @@
-package main;
+package main.demo.cli;
 
 import gx.realtime.*;
 import org.apache.logging.log4j.Level;
