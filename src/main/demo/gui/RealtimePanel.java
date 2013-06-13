@@ -4,33 +4,35 @@
 
 package main.demo.gui;
 
-import gx.realtime.CollaborativeMap;
-import gx.realtime.Event;
-import gx.realtime.EventHandler;
-import gx.realtime.EventType;
+import java.awt.event.*;
+
+import gx.realtime.*;
 
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
+import javax.swing.event.ListSelectionEvent;
 
-/**
- * @author Real Time
- */
 public class RealtimePanel extends JPanel {
     private RealtimeTableModel model;
 
     public RealtimePanel(CollaborativeMap<String> collabMap) {
         model = new RealtimeTableModel(collabMap);
 
-
 //        EventHandler handler = (event) -> {
 //            System.out.println("**** Received event of type: " + event.getType());
 //        };
 //        collabMap.addEventListener(EventType.COLLABORATOR_JOINED, handler);
 //        collabMap.addEventListener(EventType.COLLABORATOR_LEFT, handler);
-//        collabMap.addEventListener(EventType.OBJECT_ADDED, handler);
+//        collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
+//            model.updateValue(event.getProperty(), event.getNewValue());
+//        });
 //        collabMap.addEventListener(EventType.VALUE_CHANGED, handler);
         initComponents();
+        table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            keyField.setText((String) model.getValueAt(e.getFirstIndex(), 0));
+            valueField.setText((String) model.getValueAt(e.getFirstIndex(), 1));
+        });
     }
 
     public static void createUI(CollaborativeMap<String> collabMap)
@@ -46,7 +48,23 @@ public class RealtimePanel extends JPanel {
         frame.setVisible(true);
     }
 
+    private void clearButtonActionPerformed(ActionEvent e) {
+        model.removeAll();
+    }
+
+    private void removeButtonActionPerformed(ActionEvent e) {
+        for(int row : table.getSelectedRows()) {
+            model.removeValueAt(row);
+        }
+    }
+
+    private void putButtonActionPerformed(ActionEvent e) {
+        model.updateValue(keyField.getText(), valueField.getText());
+    }
+
     private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Evaluation license - Real Time
         tableScrollPane = new JScrollPane();
         table = new JTable(model);
         clearButton = new JButton();
@@ -61,6 +79,16 @@ public class RealtimePanel extends JPanel {
         eventLogArea = new JTextArea();
         eventLogLabel = new JLabel();
 
+        //======== this ========
+
+        // JFormDesigner evaluation mark
+        setBorder(new javax.swing.border.CompoundBorder(
+            new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                java.awt.Color.red), getBorder())); addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+
+
         //======== tableScrollPane ========
         {
             tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -73,12 +101,46 @@ public class RealtimePanel extends JPanel {
 
         //---- clearButton ----
         clearButton.setText("Clear map");
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearButtonActionPerformed(e);
+            }
+        });
 
         //---- removeButton ----
-        removeButton.setText("Remove key-value pair");
+        removeButton.setText("Remove selection");
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeButtonActionPerformed(e);
+            }
+        });
 
         //---- putButton ----
         putButton.setText("Put key-value pair");
+        putButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                putButtonActionPerformed(e);
+            }
+        });
+
+        //---- keyField ----
+        keyField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                putButtonActionPerformed(e);
+            }
+        });
+
+        //---- valueField ----
+        valueField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                putButtonActionPerformed(e);
+            }
+        });
 
         //---- keyLabel ----
         keyLabel.setText("Key:");
@@ -154,8 +216,11 @@ public class RealtimePanel extends JPanel {
                             .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)))
                     .addContainerGap())
         );
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Evaluation license - Real Time
     private JScrollPane tableScrollPane;
     private JTable table;
     private JButton clearButton;
@@ -169,4 +234,5 @@ public class RealtimePanel extends JPanel {
     private JScrollPane eventLogScrollPane;
     private JTextArea eventLogArea;
     private JLabel eventLogLabel;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

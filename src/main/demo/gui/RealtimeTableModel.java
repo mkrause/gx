@@ -46,23 +46,11 @@ public class RealtimeTableModel extends AbstractTableModel
 
     public Object getValueAt(int row, int col)
     {
-        return dataMap.get(mapKeys.get(row));
-    }
-
-    public boolean isCellEditable(int row, int col)
-    {
-        // Only allow users to edit the value, not the key
-        return col > 0;
-    }
-
-    @Override
-    public void setValueAt(Object value, int row, int col)
-    {
-        System.out.println("Settings " + getValueAt(row, 0) + " to " + value);
-
-//        collaborativeMap.set(mapKeys.get(row), (String)value);
-        dataMap.put(mapKeys.get(row), (String) value);
-        fireTableCellUpdated(row, col);
+        if(col == 0) {
+            return mapKeys.get(row);
+        } else {
+            return dataMap.get(mapKeys.get(row));
+        }
     }
 
     /**
@@ -71,6 +59,7 @@ public class RealtimeTableModel extends AbstractTableModel
      */
     public void removeValueAt(int row)
     {
+        System.out.println("removeValueAt: " + row);
         String key = mapKeys.remove(row);
         dataMap.remove(key);
         fireTableRowsDeleted(row, row);
@@ -81,15 +70,29 @@ public class RealtimeTableModel extends AbstractTableModel
      * @param key
      * @param value
      */
-    public void addValue(String key, String value)
+    public void updateValue(String key, String value)
     {
+        System.out.println("updateValue: " + key + " => " + value);
         dataMap.put(key, value);
-        if(mapKeys.contains(key)) {
-            fireTableCellUpdated(mapKeys.indexOf(key), 1);
-        } else {
+
+        // If it's a new key, add it to the list
+        if(!mapKeys.contains(key)) {
             mapKeys.add(key);
             Collections.sort(mapKeys);
-            fireTableRowsInserted(mapKeys.indexOf(key), mapKeys.indexOf(key));
         }
+
+        // Update the table
+        fireTableDataChanged();
+    }
+
+    /**
+     * Removes all values from the map
+     */
+    public void removeAll()
+    {
+        System.out.println("removeAll");
+        mapKeys.clear();
+        dataMap.clear();
+        fireTableDataChanged();
     }
 }
