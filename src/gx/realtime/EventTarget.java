@@ -63,21 +63,16 @@ public abstract class EventTarget
      * If the event is a BaseModelEvent that is bubbling, the event is passed to the parents of this EventTarget afterwards.
      * @param event The event object, containing any necessary information.
      */
-    protected void fireEvent(Event event)
-    {
-        System.out.println("Firing event " + event.getClass() + " " + event + " in " + this.getClass() + " " + this);
+    protected void fireEvent(Event event){
         if(event instanceof BaseModelEvent){
-            System.out.println("This is a basemodelEvent");
             fireEvent((BaseModelEvent) event);
         } else if(this.equals(event.getTarget())) {
-            System.out.println("This is not a BaseModelEvent: " + event.getType());
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null){
                 for (EventHandler handler : handlers){
                     handler.handleEvent(event);
                 }
             }
-            System.out.println("=EventHandlers executed. Function finished");
         }
     }
 
@@ -87,9 +82,7 @@ public abstract class EventTarget
      * @param event The BaseModelEvent, containing any necessary information.
      */
     private void fireEvent(BaseModelEvent event){
-        System.out.println("firing event on target" + event.getTarget());
         if(event.isFirstVisit(this)){
-            System.out.println("This is the first visit");
             event.addBubbledNode(this);
 
             //execute eventhandlers of this EventTarget if needed.
