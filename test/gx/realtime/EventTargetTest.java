@@ -129,6 +129,7 @@ public class EventTargetTest {
         TestObject object2 = new TestObject(110);
         object1.addChild(object2);
 
+        System.out.println("--Firing event on object 2 with object 1 as parent");
         object2.fireEvent(event);
         assertEquals(12, object1.getId());
         assertEquals(110, object2.getId());
@@ -164,5 +165,7 @@ public class EventTargetTest {
         assertEquals(310, object4.getId());
         assertEquals(410, object5.getId());
         assertEquals(510, object6.getId());
+
+        fail("TODO: test with ordinary events instead of BaseModelEvent");
     }
 }

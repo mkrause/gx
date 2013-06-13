@@ -214,10 +214,16 @@ public class Model extends EventTarget {
      */
     private void registerMutation(Event e){
         if(e instanceof RevertableEvent){
+            boolean oldUndo = canUndo();
+            boolean oldRedo = canRedo();
+
             undoableMutations.push((RevertableEvent) e);
             redoableMutations.clear();
-            UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            this.fireEvent(urscEvent);
+
+            if(oldUndo != canUndo() || oldRedo != canRedo()){
+                UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
+                this.fireEvent(urscEvent);
+            }
         }
     }
 
@@ -231,7 +237,7 @@ public class Model extends EventTarget {
         RevertableEvent redoableEvent = redoableMutations.pop();
         fireEvent(redoableEvent);
 
-        if(oldUndo != canUndo() || oldRedo || canRedo()){
+        if(oldUndo != canUndo() || oldRedo != canRedo()){
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
             this.fireEvent(urscEvent);
         }
