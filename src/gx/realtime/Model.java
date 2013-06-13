@@ -351,8 +351,8 @@ public class Model extends EventTarget {
     }
 
     /**
-     * Take an incoming remote event (event recieved from browserchannel), and use it to update our local
-     * model and fire it to the target object if possible.
+     * Take an incoming remote event (event received from browserchannel), and use it to update our local
+     * model and fire it to the target object, if possible.
      * @param event
      */
     protected void handleRemoteEvent(BaseModelEvent event) {
@@ -375,8 +375,9 @@ public class Model extends EventTarget {
         EventTarget targetNode = (EventTarget)node;
 
         // Currently, the event may just contain the target ID (because it need
-        // not have exited in our local model yet), so set it
+        // not have been created in our local model yet), so set it
         event.setTarget(targetNode);
+        
         fireEvent(event);
     }
 

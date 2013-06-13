@@ -2,6 +2,9 @@ package gx.realtime;
 
 import gx.util.RandomUtils;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class CollaborativeString extends CollaborativeObject {
 
     /**
@@ -79,14 +82,15 @@ public class CollaborativeString extends CollaborativeObject {
      */
 	public void append(String text) {
         int index = value.length();
-        fireEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
+        
+        fireWithObjectChangedEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
 	}
 
     /**
      * Gets a string representation of the collaborative string.
      * @return A  string representation of the collaborative string.
      */
-	public String getText(){
+	public String getText() {
 		return value;
 	}
 
@@ -96,7 +100,7 @@ public class CollaborativeString extends CollaborativeObject {
      * @param text The new text to insert.
      */
 	public void insertString(int index, String text){
-        fireEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
+        fireWithObjectChangedEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
 	}
     
     /**
@@ -120,8 +124,8 @@ public class CollaborativeString extends CollaborativeObject {
         
         int index = startIndex;
         String text = value.substring(startIndex, endIndex);
-        
-        fireEvent(new TextDeletedEvent(this, sessionId, userId, true, index, text));
+
+        fireWithObjectChangedEvent(new TextDeletedEvent(this, sessionId, userId, true, index, text));
 	}
 
     /**
@@ -147,8 +151,21 @@ public class CollaborativeString extends CollaborativeObject {
     /**
      * @return The length of the string.
      */
-	public int length(){
+	public int length() {
 		return value.length();
 	}
-
+    
+    /**
+     * Utility method to fire an event with an ObjectChangedEvent.
+     * @param event
+     */
+    private void fireWithObjectChangedEvent(BaseModelEvent event) {
+        // First, fire the event itself
+        fireEvent(event);
+        
+        // Next, fire an object changed event that bubbles up the tree
+        List<BaseModelEvent> eventList = new LinkedList<>();
+        eventList.add(event);
+        fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
+    }
 }
