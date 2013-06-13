@@ -42,22 +42,25 @@ public class DemoCliApp
         options.setOnFileLoaded((doc) -> {
             System.out.println("Received onDocumentLoadedCallback for sessionid " + doc.getSession());
             EventHandler handler = (event) -> {
-                System.out.println("**** Received event of type: " + event.getType());
+                System.out.println("Document received " + event.getType() + " event");
             };
             doc.addEventListener(EventType.COLLABORATOR_JOINED, handler);
             doc.addEventListener(EventType.COLLABORATOR_LEFT, handler);
-            doc.addEventListener(EventType.OBJECT_ADDED, handler);
-            doc.addEventListener(EventType.VALUE_CHANGED, handler);
 
             Model model = doc.getModel();
             System.out.println("Found model: " + model != null);
 
-            // TODO: Implement some functionality once the model is properly built on application start
             document = doc;
 
             // Get the model root
             CollaborativeMap root = model.getRoot();
             System.out.println("Root id: " + root.getId() + ", size: " + root.size());
+
+            EventHandler rootHandler = (event) -> {
+                System.out.println("Root received " + event.getType() + " event");
+            };
+            root.addEventListener(EventType.OBJECT_CHANGED, rootHandler);
+            root.addEventListener(EventType.VALUE_CHANGED, rootHandler);
 
             // Iterate over the keys and grab some key
             String key = null;
@@ -68,12 +71,19 @@ public class DemoCliApp
                     key = k;
             }
 
-
             if(key != null) {
                 // Try to get the key value
                 Object foo = root.get(key);
 
                 System.out.println("Found collaborativeObject: " + foo.toString());
+
+                // TODO: Once root.get() returns a CollaborativeObject, set the listeners
+
+                EventHandler mapListener = (event) -> {
+                    System.out.println("CollabMap received event: " + event.getType());
+                };
+//                foo.addEventListener(EventType.OBJECT_CHANGED, mapListener);
+//                foo.addEventListener(EventType.VALUE_CHANGED, mapListener);
             }
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
