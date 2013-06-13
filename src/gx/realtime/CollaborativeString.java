@@ -2,6 +2,7 @@ package gx.realtime;
 
 import gx.util.RandomUtils;
 
+import javax.xml.transform.sax.SAXSource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,9 +29,11 @@ public class CollaborativeString extends CollaborativeObject {
 	public CollaborativeString(String id, Model model){
 		super(id, model);
         value = "";
-        
-        sessionId = model.getDocument().getSession().getSessionId();
-        userId = model.getDocument().getMe().getUserId();
+
+        if(model != null) {
+            sessionId = model.getDocument().getSession().getSessionId();
+            userId = model.getDocument().getMe().getUserId();
+        }
         
         addEventListener(EventType.TEXT_INSERTED, textInsertedHandler());
         addEventListener(EventType.TEXT_DELETED, textDeletedHandler());
@@ -62,10 +65,14 @@ public class CollaborativeString extends CollaborativeObject {
         return (TextDeletedEvent event) -> {
             int index = event.getIndex();
             String deletedText = event.getText();
+
+            // Nothing to delete
+            if(deletedText.length() == 0)
+                return;
             
             // If the text at the specified position is not equal to the
             // text from the event, something went wrong (so ignore it).
-            String toBeDeleted = value.substring(index, deletedText.length());
+            String toBeDeleted = value.substring(index, index + deletedText.length());
             if (!toBeDeleted.equals(deletedText)) {
                 return;
             }
@@ -137,10 +144,11 @@ public class CollaborativeString extends CollaborativeObject {
 	public void setText(String text){
 		//TODO: perform a text diff
         //TODO: alter the text with the minimum amount of text inserts and deletes possible.
+        //TODO: create events
 	}
 
     /**
-     * Gets a string representatino of the collaborative string.
+     * Gets a string representation of the collaborative string.
      * @return A string representation of the collaborative string.
      */
     @Override
