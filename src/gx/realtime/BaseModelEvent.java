@@ -44,6 +44,8 @@ public abstract class BaseModelEvent extends Event
         this.isLocal = isLocal;
         this.bubbles = bubbles;
         this.userId = userId;
+
+        bubbledNodes = new HashSet();
     }
 
     public String getSessionId()

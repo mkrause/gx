@@ -10,6 +10,7 @@ public class TestObject extends EventTarget implements Cloneable {
 
 	public TestObject(int id){
         this.id = id;
+        children = new HashSet();
 	}
 	
 	public TestObject(int id, TestObject child){
