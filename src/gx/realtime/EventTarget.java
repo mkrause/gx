@@ -69,7 +69,7 @@ public abstract class EventTarget
         if(event instanceof BaseModelEvent){
             System.out.println("This is a basemodelEvent");
             fireEvent((BaseModelEvent) event);
-        } else if(this.equals(event.getTarget()){
+        } else if(this.equals(event.getTarget())) {
             System.out.println("This is ont a BaseModelEvent");
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null){
