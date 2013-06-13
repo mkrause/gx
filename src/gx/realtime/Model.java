@@ -11,7 +11,9 @@ import java.util.Map.Entry;
  * via the root node.
  */
 public class Model extends EventTarget {
-
+    
+    public class NoCompoundOperationInProgressException extends Exception {}
+    
     private Document document;
     private boolean initialized;
     private boolean readOnly;
@@ -45,8 +47,8 @@ public class Model extends EventTarget {
         readOnly = false;
 
         root = new CollaborativeMap("root", this);
-        undoableMutations = new LinkedList();
-        redoableMutations = new LinkedList();
+        undoableMutations = new LinkedList<>();
+        redoableMutations = new LinkedList<>();
     }
 
     /**
@@ -435,8 +437,5 @@ public class Model extends EventTarget {
      */
     public String toString() {
         return "Model(nodes=" + nodes + ")";
-    }
-
-    private class NoCompoundOperationInProgressException extends Exception {
     }
 }
