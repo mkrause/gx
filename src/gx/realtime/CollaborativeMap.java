@@ -10,15 +10,13 @@ import java.util.Map.Entry;
  * custom collaborative objects or Java objects.
  * Changes to the map will automatically be synced with the server and other collaborators. 
  * To listen for changes, add EventListeners for the gx.realtime.EventType.VALUE_CHANGED event type. 
- *
- * @param <V> The type of the values contained by this map. The map's key must be a String.
  */
-public class CollaborativeMap<V> extends CollaborativeObject{
+public class CollaborativeMap extends CollaborativeObject{
 
 	/**
 	 * The internal HashMap for storing the data of this CollaborativeMap.
 	 */
-	private HashMap<String, V> map;
+	private Map<String, Object> map;
 	
 	/**
 	 * Constructor, constructing a map for the given model. This constructor should not be called
@@ -26,7 +24,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 */
 	public CollaborativeMap(String id, Model model){
 		super(id, model);
-		map = new HashMap<String, V>();
+		map = new HashMap<>();
 	}
 	
 	/**
@@ -41,8 +39,8 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @param key The key to unmap.
 	 * @return The value that was mapped to this key, or null if there was no existing value.
 	 */
-	public V delete(String key){
-		V result = map.remove(key);
+	public Object delete(String key){
+		Object result = map.remove(key);
         if(result instanceof EventTarget){
             ((EventTarget) result).removeParent(this);
         }
@@ -54,7 +52,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @param key The key to look up.
 	 * @return The value mapped to the given key.
 	 */
-	public V get(String key){
+	public Object get(String key){
 		return map.get(key);
 	}
 	
@@ -80,12 +78,12 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * Modifications to the returned Set do not modify this collaborative map.
 	 * @return The items in this map. Each item is a [key, value] pair.
 	 */
-	public Set<Entry<String, V>> items(){
-		Set<Entry<String, V>> result = new HashSet<Entry<String, V>>();
-		Set<Entry<String, V>> entrySet = map.entrySet();
+	public Set<Entry<String, Object>> items(){
+		Set<Entry<String, Object>> result = new HashSet<>();
+		Set<Entry<String, Object>> entrySet = map.entrySet();
 		
-		for(Entry<String, V> entry : entrySet){
-			result.add(new AbstractMap.SimpleEntry<String, V>(entry.getKey(), Cloner.clone(entry.getValue())));
+		for(Entry<String, Object> entry : entrySet){
+			result.add(new AbstractMap.SimpleEntry<>(entry.getKey(), Cloner.clone(entry.getValue())));
 		}
 		return result;
 	}
@@ -105,7 +103,7 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @param value The map value.
 	 * @return The old map value, if any, that used to be mapped to the given key.
 	 */
-	public V set(String key, V value){
+	public Object set(String key, Object value){
         if(value instanceof EventTarget){
             ((EventTarget) value).addParent(this);
         }
@@ -118,11 +116,11 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 	 * @return The values in this map.
 	 */
 	@SuppressWarnings("unchecked")
-	public List<V> values(){
-        List<V> result = new ArrayList<V>();
+	public List<Object> values(){
+        List<Object> result = new ArrayList<Object>();
 
-        Collection<V> values = map.values();
-        for(V value : values){
+        Collection<Object> values = map.values();
+        for(Object value : values){
             result.add(Cloner.clone(value));
         }
         return result;
@@ -140,8 +138,8 @@ public class CollaborativeMap<V> extends CollaborativeObject{
         switch (event.getType()) {
             case VALUE_CHANGED:
                 ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
-                //TODO: getNewValue() returns a String, but we want an instance of V
-                set(valuesChangedEvent.getProperty(), (V)valuesChangedEvent.getNewValue());
+                //TODO: parse getNewValue() into the actual object using getValueType()
+                set(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
                 break;
         }
     }
@@ -158,8 +156,8 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 
         //if not, propagate event to childeren with callback.
         if(!this.equals(event.getTarget())){
-            Collection<V> values = map.values();
-            for(V value : values){
+            Collection<Object> values = map.values();
+            for(Object value : values){
                 if(value instanceof CollaborativeObject){
                     ((CollaborativeObject) value).fireEvent(event);
                 }
@@ -168,5 +166,4 @@ public class CollaborativeMap<V> extends CollaborativeObject{
 
         super.fireEvent(event);
     }
-	
 }

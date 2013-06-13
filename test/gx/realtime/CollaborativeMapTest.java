@@ -15,18 +15,18 @@ public class CollaborativeMapTest {
 
 	private static TestObject simpleObject;
 	private static TestObject testObject;
-	private static CollaborativeMap<TestObject> map;
+	private static CollaborativeMap map;
 	
 	@Before
 	public void setUp(){
-		map = new CollaborativeMap<TestObject>(null, null);
+		map = new CollaborativeMap(null, null);
 		simpleObject = new TestObject(123);
 		testObject = new TestObject(456, simpleObject);
 	}
 	
 	@Test
 	public void testCollaborativeMap(){
-		CollaborativeMap<TestObject> map = new CollaborativeMap<TestObject>(null, null);
+		CollaborativeMap map = new CollaborativeMap(null, null);
 		assertEquals(0, map.size());
 		assertTrue(map.isEmpty());
 	}
@@ -41,14 +41,14 @@ public class CollaborativeMapTest {
 		assertEquals(2, map.size());
 		assertFalse(map.isEmpty());
 		
-		Set<Entry<String, TestObject>> items = map.items();
+		Set<Entry<String, Object>> items = map.items();
 		assertEquals(2, items.size());
 
 		//check if they are actually clones
-		Iterator<Entry<String, TestObject>> iterator = items.iterator();
-		Entry<String, TestObject> obj1 = iterator.next();
-		Entry<String, TestObject> obj2 = iterator.next();
-		
+		Iterator<Entry<String, Object>> iterator = items.iterator();
+		Entry<String, Object> obj1 = iterator.next();
+		Entry<String, Object> obj2 = iterator.next();
+        
 		if(obj1.getKey().equals("123")){
 			assertEquals(simpleObject, obj1.getValue());
 			assertEquals(testObject, obj2.getValue());
@@ -69,12 +69,12 @@ public class CollaborativeMapTest {
 		map.set("123", simpleObject);
 		map.set("456", testObject);
 		
-		List<TestObject> values = map.values();
+		List<Object> values = map.values();
         System.out.println("List: " + values);
 		assertEquals(2, values.size());
 
-		TestObject obj1 = values.get(0);
-		TestObject obj2 = values.get(1);
+		TestObject obj1 = (TestObject)values.get(0);
+		TestObject obj2 = (TestObject)values.get(1);
 		if(obj1.getId() == 123){
             //obj1 =  simpleObject, obj2 = testObject
 			assertEquals(simpleObject, obj1);
