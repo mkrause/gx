@@ -8,8 +8,9 @@ public abstract class Event {
     protected EventType type;
     protected EventTarget target;
 
-    public Event(EventTarget target){
+    public Event(EventTarget target, EventType type){
         this.target = target;
+        this.type = type;
     }
 
     public EventType getType()
