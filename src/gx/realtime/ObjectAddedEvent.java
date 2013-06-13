@@ -4,14 +4,14 @@ public class ObjectAddedEvent extends BaseModelEvent {
 
     private ObjectType objectType;
 
-    public ObjectAddedEvent(String target, int type)
+    public ObjectAddedEvent(String targetId, String sessionId, String userId, boolean local, int type)
     {
-        this(target, ObjectType.map(type));
+        this(targetId, sessionId, userId, local, ObjectType.map(type));
     }
 
-    public ObjectAddedEvent(String target, ObjectType type)
+    public ObjectAddedEvent(String targetId, String sessionId, String userId, boolean local, ObjectType type)
     {
-        super(EventType.OBJECT_ADDED, target, null, null, true, false);
+        super(EventType.OBJECT_ADDED, targetId, sessionId, userId, local, false);
         this.objectType = type;
     }
     

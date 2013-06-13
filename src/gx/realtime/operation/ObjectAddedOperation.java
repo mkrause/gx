@@ -30,7 +30,7 @@ public class ObjectAddedOperation extends Operation {
     public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal)
     {
         List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
-        events.add(new ObjectAddedEvent(objectId, objectType));
+        events.add(new ObjectAddedEvent(objectId, sessionId, userId, isLocal, objectType));
         return events;
     }
     
