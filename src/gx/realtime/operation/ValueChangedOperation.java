@@ -54,9 +54,16 @@ public class ValueChangedOperation extends Operation {
 
     public enum ValueType
     {
-        EDITABLE_STRING,
-        COLLABORATIVE_OBJECT,
-        JSON;
+        EDITABLE_STRING(1),
+        COLLABORATIVE_OBJECT(2),
+        JSON(21);
+        
+        private int value;
+        
+        ValueType(int value)
+        {
+            this.value = value;
+        }
         
         public static ValueType map(int type)
         {
@@ -70,6 +77,11 @@ public class ValueChangedOperation extends Operation {
             return JSON;
             }
             return null;
-        } 
+        }
+        
+        public int asInt()
+        {
+            return value;
+        }
     }
 }

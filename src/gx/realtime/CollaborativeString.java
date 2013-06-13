@@ -29,16 +29,18 @@ public class CollaborativeString extends CollaborativeObject {
 	public CollaborativeString(String id, Model model){
 		super(id, model);
         value = "";
-
+        
         if(model != null) {
             sessionId = model.getDocument().getSession().getSessionId();
             userId = model.getDocument().getMe().getUserId();
         }
         
-        addEventListener(EventType.TEXT_INSERTED, textInsertedHandler());
-        addEventListener(EventType.TEXT_DELETED, textDeletedHandler());
+        sessionId = model.getDocument().getSession().getSessionId();
+        if (model.getDocument().getMe() != null) {
+            userId = model.getDocument().getMe().getUserId();
+        }
 	}
-
+    
     /**
      * Generic handler for TEXT_INSERTED events. Inserts the text in the
      * specified position, as specified by the event.
@@ -81,6 +83,18 @@ public class CollaborativeString extends CollaborativeObject {
             value = value.substring(0, index)
                 + value.substring(index + deletedText.length());
         };
+    }
+
+    @Override
+    protected void updateModel(BaseModelEvent event) {
+        switch (event.getType()) {
+            case TEXT_INSERTED:
+                textInsertedHandler().handleEvent((TextInsertedEvent)event);
+                break;
+            case TEXT_DELETED:
+                textDeletedHandler().handleEvent((TextDeletedEvent)event);
+                break;
+        }
     }
     
     /**
@@ -168,10 +182,13 @@ public class CollaborativeString extends CollaborativeObject {
      * @param event
      */
     private void fireWithObjectChangedEvent(BaseModelEvent event) {
-        // First, fire the event itself
+        // Update the model
+        updateModel(event);
+        
+        // Fire the event itself
         fireEvent(event);
         
-        // Next, fire an object changed event that bubbles up the tree
+        // Fire an object changed event that bubbles up the tree
         List<BaseModelEvent> eventList = new LinkedList<>();
         eventList.add(event);
         fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));

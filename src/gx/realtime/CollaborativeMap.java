@@ -11,20 +11,28 @@ import java.util.Map.Entry;
  * Changes to the map will automatically be synced with the server and other collaborators. 
  * To listen for changes, add EventListeners for the gx.realtime.EventType.VALUE_CHANGED event type. 
  */
-public class CollaborativeMap extends CollaborativeObject{
+public class CollaborativeMap extends CollaborativeObject {
 
 	/**
 	 * The internal HashMap for storing the data of this CollaborativeMap.
 	 */
 	private Map<String, Object> map;
+
+    private String sessionId;
+    private String userId;
 	
 	/**
-	 * Constructor, constructing a map for the given model. This constructor should not be called
+	 * Constructor, constructing a map for the given model. This constructor should not be called directly.
 	 * @param model
 	 */
 	public CollaborativeMap(String id, Model model){
 		super(id, model);
 		map = new HashMap<>();
+
+        sessionId = model.getDocument().getSession().getSessionId();
+        if (model.getDocument().getMe() != null) {
+            userId = model.getDocument().getMe().getUserId();
+        }
 	}
 	
 	/**
@@ -100,14 +108,18 @@ public class CollaborativeMap extends CollaborativeObject{
 	/**
 	 * Put the value into the map with the given key, overwriting an existing value for that key.
 	 * @param key The map key.
-	 * @param value The map value.
+	 * @param newValue The map value.
 	 * @return The old map value, if any, that used to be mapped to the given key.
 	 */
-	public Object set(String key, Object value){
-        if(value instanceof EventTarget){
-            ((EventTarget) value).addParent(this);
+	public Object set(String key, Object newValue) {
+        if (newValue instanceof EventTarget){
+            ((EventTarget)newValue).addParent(this);
         }
-		return map.put(key, value);
+		Object oldValue = map.put(key, newValue);
+
+        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
+        
+        return oldValue;
 	}
 	
 	/**
@@ -139,7 +151,7 @@ public class CollaborativeMap extends CollaborativeObject{
             case VALUE_CHANGED:
                 ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
                 //TODO: parse getNewValue() into the actual object using getValueType()
-                set(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
+                map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
                 break;
         }
     }
@@ -163,7 +175,22 @@ public class CollaborativeMap extends CollaborativeObject{
                 }
             }
         }
+    }
 
-        super.fireEvent(event);
+    /**
+     * Utility method to fire an event with an ObjectChangedEvent.
+     * @param event
+     */
+    private void fireWithObjectChangedEvent(BaseModelEvent event) {
+        // Update the model
+        updateModel(event);
+
+        // Fire the event itself
+        fireEvent(event);
+
+        // Fire an object changed event that bubbles up the tree
+        List<BaseModelEvent> eventList = new LinkedList<>();
+        eventList.add(event);
+        fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
     }
 }

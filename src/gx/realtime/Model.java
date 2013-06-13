@@ -1,5 +1,7 @@
 package gx.realtime;
 
+import gx.realtime.operation.ValueChangedOperation;
+import gx.realtime.operation.ValueChangedOperation.ValueType;
 import gx.util.RandomUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -351,6 +353,33 @@ public class Model extends EventTarget {
     }
 
     /**
+     * An event may still contains some node IDs in string form,
+     * deserialize these now when we know the objects have been created.
+     * @param event
+     */
+    private void deserializeEvent(BaseModelEvent event) {
+        // Set the target node
+        EventTarget targetNode = (EventTarget)nodes.get(event.getTargetId());
+        event.setTarget(targetNode);
+        
+        if (event instanceof ValueChangedEvent) {
+            ValueChangedEvent vcEvent = (ValueChangedEvent)event;
+            ValueType valueType = vcEvent.getValueType();
+            if (valueType.equals(ValueType.COLLABORATIVE_OBJECT)) {
+                Object node = nodes.get(vcEvent.getNewValue());
+                vcEvent.setNewValue(node);
+                
+                // The target node should be a map (since it's a ValueChangedEvent)
+                CollaborativeMap targetMap = (CollaborativeMap)targetNode;
+                
+                // Set the "old value" using the current value in the model
+                Object currentValue = targetMap.get(vcEvent.getProperty());
+                vcEvent.setOldValue(currentValue);
+            }
+        }
+    }
+
+    /**
      * Take an incoming remote event (event received from browserchannel), and use it to update our local
      * model and fire it to the target object, if possible.
      * @param event
@@ -371,12 +400,10 @@ public class Model extends EventTarget {
             // Not an event target, so ignore
             return;
         }
-
-        EventTarget targetNode = (EventTarget)node;
-
-        // Currently, the event may just contain the target ID (because it need
-        // not have been created in our local model yet), so set it
-        event.setTarget(targetNode);
+        
+        // The event may still contains some node IDs in string form,
+        // deserialize these now that we know the objects have been created
+        deserializeEvent(event);
         
         fireEvent(event);
     }

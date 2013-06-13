@@ -8,10 +8,10 @@ import gx.realtime.serialize.ValueChangedEventSerializer;
 public class ValueChangedEvent extends RevertableEvent {
 
     private String property;
-    private String newValue;
-    private String oldValue;
+    private Object newValue;
+    private Object oldValue;
     private ValueChangedOperation.ValueType valueType;
-
+    
     /**
      * Event fired when a map or custom object property changes.
      * @param target The target object that generated the event.
@@ -22,7 +22,7 @@ public class ValueChangedEvent extends RevertableEvent {
      * @param newValue The new property value.
      * @param oldValue  The old property value.
      */
-    public ValueChangedEvent(String target, String sessionId, String userId, boolean isLocal, String property, String newValue, String oldValue)
+    public ValueChangedEvent(String target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
     {
         super(EventType.VALUE_CHANGED, target, sessionId, userId, isLocal, false);
         this.property = property;
@@ -30,7 +30,7 @@ public class ValueChangedEvent extends RevertableEvent {
         this.oldValue = oldValue;
     }
 
-    public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, String newValue, String oldValue)
+    public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
     {
         super(EventType.VALUE_CHANGED, target, sessionId, userId, isLocal, false);
         this.property = property;
@@ -58,7 +58,7 @@ public class ValueChangedEvent extends RevertableEvent {
     /**
      * @return The new value of the property that was changed.
      */
-    public String getNewValue()
+    public Object getNewValue()
     {
         return newValue;
     }
@@ -67,7 +67,7 @@ public class ValueChangedEvent extends RevertableEvent {
      * Set the new value of the property that was changed.
      * @param newValue The new value of the property that was changed.
      */
-    public void setNewValue(String newValue)
+    public void setNewValue(Object newValue)
     {
         this.newValue = newValue;
     }
@@ -75,7 +75,7 @@ public class ValueChangedEvent extends RevertableEvent {
     /**
      * @return The old value of the property that was changed.
      */
-    public String getOldValue()
+    public Object getOldValue()
     {
         return oldValue;
     }
@@ -84,7 +84,7 @@ public class ValueChangedEvent extends RevertableEvent {
      * Set the old value of the property that was changed.
      * @param oldValue The old value of the porperty that was changed.
      */
-    public void setOldValue(String oldValue)
+    public void setOldValue(Object oldValue)
     {
         this.oldValue = oldValue;
     }
