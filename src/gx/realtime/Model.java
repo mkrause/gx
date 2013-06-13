@@ -15,7 +15,7 @@ public class Model extends EventTarget {
     private Document document;
     private boolean initialized;
     private boolean readOnly;
-    private CollaborativeMap<CollaborativeObject> root;
+    private CollaborativeMap root;
 
     /**
      * Undo / Redo stacks
@@ -44,7 +44,7 @@ public class Model extends EventTarget {
         initialized = false;
         readOnly = false;
 
-        root = new CollaborativeMap<CollaborativeObject>("root", this);
+        root = new CollaborativeMap("root", this);
         undoableMutations = new LinkedList();
         redoableMutations = new LinkedList();
     }
@@ -134,23 +134,21 @@ public class Model extends EventTarget {
 
     /**
      * Creates an empty Collaborative Map.
-     * @param <E> The generic type of the values in the map.
      * @return A newly created empty Collaborative Map.
      */
-    public <E> CollaborativeMap<E> createMap(){
-        return new CollaborativeMap<E>(RandomUtils.getRandomAlphaNumeric(), this);
+    public CollaborativeMap createMap(){
+        return new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
     }
 
     /**
      * Creates a collaborative map with the given values as initial content.
      * @param opt_initialValue Initial value for the map.
-     * @param <E> The generic type of the values in the map.
      * @return A newly created Collaborative Map with the given values as initial content.
      */
-    public <E> CollaborativeMap<E> createMap(Map<String, E> opt_initialValue){
-        CollaborativeMap<E> result = createMap();
-        Set<Entry<String, E>> entries = opt_initialValue.entrySet();
-        for(Entry<String, E> entry : entries){
+    public CollaborativeMap createMap(Map<String, Object> opt_initialValue){
+        CollaborativeMap result = createMap();
+        Set<Entry<String, Object>> entries = opt_initialValue.entrySet();
+        for(Entry<String, Object> entry : entries){
             result.set(entry.getKey(), entry.getValue());
         }
         return result;
@@ -194,7 +192,7 @@ public class Model extends EventTarget {
      * Returns the root of the object model.
      * @return The root of the object model.
      */
-    public CollaborativeMap<CollaborativeObject> getRoot(){
+    public CollaborativeMap getRoot(){
         return root;
     }
 

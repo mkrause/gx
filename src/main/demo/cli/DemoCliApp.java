@@ -56,7 +56,7 @@ public class DemoCliApp
             document = doc;
 
             // Get the model root
-            CollaborativeMap<CollaborativeObject> root = model.getRoot();
+            CollaborativeMap root = model.getRoot();
             System.out.println("Root id: " + root.getId() + ", size: " + root.size());
 
             // Iterate over the keys and grab some key
@@ -71,7 +71,7 @@ public class DemoCliApp
 
             if(key != null) {
                 // Try to get the key value
-                CollaborativeObject foo = root.get(key);
+                Object foo = root.get(key);
 
                 System.out.println("Found collaborativeObject: " + foo.toString());
             }
