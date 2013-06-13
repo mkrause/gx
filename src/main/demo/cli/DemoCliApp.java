@@ -11,8 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import static org.junit.Assert.fail;
-
 /**
  * Demo application using the framework
  */
@@ -114,7 +112,7 @@ public class DemoCliApp
         try {
             clientId = IdentificationLoader.usingDefault().getClientId();
         } catch (IOException e) {
-            fail("Could not load client ID");
+            System.out.println("Could not load client ID");
             e.printStackTrace();
             System.exit(1);
         }
