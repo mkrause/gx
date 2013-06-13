@@ -69,7 +69,7 @@ public abstract class EventTarget
         if(event instanceof BaseModelEvent){
             System.out.println("This is a basemodelEvent");
             fireEvent((BaseModelEvent) event);
-        } else {
+        } else if(this.equals(event.getTarget()){
             System.out.println("This is ont a BaseModelEvent");
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null){
@@ -90,12 +90,16 @@ public abstract class EventTarget
         if(event.isFirstVisit(this)){
             System.out.println("This is the first visit");
             event.addBubbledNode(this);
+
+            //execute eventhandlers of this EventTarget if needed.
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            if (handlers != null){
+            if (this.equals(event.getTarget()) && handlers != null){
                 for (EventHandler handler : handlers){
                     handler.handleEvent(event);
                 }
             }
+
+            //Bubble if needed.
             if(event.bubbles()){
                 for(EventTarget parent : parents){
                     parent.fireEvent(event);
