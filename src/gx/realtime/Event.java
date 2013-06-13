@@ -32,4 +32,8 @@ public abstract class Event {
     {
         this.target = target;
     }
+
+    public String toString(){
+        return "[" + this.getType() + " -> " + this.getTarget() + "]";
+    }
 }

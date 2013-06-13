@@ -214,6 +214,7 @@ public class Model extends EventTarget {
      */
     private void registerMutation(Event e){
         if(e instanceof RevertableEvent){
+            System.out.println("Event is revertable, so push on stack.");
             boolean oldUndo = canUndo();
             boolean oldRedo = canRedo();
 
@@ -388,10 +389,17 @@ public class Model extends EventTarget {
             compoundOperation.addEvent((RevertableEvent) event);
 
         } else {
+            System.out.println("Model call super fireEvent");
             super.fireEvent(event);
-            event.getTarget().fireEvent(event);
+
+            //if other target, fire on target
+            if(!this.equals(event.getTarget())){
+                System.out.println("Model call target fireEvent");
+                event.getTarget().fireEvent(event);
+            }
 
             if(register){
+                System.out.println("Register mutation");
                 registerMutation(event);
             }
         }
