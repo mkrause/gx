@@ -1,10 +1,14 @@
 /*
- * Created by JFormDesigner on Thu Jun 13 12:05:44 CEST 2013
+ * Created by JFormDesigner on Wed Jun 12 20:23:52 CEST 2013
  */
 
 package main.demo.gui;
 
-import java.awt.event.*;
+import gx.realtime.CollaborativeMap;
+import gx.realtime.Event;
+import gx.realtime.EventHandler;
+import gx.realtime.EventType;
+
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
@@ -12,25 +16,39 @@ import javax.swing.LayoutStyle;
 /**
  * @author Real Time
  */
-public class DemoGuiPanel extends JPanel {
-    public DemoGuiPanel() {
+public class RealtimePanel extends JPanel {
+    private RealtimeTableModel model;
+
+    public RealtimePanel(CollaborativeMap<String> collabMap) {
+        model = new RealtimeTableModel(collabMap);
+
+
+//        EventHandler handler = (event) -> {
+//            System.out.println("**** Received event of type: " + event.getType());
+//        };
+//        collabMap.addEventListener(EventType.COLLABORATOR_JOINED, handler);
+//        collabMap.addEventListener(EventType.COLLABORATOR_LEFT, handler);
+//        collabMap.addEventListener(EventType.OBJECT_ADDED, handler);
+//        collabMap.addEventListener(EventType.VALUE_CHANGED, handler);
         initComponents();
     }
 
-    private void createUIComponents() {
-        // TODO: add custom component creation code here
-    }
+    public static void createUI(CollaborativeMap<String> collabMap)
+    {
+        JFrame frame = new JFrame("Demo Realtime Gx Application");
 
-    private void clearButtonActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        RealtimePanel newContentPane = new RealtimePanel(collabMap);
+        newContentPane.setOpaque(true);
+        frame.setContentPane(newContentPane);
+
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     private void initComponents() {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Real Time
-        createUIComponents();
-
         tableScrollPane = new JScrollPane();
+        table = new JTable(model);
         clearButton = new JButton();
         removeButton = new JButton();
         putButton = new JButton();
@@ -42,16 +60,6 @@ public class DemoGuiPanel extends JPanel {
         eventLogScrollPane = new JScrollPane();
         eventLogArea = new JTextArea();
         eventLogLabel = new JLabel();
-
-        //======== this ========
-
-        // JFormDesigner evaluation mark
-        setBorder(new javax.swing.border.CompoundBorder(
-            new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                java.awt.Color.red), getBorder())); addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
 
         //======== tableScrollPane ========
         {
@@ -65,12 +73,6 @@ public class DemoGuiPanel extends JPanel {
 
         //---- clearButton ----
         clearButton.setText("Clear map");
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                clearButtonActionPerformed(e);
-            }
-        });
 
         //---- removeButton ----
         removeButton.setText("Remove key-value pair");
@@ -152,11 +154,8 @@ public class DemoGuiPanel extends JPanel {
                             .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)))
                     .addContainerGap())
         );
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Real Time
     private JScrollPane tableScrollPane;
     private JTable table;
     private JButton clearButton;
@@ -170,5 +169,4 @@ public class DemoGuiPanel extends JPanel {
     private JScrollPane eventLogScrollPane;
     private JTextArea eventLogArea;
     private JLabel eventLogLabel;
-    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
