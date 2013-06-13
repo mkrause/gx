@@ -1,7 +1,3 @@
-/*
- * Created by JFormDesigner on Wed Jun 12 20:23:52 CEST 2013
- */
-
 package main.demo.gui;
 
 import java.awt.event.*;
@@ -13,29 +9,37 @@ import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
 import javax.swing.event.ListSelectionEvent;
 
+/**
+ * Swing panel that handles the display and interaction with the Realtime library
+ */
 public class RealtimePanel extends JPanel {
     private RealtimeTableModel model;
 
-    public RealtimePanel(CollaborativeMap<String> collabMap) {
+    public RealtimePanel(CollaborativeMap collabMap) {
         model = new RealtimeTableModel(collabMap);
 
-//        EventHandler handler = (event) -> {
-//            System.out.println("**** Received event of type: " + event.getType());
-//        };
-//        collabMap.addEventListener(EventType.COLLABORATOR_JOINED, handler);
-//        collabMap.addEventListener(EventType.COLLABORATOR_LEFT, handler);
-//        collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
-//            model.updateValue(event.getProperty(), event.getNewValue());
-//        });
-//        collabMap.addEventListener(EventType.VALUE_CHANGED, handler);
+        // Listen for ValueChangedEvents to update the UI
+        collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
+            model.updateValue(event.getProperty(), event.getNewValue());
+            eventLogArea.append(event.toString() + "\n");
+        });
+
+        // Init the components
         initComponents();
+
+        // Put a selection listener on the table to prefill the key/value fields
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             keyField.setText((String) model.getValueAt(e.getFirstIndex(), 0));
             valueField.setText((String) model.getValueAt(e.getFirstIndex(), 1));
         });
     }
 
-    public static void createUI(CollaborativeMap<String> collabMap)
+    /**
+     * Method that creates the frame and handles some of the final setup actions.
+     * @param document
+     * @param collabMap
+     */
+    public static void createUI(Document document, CollaborativeMap collabMap)
     {
         JFrame frame = new JFrame("Demo Realtime Gx Application");
 
@@ -45,6 +49,12 @@ public class RealtimePanel extends JPanel {
 
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowStateListener((WindowEvent e) -> {
+            if(e.getNewState() == WindowEvent.WINDOW_CLOSED) {
+                System.out.println("Politely closing API link...");
+                document.close();
+            }
+        });
         frame.setVisible(true);
     }
 
@@ -80,14 +90,6 @@ public class RealtimePanel extends JPanel {
         eventLogLabel = new JLabel();
 
         //======== this ========
-
-        // JFormDesigner evaluation mark
-        setBorder(new javax.swing.border.CompoundBorder(
-            new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                java.awt.Color.red), getBorder())); addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
 
         //======== tableScrollPane ========
         {

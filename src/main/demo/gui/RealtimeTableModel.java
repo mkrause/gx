@@ -5,27 +5,19 @@ import gx.realtime.CollaborativeMap;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class RealtimeTableModel extends AbstractTableModel
 {
-    private final CollaborativeMap<String> collaborativeMap;
-    private final HashMap<String, String> dataMap;
+    private final CollaborativeMap collaborativeMap;
     private String[] columnNames = {"Key", "Value"};
     private List<String> mapKeys;
 
-    public RealtimeTableModel(CollaborativeMap<String> collaborativeMap)
+    public RealtimeTableModel(CollaborativeMap collaborativeMap)
     {
         this.collaborativeMap = collaborativeMap;
 
-        dataMap = new HashMap<>();
-        dataMap.put("key1", "value1");
-        dataMap.put("key2", "value2");
-        dataMap.put("key3", "value3");
-        dataMap.put("key4", "value4");
-
-        mapKeys = new ArrayList<>(dataMap.keySet());
+        mapKeys = new ArrayList<>(collaborativeMap.keys());
         Collections.sort(mapKeys);
     }
 
@@ -49,7 +41,7 @@ public class RealtimeTableModel extends AbstractTableModel
         if(col == 0) {
             return mapKeys.get(row);
         } else {
-            return dataMap.get(mapKeys.get(row));
+            return collaborativeMap.get(mapKeys.get(row));
         }
     }
 
@@ -61,7 +53,7 @@ public class RealtimeTableModel extends AbstractTableModel
     {
         System.out.println("removeValueAt: " + row);
         String key = mapKeys.remove(row);
-        dataMap.remove(key);
+        collaborativeMap.delete(key);
         fireTableRowsDeleted(row, row);
     }
 
@@ -73,7 +65,7 @@ public class RealtimeTableModel extends AbstractTableModel
     public void updateValue(String key, String value)
     {
         System.out.println("updateValue: " + key + " => " + value);
-        dataMap.put(key, value);
+        collaborativeMap.set(key, value);
 
         // If it's a new key, add it to the list
         if(!mapKeys.contains(key)) {
@@ -92,7 +84,7 @@ public class RealtimeTableModel extends AbstractTableModel
     {
         System.out.println("removeAll");
         mapKeys.clear();
-        dataMap.clear();
+        collaborativeMap.clear();
         fireTableDataChanged();
     }
 }
