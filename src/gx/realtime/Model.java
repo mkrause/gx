@@ -11,7 +11,9 @@ import java.util.Map.Entry;
  * via the root node.
  */
 public class Model extends EventTarget {
-
+    
+    public class NoCompoundOperationInProgressException extends Exception {}
+    
     private Document document;
     private boolean initialized;
     private boolean readOnly;
@@ -45,8 +47,8 @@ public class Model extends EventTarget {
         readOnly = false;
 
         root = new CollaborativeMap("root", this);
-        undoableMutations = new LinkedList();
-        redoableMutations = new LinkedList();
+        undoableMutations = new LinkedList<>();
+        redoableMutations = new LinkedList<>();
     }
 
     /**
@@ -349,8 +351,8 @@ public class Model extends EventTarget {
     }
 
     /**
-     * Take an incoming remote event (event recieved from browserchannel), and use it to update our local
-     * model and fire it to the target object if possible.
+     * Take an incoming remote event (event received from browserchannel), and use it to update our local
+     * model and fire it to the target object, if possible.
      * @param event
      */
     protected void handleRemoteEvent(BaseModelEvent event) {
@@ -373,8 +375,9 @@ public class Model extends EventTarget {
         EventTarget targetNode = (EventTarget)node;
 
         // Currently, the event may just contain the target ID (because it need
-        // not have exited in our local model yet), so set it
+        // not have been created in our local model yet), so set it
         event.setTarget(targetNode);
+        
         fireEvent(event);
     }
 
@@ -435,8 +438,5 @@ public class Model extends EventTarget {
      */
     public String toString() {
         return "Model(nodes=" + nodes + ")";
-    }
-
-    private class NoCompoundOperationInProgressException extends Exception {
     }
 }

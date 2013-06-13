@@ -15,10 +15,14 @@ project/plugins/project/
 
 baseFile.txt
 
-# OSX files
+# OS junk files
+[Tt]humbs.db
 .DS_Store
 
 # IDEA files
 .idea
 *.iml
 out/
+
+# Temp files
+*~

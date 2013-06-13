@@ -1,8 +1,8 @@
 package gx.realtime.serialize;
 
-import com.google.gson.Gson;
-
 public class Cloner {
+
+    private static com.rits.cloning.Cloner cloner = new com.rits.cloning.Cloner();
 
     /**
      * This is an internal function for cloning objects of a given type. Examples are the CollaborativeMap and CollaborativeList which need to clone their contents
@@ -13,7 +13,6 @@ public class Cloner {
      * @return A clone of the given object.
      */
     public static <E> E clone(E value){
-        Gson gson = new Gson();
-        return (E) gson.fromJson(gson.toJson(value), value.getClass());
+        return cloner.deepClone(value);
     }
 }
