@@ -61,17 +61,17 @@ public class DemoCliApp
             root.addEventListener(EventType.VALUE_CHANGED, rootHandler);
 
             // Iterate over the keys and grab some key
-            String key = null;
+            String firstKey = null;
             for (String k : root.keys()) {
                 System.out.println("Key: " + k);
 
-                if (key == null)
-                    key = k;
+                firstKey = k;
+                return;
             }
 
-            if(key != null) {
+            if (firstKey != null) {
                 // Try to get the key value
-                Object foo = root.get(key);
+                Object foo = root.get(firstKey);
 
                 System.out.println("Found collaborativeObject: " + foo.toString());
 
@@ -94,9 +94,10 @@ public class DemoCliApp
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             br.readLine();
-        } catch (Exception ex) { }
+        } catch (Exception ex) {
+        }
 
-        if(document != null)
+        if (document != null)
             document.close();
         System.out.println("Closed");
     }
