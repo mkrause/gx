@@ -9,7 +9,7 @@ public class CollaboratorJoinedEvent extends Event {
     Collaborator collaborator;
 
     public CollaboratorJoinedEvent(Document document, Collaborator collaborator) {
-        super(document);
+        super(document, EventType.COLLABORATOR_JOINED);
         this.collaborator = collaborator;
         this.type = EventType.COLLABORATOR_JOINED;
     }

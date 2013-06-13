@@ -16,8 +16,7 @@ public abstract class BaseModelEvent extends Event
 
     public BaseModelEvent(EventType type, String targetId, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
-        super(null);
-        this.type = type;
+        super(null, type);
         this.targetId = targetId;
         this.sessionId = sessionId;
         this.isLocal = isLocal;
@@ -38,8 +37,7 @@ public abstract class BaseModelEvent extends Event
      */
     public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
-        super(target);
-        this.type = type;
+        super(target, type);
         this.sessionId = sessionId;
         this.isLocal = isLocal;
         this.bubbles = bubbles;

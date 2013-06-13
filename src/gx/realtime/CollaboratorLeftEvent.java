@@ -9,7 +9,7 @@ public class CollaboratorLeftEvent extends Event {
     Collaborator collaborator;
 
     public CollaboratorLeftEvent(Document document, Collaborator collaborator) {
-        super(document);
+        super(document, EventType.COLLABORATOR_LEFT);
         this.collaborator = collaborator;
         this.type = EventType.COLLABORATOR_LEFT;
     }

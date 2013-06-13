@@ -16,7 +16,7 @@ public class SaveMessageSerializerTest
     @Test
     public void testSerializeValueChangedEvent() throws JsonProcessingException
     {
-        String expected = "{\"revision\":1,\"requestNumber\":2,\"changes\":[[4,[0,[8,\"id\",\"property\",[21,\"new\"]]]]]}";
+        String expected = "{\"revision\":0,\"requestNumber\":0,\"changes\":[[4,[0,[8,\"id\",\"property\",[21,\"new\"]]]]]}";
         ValueChangedEvent event = new ValueChangedEvent("id", "sessid", "userid", false, "property", "new", "old");
 
         SaveMessage m = new SaveMessage(event);

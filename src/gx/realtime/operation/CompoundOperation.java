@@ -23,12 +23,17 @@ public class CompoundOperation extends Operation {
         this.operations = operations;
     }
 
+    public Operation[] getOperations()
+    {
+        return operations;
+    }
+
     @Override
     public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal) {
         List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
         for(Operation operation : operations)
         {
-            events.addAll(events);
+            events.addAll(operation.toEvents(sessionId, userId, isLocal));
         }
         return events;
     }

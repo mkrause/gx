@@ -6,7 +6,7 @@ public class UndoRedoStateChangedEvent extends Event{
     private boolean canUndo;
 
     public UndoRedoStateChangedEvent(Model model, boolean canRedo, boolean canUndo) {
-        super(model);
+        super(model, EventType.UNDO_REDO_STATE_CHANGED);
         this.canRedo = canRedo;
         this.canUndo = canUndo;
     }

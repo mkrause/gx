@@ -389,7 +389,11 @@ public class Model extends EventTarget {
 
         } else {
             super.fireEvent(event);
-            event.getTarget().fireEvent(event);
+
+            //if other target, fire on target
+            if(!this.equals(event.getTarget())){
+                event.getTarget().fireEvent(event);
+            }
 
             if(register){
                 registerMutation(event);
