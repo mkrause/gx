@@ -18,7 +18,9 @@ import java.util.Map;
 /**
  * Top-level loader for the realtime API.
  */
-public class RealtimeLoader {
+public class RealtimeLoader
+{
+    private static final String CHANNEL_URL = "https://drive.google.com/otservice";
     
     // Callback interfaces
     public interface OnDocumentLoadedCallback {
@@ -31,11 +33,13 @@ public class RealtimeLoader {
         void handleErrors(Exception e);
     }
     
-    private static String channelUrl = "https://drive.google.com/otservice";
-    private static JsonFactory jfactory = new JsonFactory();
+    private RealtimeOptions options;
+    private JsonFactory jfactory = new JsonFactory();
+    private String accessToken;
     private Document doc;
     
-    private static class ModelResponse {
+    private static class ModelResponse
+    {
         @JsonProperty("modelId")
         private String modelId;
 
@@ -43,40 +47,56 @@ public class RealtimeLoader {
             return modelId;
         }
     }
+
+    /**
+     * Return the URL for the channel to the Drive server.
+     * @return String
+     */
+    public static String getChannelUrl()
+    {
+        return CHANNEL_URL;
+    }
     
-    private RealtimeOptions options;
-    
-    public RealtimeLoader(RealtimeOptions options) {
+    /**
+     * Construct a new loader, with the given options.
+     * @param options
+     */
+    public RealtimeLoader(RealtimeOptions options)
+    {
         this.options = options;
     }
 
     /**
-     * Return the document after it has been loaded.
-     * @return
+     * Return the document after it has been loaded, or null if
+     * we have not loaded any document yet.
+     * @return Document
      */
-    public Document getDocument() {
+    public Document getDocument()
+    {
         return doc;
     }
-
+    
     /**
-     * To avoid global states, the token will not be saved in this static class.
-     * If we need the token anyway, it is advised to save it in the Document, and add a getToken() function to the Document class.
-     * @return
+     * Return the OAuth access token, or null if none was yet loaded.
+     * @return String
      */
-    @Deprecated
-    public static String getToken(){
-        return null;
+    public String getToken()
+    {
+        return accessToken;
     }
-
-    private static String retrieveModelId(Credential cred, String docId) {
+    
+    private String retrieveModelId(Credential cred, String docId)
+    {
+        accessToken = cred.getAccessToken();
+        
         // Set up parameters
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("id", docId);
-        parameters.put("access_token", cred.getAccessToken());
+        parameters.put("access_token", accessToken);
 
         try {
             // Create connection
-            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/modelid"), parameters);
+            URLWithQuery urlq = new URLWithQuery(new URL(CHANNEL_URL + "/modelid"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
             Reader in = new NormalizedJsonReader(connection.getInputStream());
 
@@ -93,15 +113,15 @@ public class RealtimeLoader {
         }
     }
 
-    private static Session createSession(Credential cred, String modelId) {
+    private Session createSession(Credential cred, String modelId) {
         // Set up parameters
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("id", modelId);
         parameters.put("access_token", cred.getAccessToken());
 
         try {
             // Create connection
-            URLWithQuery urlq = new URLWithQuery(new URL(channelUrl + "/gs"), parameters);
+            URLWithQuery urlq = new URLWithQuery(new URL(CHANNEL_URL + "/gs"), parameters);
             HttpURLConnection connection = (HttpURLConnection) urlq.getURL().openConnection();
             Reader in = new NormalizedJsonReader(connection.getInputStream());
 
@@ -134,46 +154,42 @@ public class RealtimeLoader {
      * @param initializeFn
      * @param errorFn
      */
-    public void load(
+    private void load(
         Credential cred,
         String docId,
         OnDocumentLoadedCallback onLoaded,
         InitializeModelCallback initializeFn,
         HandleErrorsCallback errorFn
-    ) {
+    )
+    {
         doc = buildDocument(cred, docId);
-
-        if(options.getInitializeModel() != null)
-            options.getInitializeModel().initializeModel(doc.getModel());
-        if(options.getOnFileLoaded() != null)
+        
+        options.getInitializeModel().initializeModel(doc.getModel());
         options.getOnFileLoaded().onFileLoaded(doc);
     }
-
+    
     /**
-     * Main method to start the Realtime process
+     * Main method to start the Realtime process.
      */
-    public void start() {
+    public void start()
+    {
         Authorizer authorizer = new Authorizer();
         
         Credential cred;
         try {
             cred = authorizer.authorize();
         } catch (Exception e) {
+            System.out.println("Authorization failed");
             e.printStackTrace();
             return;
         }
         
         load(
-                cred,
-                options.getDocId(),
-                options.getOnFileLoaded(),
-                options.getInitializeModel(),
-                options.getHandleErrors()
+            cred,
+            options.getDocId(),
+            options.getOnFileLoaded(),
+            options.getInitializeModel(),
+            options.getHandleErrors()
         );
-    }
-    
-    public static String getChannelUrl()
-    {
-        return channelUrl;
     }
 }

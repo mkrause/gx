@@ -86,10 +86,10 @@ public class Authorizer {
         InputStream s = new FileInputStream(CLIENT_SECRETS_FILE);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, s);
         appId = getAppId(clientSecrets);
-
+        
         // Authorize
         Credential credential = USE_SERVICE_ACCOUNT ? authorizeServiceAccount() : authorizeUser(clientSecrets);
-
+        
         // Get token
         credential.refreshToken();
         logger.debug("Access token: {}", credential.getAccessToken());
