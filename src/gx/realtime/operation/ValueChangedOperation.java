@@ -21,6 +21,7 @@ public class ValueChangedOperation extends Operation {
     private String key;
     private ValueType valueType;
     private String value;
+    private boolean isRemoveOperation;
     
     public ValueChangedOperation(String id, String key, ValueType type, String value)
     {
@@ -29,6 +30,7 @@ public class ValueChangedOperation extends Operation {
         this.objectId = id;
         this.valueType = type;
         this.value = value;
+        this.isRemoveOperation = value == null;
     }
     
     public ValueChangedOperation(String id, String key, int type, String value)
@@ -43,6 +45,11 @@ public class ValueChangedOperation extends Operation {
         event.setValueType(valueType);
         events.add(event);
         return events;
+    }
+
+    public boolean isRemoveOperation()
+    {
+        return isRemoveOperation;
     }
 
     public enum ValueType

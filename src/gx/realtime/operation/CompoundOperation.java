@@ -33,7 +33,7 @@ public class CompoundOperation extends Operation {
         List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
         for(Operation operation : operations)
         {
-            events.addAll(events);
+            events.addAll(operation.toEvents(sessionId, userId, isLocal));
         }
         return events;
     }

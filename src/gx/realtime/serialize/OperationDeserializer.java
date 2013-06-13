@@ -40,7 +40,11 @@ public class OperationDeserializer extends JsonDeserializer<Operation>
         // AbstractMessage type not recognized
         if(operation == null)
             throw new JsonParseException(UNKNOWN_TYPE, jp.getCurrentLocation());
-        
+
+        // Is this is a remove operation, the last END_ARRAY_TOKEn is already read
+        if(operation instanceof ValueChangedOperation && ((ValueChangedOperation)operation).isRemoveOperation())
+            return operation;
+
         // Check if next token is array end token
         JsonToken lastToken = jp.nextToken();
         if(lastToken != null && !lastToken.equals(JsonToken.END_ARRAY))

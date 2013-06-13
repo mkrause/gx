@@ -1,20 +1,18 @@
 package gx.realtime.serialize;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import gx.realtime.BaseModelEvent;
 import gx.realtime.operation.CompoundOperation;
 import gx.realtime.operation.ObjectAddedOperation;
 import gx.realtime.operation.Operation;
 import gx.realtime.operation.ValueChangedOperation;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.fail;
 
 /**
  *
@@ -22,11 +20,12 @@ import static junit.framework.TestCase.fail;
 public class OperationDeserializerTest extends DeserializerTestHelper
 {
     final String emptyType9Operation = "[9]";
-    final String compoundOperation = "[4,[0,[9],[9],[9]]]";
     final String objectAddedOperation = "[7,\"objectid\",0]";
+    final String emptyCompoundOperation = "[4,[0]]";
+    final String compound9Operation = "[4,[0,[9],[9],[9]]]";
+    final String compoundOperation = "[4,[0,"+objectAddedOperation+","+objectAddedOperation+","+objectAddedOperation+"]]";
     final String valueChangedOperation = "[8,\"objectid\",\"key\",[1,\"new value\"]]";
     final String valueRemovedOperation = "[8,\"objectid\",\"key\"]";
-    private JsonFactory jsonFactory = new JsonFactory();
 
     @Test
     public void testDeserialize_single() throws Exception
@@ -38,13 +37,37 @@ public class OperationDeserializerTest extends DeserializerTestHelper
     }
 
     @Test
+    public void testDeserialize_empty_compound() throws Exception
+    {
+        JsonParser parser = getParser(emptyCompoundOperation);
+
+        CompoundOperation operation = (CompoundOperation)parser.readValueAs(Operation.class);
+        assertNotNull("Compound operation should be parsed correctly", operation);
+        assertEquals(0, operation.getOperations().length);
+        assertEquals(0, operation.toEvents("sessId", "userId", false).size());
+    }
+
+    @Test
+    public void testDeserialize_9_compound() throws Exception
+    {
+        JsonParser parser = getParser(compound9Operation);
+
+        CompoundOperation operation = (CompoundOperation)parser.readValueAs(Operation.class);
+        assertNotNull("Compound operation should be parsed correctly", operation);
+        assertEquals(3, operation.getOperations().length);
+        assertEquals(0, operation.toEvents("sessId", "userId", false).size());
+    }
+
+    @Test
     public void testDeserialize_compound() throws Exception
     {
         JsonParser parser = getParser(compoundOperation);
 
-        CompoundOperation event = (CompoundOperation)parser.readValueAs(Operation.class);
-        assertNotNull("Compound operation should be parsed correctly", event);
-        assertEquals(3, event.getOperations().length);
+        CompoundOperation operation = (CompoundOperation)parser.readValueAs(Operation.class);
+        assertNotNull("Compound operation should be parsed correctly", operation);
+        assertEquals(3, operation.getOperations().length);
+        List<BaseModelEvent> events = operation.toEvents("sessId", "userId", false);
+        assertEquals(3, events.size());
     }
 
     @Test
@@ -52,8 +75,9 @@ public class OperationDeserializerTest extends DeserializerTestHelper
     {
         JsonParser parser = getParser(objectAddedOperation);
 
-        ObjectAddedOperation event = (ObjectAddedOperation)parser.readValueAs(Operation.class);
-        assertNotNull("ObjectAdded operation should be parsed correctly", event);
+        ObjectAddedOperation operation = (ObjectAddedOperation)parser.readValueAs(Operation.class);
+        assertNotNull("ObjectAdded operation should be parsed correctly", operation);
+        assertEquals(1, operation.toEvents("sessId", "userId", false).size());
     }
 
     @Test
@@ -61,8 +85,10 @@ public class OperationDeserializerTest extends DeserializerTestHelper
     {
         JsonParser parser = getParser(valueChangedOperation);
 
-        ValueChangedOperation event = (ValueChangedOperation)parser.readValueAs(Operation.class);
-        assertNotNull("ValueChanged operation should be parsed correctly", event);
+        ValueChangedOperation operation = (ValueChangedOperation)parser.readValueAs(Operation.class);
+        assertNotNull("ValueChanged operation should be parsed correctly", operation);
+        assertFalse("ValueChanged operation should not be a remove operation", operation.isRemoveOperation());
+        assertEquals(1, operation.toEvents("sessId", "userId", false).size());
     }
 
     @Test
@@ -70,7 +96,9 @@ public class OperationDeserializerTest extends DeserializerTestHelper
     {
         JsonParser parser = getParser(valueRemovedOperation);
 
-        ValueChangedOperation event = (ValueChangedOperation)parser.readValueAs(Operation.class);
-        assertNotNull("ValueChanged operation should be parsed correctly", event);
+        ValueChangedOperation operation = (ValueChangedOperation)parser.readValueAs(Operation.class);
+        assertNotNull("ValueChanged operation should be parsed correctly", operation);
+        assertTrue("ValueChanged operation should be a remove operation", operation.isRemoveOperation());
+        assertEquals(1, operation.toEvents("sessId", "userId", false).size());
     }
 }

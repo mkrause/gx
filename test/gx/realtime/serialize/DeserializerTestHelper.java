@@ -11,7 +11,7 @@ import static junit.framework.TestCase.fail;
 /**
  *
  */
-public class DeserializerTestHelper
+public abstract class DeserializerTestHelper
 {
 
     private JsonFactory jsonFactory = new JsonFactory();
