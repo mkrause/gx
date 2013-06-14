@@ -1,9 +1,7 @@
 package gx.realtime;
 
-import difflib.DiffUtils;
 import gx.util.RandomUtils;
 
-import javax.xml.transform.sax.SAXSource;
 import java.util.LinkedList;
 import java.util.List;
 
