@@ -152,7 +152,7 @@ public class CollaborativeMap extends CollaborativeObject {
             case VALUE_CHANGED:
                 ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
                 System.out.println("putting key: " + valuesChangedEvent.getProperty());
-                System.out.println("putting new value: " + valuesChangedEvent.getNewValue() + valuesChangedEvent.getNewValue().getClass());
+                System.out.println("putting new value: " + valuesChangedEvent.getNewValue());
                 map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
                 break;
         }
