@@ -51,7 +51,7 @@ public class DemoGuiApp
             if (key != null) {
                 // Try to get the key value
                 CollaborativeMap map = (CollaborativeMap) root.get(key);
-                System.out.println("Found collaborativeMap: " + map.toString());
+                System.out.println("Found collaborativeMap: " + map);
 
                 // Start the UI
                 SwingUtilities.invokeLater(() -> RealtimePanel.createUI(document, map));
