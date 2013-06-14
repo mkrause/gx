@@ -27,7 +27,7 @@ public class ValueChangedOperationDeserializer extends JsonDeserializer<ValueCha
 
         JsonNode valueNode = jp.readValueAsTree();
         int valueType = valueNode.get(0).asInt();
-        String value = valueNode.get(1).toString();
+        String value = valueNode.get(1).asText();
         return new ValueChangedOperation(objectId, key, valueType, value);
     }
 }

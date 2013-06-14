@@ -171,7 +171,6 @@ public class Document extends EventTarget {
      * @param event
      */
     protected void handleRemoteEvent(Event event) {
-        System.out.println("---" + event);
         // Handle special internal events to add new objects
         if (event instanceof ObjectAddedEvent) {
             model.addNodeFromEvent((ObjectAddedEvent) event);
