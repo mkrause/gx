@@ -29,28 +29,26 @@ public class GooglePromptAuthorizer implements AuthorizerInterface
     /**
      * Client secrets of installed app.
      */
-    private static final String CLIENT_SECRETS_FILE = "client_secrets.json";
+    private final String CLIENT_SECRETS_FILE = "client_secrets.json";
     /**
      * Global configuration of Google Cloud Storage OAuth 2.0 scope.
      */
-    private static final ArrayList<String> SCOPES = new ArrayList<String>();
+    private final ArrayList<String> SCOPES = new ArrayList<>();
     /**
      * Global instance of the JSON factory.
      */
-    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private final JsonFactory JSON_FACTORY = new JacksonFactory();
     /**
      * Global instance of the HTTP transport.
      */
-    private static HttpTransport HTTP_TRANSPORT;
+    private HttpTransport HTTP_TRANSPORT;
     /**
      * Location of the credential file of the user.
      */
-    private static String CREDENTIAL_FILE;
+    private String CREDENTIAL_FILE;
 
     private static Logger logger = LogManager.getLogger(GooglePromptAuthorizer.class);
 
-    private static long appId;
-    
     /**
      * Obtains credentials using the preferred authorization method.
      *
@@ -67,8 +65,7 @@ public class GooglePromptAuthorizer implements AuthorizerInterface
         // load client secrets
         InputStream s = new FileInputStream(CLIENT_SECRETS_FILE);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, s);
-        appId = getAppId(clientSecrets);
-        
+
         // Authorize
         Credential credential = authorizeUser(clientSecrets);
         
@@ -97,15 +94,4 @@ public class GooglePromptAuthorizer implements AuthorizerInterface
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    private long getAppId(GoogleClientSecrets clientSecrets) throws Exception
-    {
-
-        String clientId = clientSecrets.getDetails().getClientId();
-        String[] parts = clientId.split("-");
-
-        if (parts.length != 2)
-            return -1;
-
-        return Long.parseLong(parts[0]);
-    }
 }
