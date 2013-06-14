@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- *
+ * Sample authorizer class that uses a GooglePromptReceiver.
  */
 public class Authorizer implements AuthorizerInterface
 {
