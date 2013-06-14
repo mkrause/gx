@@ -24,6 +24,7 @@ public class RealtimePanel extends JPanel
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
+            System.out.println("Received event for key " + event.getProperty());
             model.updateValue(event.getProperty(), (String) event.getNewValue());
             eventLogArea.append(event.toString() + "\n");
         });
@@ -55,6 +56,7 @@ public class RealtimePanel extends JPanel
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addWindowStateListener((WindowEvent e) -> {
+            System.out.println("Received WindowEvent " + e + ", should be politely closing now");
             if (e.getNewState() == WindowEvent.WINDOW_CLOSED) {
                 System.out.println("Politely closing API link...");
                 document.close();
