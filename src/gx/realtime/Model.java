@@ -369,11 +369,6 @@ public class Model extends EventTarget {
             ValueType valueType = vcEvent.getValueType();
             if (valueType.equals(ValueType.COLLABORATIVE_OBJECT)) {
                 Object node = nodes.get(vcEvent.getNewValue());
-                
-                System.out.println("=*=" + vcEvent.getNewValue());
-                System.out.println("=*=" + nodes.keySet());
-                System.out.println((String)vcEvent.getNewValue());
-                System.out.println("=*=" + nodes.containsKey("gdei8wy17hhpsusd9")); //(String)vcEvent.getNewValue()
                 vcEvent.setNewValue(node);
                 
                 // The target node should be a map (since it's a ValueChangedEvent)
