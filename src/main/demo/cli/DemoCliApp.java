@@ -66,22 +66,22 @@ public class DemoCliApp
                 System.out.println("Key: " + k);
 
                 firstKey = k;
-                return;
+                break;
             }
 
             if (firstKey != null) {
                 // Try to get the key value
-                Object foo = root.get(firstKey);
+                CollaborativeMap foo = (CollaborativeMap) root.get(firstKey);
 
                 System.out.println("Found collaborativeObject: " + foo.toString());
-
-                // TODO: Once root.get() returns a CollaborativeObject, set the listeners
 
                 EventHandler mapListener = (event) -> {
                     System.out.println("CollabMap received event: " + event.getType());
                 };
-//                foo.addEventListener(EventType.OBJECT_CHANGED, mapListener);
-//                foo.addEventListener(EventType.VALUE_CHANGED, mapListener);
+                foo.addEventListener(EventType.OBJECT_CHANGED, mapListener);
+                foo.addEventListener(EventType.VALUE_CHANGED, mapListener);
+            } else {
+                System.out.println("ERROR: found no keys");
             }
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
