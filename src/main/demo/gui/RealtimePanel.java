@@ -35,8 +35,12 @@ public class RealtimePanel extends JPanel
 
         // Put a selection listener on the table to prefill the key/value fields
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
-            keyField.setText((String) model.getValueAt(e.getFirstIndex(), 0));
-            valueField.setText((String) model.getValueAt(e.getFirstIndex(), 1));
+            int row = table.getSelectedRow();
+            if(row == -1)
+                return;
+
+            keyField.setText((String) model.getValueAt(row, 0));
+            valueField.setText((String) model.getValueAt(row, 1));
         });
     }
 
