@@ -17,9 +17,11 @@ import java.io.InputStreamReader;
 public class DemoCliApp
 {
     private Document document;
+    private CollaborativeMap collabMap;
 
     public static void main(String[] args)
     {
+        // Tune down the logging of Log4j2 a bit
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.
@@ -38,22 +40,17 @@ public class DemoCliApp
         options.setDocId("0B6gFLa0mYRcOUHlpUlFTTm5EaDQ");
 
         options.setOnFileLoaded((doc) -> {
-            System.out.println("Received onDocumentLoadedCallback for sessionid " + doc.getSession());
+            document = doc;
+
+            // Add listeners to the document
             EventHandler handler = (event) -> {
                 System.out.println("Document received " + event.getType() + " event");
             };
             doc.addEventListener(EventType.COLLABORATOR_JOINED, handler);
             doc.addEventListener(EventType.COLLABORATOR_LEFT, handler);
 
-            Model model = doc.getModel();
-            System.out.println("Found model: " + model != null);
-
-            document = doc;
-
-            // Get the model root
-            CollaborativeMap root = model.getRoot();
-            System.out.println("Root id: " + root.getId() + ", size: " + root.size());
-
+            // Add listeners to the root map
+            CollaborativeMap root = doc.getModel().getRoot();
             EventHandler rootHandler = (event) -> {
                 System.out.println("Root received " + event.getType() + " event");
             };
@@ -61,39 +58,53 @@ public class DemoCliApp
             root.addEventListener(EventType.VALUE_CHANGED, rootHandler);
 
             // Iterate over the keys and grab some key
-            String firstKey = null;
-            for (String k : root.keys()) {
-                System.out.println("Key: " + k);
-
-                firstKey = k;
-                break;
-            }
+            String firstKey = root.keys().iterator().next();
 
             if (firstKey != null) {
-                // Try to get the key value
-                CollaborativeMap foo = (CollaborativeMap) root.get(firstKey);
+                collabMap = (CollaborativeMap) root.get(firstKey);
+                System.out.println("Found collaborativeObject: " + collabMap.toString());
 
-                System.out.println("Found collaborativeObject: " + foo.toString());
-
+                // Add listeners to the map
                 EventHandler mapListener = (event) -> {
                     System.out.println("CollabMap received event: " + event.getType());
                 };
-                foo.addEventListener(EventType.OBJECT_CHANGED, mapListener);
-                foo.addEventListener(EventType.VALUE_CHANGED, mapListener);
+                collabMap.addEventListener(EventType.OBJECT_CHANGED, mapListener);
+                collabMap.addEventListener(EventType.VALUE_CHANGED, mapListener);
             } else {
                 System.out.println("ERROR: found no keys");
+                System.exit(1);
             }
         });
         options.setHandleErrors((doc) -> System.out.println("Received error, crap!"));
 
         RealtimeLoader loader = new RealtimeLoader(options);
-
         loader.start();
 
-        System.out.println("Press ENTER to disconnect");
+        handleInput();
+    }
+
+
+    /**
+     * Awaits user input and takes care of the user interaction.
+     */
+    private void handleInput()
+    {
+        String instructions = "Enter q to disconnect, s to set a value to the current time";
+        System.out.println(instructions);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
-            br.readLine();
+            while (true) {
+                String line = br.readLine();
+                if (line.equals("q")) {
+                    System.out.println("Closing...");
+                    break;
+                } else if (line.equals("s")) {
+                    System.out.println("setting value cli_app to current time");
+                    collabMap.set("cli_app", System.currentTimeMillis());
+                } else if (line.equals("?")) {
+                    System.out.println(instructions);
+                }
+            }
         } catch (Exception ex) {
         }
 
