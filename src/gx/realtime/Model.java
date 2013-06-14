@@ -450,6 +450,17 @@ public class Model extends EventTarget
             return;
         }
 
+        // TODO: fire childs of ObjectChangedEvent or parent first?
+
+        // Unpack contained events
+        if(event instanceof ObjectChangedEvent) {
+            for(BaseModelEvent e : ((ObjectChangedEvent)event).getEvents()) {
+                deserializeEvent(e);
+                updateModel(e);
+                fireEvent(e);
+            }
+        }
+
         // The event may still contains some node IDs in string form,
         // deserialize these now that we know the objects have been created
         deserializeEvent(event);
