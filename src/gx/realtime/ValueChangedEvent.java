@@ -108,4 +108,10 @@ public class ValueChangedEvent extends RevertableEvent {
     public RevertableEvent getReverseEvent(){
         return new ValueChangedEvent(target, sessionId, userId, isLocal, property, oldValue, newValue);
     }
+
+    public String toString()
+    {
+        return "[" + this.getType() + " -> " + this.getTargetId() + ", "
+            + property + "=" + newValue + "]";
+    }
 }
