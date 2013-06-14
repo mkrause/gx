@@ -25,6 +25,9 @@ public class RealtimePanel extends JPanel
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
+            if(event.isLocal())
+                return;
+
             System.out.println("Received event for key " + event.getProperty());
             model.updateValue(event.getProperty(), (String) event.getNewValue());
             eventLogArea.append(event.toString() + "\n");
