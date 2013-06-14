@@ -58,6 +58,10 @@ rtpg.log.logEvent = function (evt, eventType) {
     } else if (evt.type == gapi.drive.realtime.EventType.COLLABORATOR_JOINED || evt.type == gapi.drive.realtime.EventType.COLLABORATOR_LEFT) {
         eventDetails = evt.collaborator.displayName;
         collaborator = evt.collaborator;
+        // Collab Object Changed events
+    } else if (evt.type == gapi.drive.realtime.EventType.OBJECT_CHANGED) {
+        eventType = 'Object Changed';
+        eventDetails = 'Contains ' + evt.events.length + ' event(s)';
     }
 
     var logMessage = {
