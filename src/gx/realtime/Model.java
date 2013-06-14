@@ -1,8 +1,9 @@
 package gx.realtime;
 
-import gx.realtime.operation.ValueChangedOperation;
 import gx.realtime.operation.ValueChangedOperation.ValueType;
 import gx.util.RandomUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -13,7 +14,9 @@ import java.util.Map.Entry;
  * via the root node.
  */
 public class Model extends EventTarget {
-    
+
+    private static Logger logger = LogManager.getLogger(Model.class);
+
     public class NoCompoundOperationInProgressException extends Exception {}
     
     private Document document;
@@ -393,7 +396,7 @@ public class Model extends EventTarget {
 
         if (node == null) {
             // Unknown target ID, so ignore
-            //TODO: logging
+            logger.error("Found a null node for key {}", targetId);
             return;
         }
 
