@@ -27,29 +27,9 @@ import java.util.ArrayList;
 public class GooglePromptAuthorizer implements AuthorizerInterface
 {
     /**
-     * Indicates whether to use the service account.
-     */
-    private static final boolean USE_SERVICE_ACCOUNT = false;
-    /**
-     * E-mail address of the service account.
-     */
-    private static final String SERVICE_ACCOUNT_EMAIL = "289978787145-qoafq30a0i1qou5eul1hvepc99jnglua@developer.gserviceaccount.com";
-    /**
-     * Private key of the service account.
-     */
-    private static final String PRIVATE_KEY_FILE = "key.p12";
-    /**
      * Client secrets of installed app.
      */
     private static final String CLIENT_SECRETS_FILE = "client_secrets.json";
-    /**
-     * Application name.
-     */
-    private static final String APP_NAME = "Realtime-Gx/1.0";
-    /**
-     * Mime type of documents created and accessed by this application.
-     */
-    private static final String APP_MIME_TYPE = "application/vnd.google-apps.drive-sdk";
     /**
      * Global configuration of Google Cloud Storage OAuth 2.0 scope.
      */
@@ -90,26 +70,12 @@ public class GooglePromptAuthorizer implements AuthorizerInterface
         appId = getAppId(clientSecrets);
         
         // Authorize
-        Credential credential = USE_SERVICE_ACCOUNT ? authorizeServiceAccount() : authorizeUser(clientSecrets);
+        Credential credential = authorizeUser(clientSecrets);
         
         // Get token
         credential.refreshToken();
         logger.debug("Access token: {}", credential.getAccessToken());
         logger.debug("Expires in {} seconds", credential.getExpiresInSeconds());
-        return credential;
-    }
-
-    // Build service account credential.
-    private Credential authorizeServiceAccount() throws Exception
-    {
-        GoogleCredential credential = new GoogleCredential.Builder()
-                .setTransport(HTTP_TRANSPORT)
-                .setJsonFactory(JSON_FACTORY)
-                .setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
-                .setServiceAccountScopes(SCOPES)
-                .setServiceAccountPrivateKeyFromP12File(new java.io.File(PRIVATE_KEY_FILE))
-                .build();
-
         return credential;
     }
 
