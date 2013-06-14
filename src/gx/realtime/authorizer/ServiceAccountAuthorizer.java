@@ -29,32 +29,26 @@ public class ServiceAccountAuthorizer implements AuthorizerInterface
     /**
      * E-mail address of the service account.
      */
-    private static final String SERVICE_ACCOUNT_EMAIL = "289978787145-qoafq30a0i1qou5eul1hvepc99jnglua@developer.gserviceaccount.com";
+    private final String SERVICE_ACCOUNT_EMAIL = "289978787145-qoafq30a0i1qou5eul1hvepc99jnglua@developer.gserviceaccount.com";
     /**
      * Private key of the service account.
      */
-    private static final String PRIVATE_KEY_FILE = "key.p12";
-    /**
-     * Client secrets of installed app.
-     */
-    private static final String CLIENT_SECRETS_FILE = "client_secrets.json";
+    private final String PRIVATE_KEY_FILE = "key.p12";
     /**
      * Global configuration of Google Cloud Storage OAuth 2.0 scope.
      */
-    private static final ArrayList<String> SCOPES = new ArrayList<String>();
+    private final ArrayList<String> SCOPES = new ArrayList<>();
     /**
      * Global instance of the JSON factory.
      */
-    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private final JsonFactory JSON_FACTORY = new JacksonFactory();
     /**
      * Global instance of the HTTP transport.
      */
-    private static HttpTransport HTTP_TRANSPORT;
+    private HttpTransport HTTP_TRANSPORT;
 
     private static Logger logger = LogManager.getLogger(ServiceAccountAuthorizer.class);
 
-    private static long appId;
-    
     /**
      * Obtains credentials using the preferred authorization method.
      *
@@ -67,11 +61,6 @@ public class ServiceAccountAuthorizer implements AuthorizerInterface
         SCOPES.add(DriveScopes.DRIVE);
         HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        // load client secrets
-        InputStream s = new FileInputStream(CLIENT_SECRETS_FILE);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, s);
-        appId = getAppId(clientSecrets);
-        
         // Authorize
         Credential credential = authorizeServiceAccount();
         
@@ -96,15 +85,4 @@ public class ServiceAccountAuthorizer implements AuthorizerInterface
         return credential;
     }
 
-    private long getAppId(GoogleClientSecrets clientSecrets) throws Exception
-    {
-
-        String clientId = clientSecrets.getDetails().getClientId();
-        String[] parts = clientId.split("-");
-
-        if (parts.length != 2)
-            return -1;
-
-        return Long.parseLong(parts[0]);
-    }
 }
