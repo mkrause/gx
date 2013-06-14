@@ -1,4 +1,4 @@
-package gx.realtime;
+package gx.realtime.authorizer;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
@@ -22,13 +22,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- *
+ * Sample authorizer class that uses a GooglePromptReceiver.
  */
-public class Authorizer {
-    /**
-     * Indicates whether to use the service account.
-     */
-    private static final boolean USE_SERVICE_ACCOUNT = false;
+public class ServiceAccountAuthorizer implements AuthorizerInterface
+{
     /**
      * E-mail address of the service account.
      */
@@ -42,14 +39,6 @@ public class Authorizer {
      */
     private static final String CLIENT_SECRETS_FILE = "client_secrets.json";
     /**
-     * Application name.
-     */
-    private static final String APP_NAME = "Realtime-Gx/1.0";
-    /**
-     * Mime type of documents created and accessed by this application.
-     */
-    private static final String APP_MIME_TYPE = "application/vnd.google-apps.drive-sdk";
-    /**
      * Global configuration of Google Cloud Storage OAuth 2.0 scope.
      */
     private static final ArrayList<String> SCOPES = new ArrayList<String>();
@@ -61,12 +50,8 @@ public class Authorizer {
      * Global instance of the HTTP transport.
      */
     private static HttpTransport HTTP_TRANSPORT;
-    /**
-     * Location of the credential file of the user.
-     */
-    private static String CREDENTIAL_FILE;
 
-    private static Logger logger = LogManager.getLogger(Authorizer.class);
+    private static Logger logger = LogManager.getLogger(ServiceAccountAuthorizer.class);
 
     private static long appId;
     
@@ -76,10 +61,10 @@ public class Authorizer {
      * @return
      * @throws Exception
      */
+    @Override
     public Credential authorize() throws Exception
     {
         SCOPES.add(DriveScopes.DRIVE);
-        CREDENTIAL_FILE = System.getProperty("user.home") + "/.credentials/oauth2.json";
         HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
         // load client secrets
@@ -88,7 +73,7 @@ public class Authorizer {
         appId = getAppId(clientSecrets);
         
         // Authorize
-        Credential credential = USE_SERVICE_ACCOUNT ? authorizeServiceAccount() : authorizeUser(clientSecrets);
+        Credential credential = authorizeServiceAccount();
         
         // Get token
         credential.refreshToken();
@@ -109,24 +94,6 @@ public class Authorizer {
                 .build();
 
         return credential;
-    }
-
-    /**
-     * Authorizes the installed application to access user's protected data.
-     */
-    private Credential authorizeUser(GoogleClientSecrets clientSecrets) throws Exception
-    {
-        // set up file credential store
-        //CredentialStore credentialStore = new MemoryCredentialStore();
-        CredentialStore credentialStore = new FileCredentialStore(new java.io.File(CREDENTIAL_FILE), JSON_FACTORY);
-
-        // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setCredentialStore(credentialStore).build();
-
-        // authorize
-        VerificationCodeReceiver receiver = new GooglePromptReceiver();
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
     private long getAppId(GoogleClientSecrets clientSecrets) throws Exception

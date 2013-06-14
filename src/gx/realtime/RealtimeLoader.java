@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
 import gx.browserchannel.NormalizedJsonReader;
 import gx.browserchannel.util.URLWithQuery;
+import gx.realtime.authorizer.AuthorizerInterface;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -173,7 +174,7 @@ public class RealtimeLoader
      */
     public void start()
     {
-        Authorizer authorizer = new Authorizer();
+        AuthorizerInterface authorizer = options.getAuthorizer();
         
         Credential cred;
         try {
