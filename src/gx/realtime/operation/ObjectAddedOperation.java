@@ -26,10 +26,10 @@ public class ObjectAddedOperation extends Operation {
     }
 
     @Override
-    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal)
+    public List<Event> toEvents(String sessionId, String userId, boolean isLocal)
     {
         List<Event> events = new ArrayList<Event>();
-        events.add(new ObjectAddedEvent(model, objectType, objectId));
+        events.add(new ObjectAddedEvent(objectType, objectId));
         return events;
     }
     

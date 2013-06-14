@@ -5,8 +5,8 @@ public class ObjectAddedEvent extends Event {
     private ObjectType objectType;
     private String objectId;
 
-    public ObjectAddedEvent(Model target, ObjectType objectType, String objectId){
-        super(target, EventType.OBJECT_ADDED);
+    public ObjectAddedEvent(ObjectType objectType, String objectId){
+        super(null, EventType.OBJECT_ADDED);
         this.objectType = objectType;
         this.objectId = objectId;
     }

@@ -2,6 +2,7 @@ package gx.realtime.serialize;
 
 import com.fasterxml.jackson.core.JsonParser;
 import gx.realtime.BaseModelEvent;
+import gx.realtime.Event;
 import gx.realtime.operation.CompoundOperation;
 import gx.realtime.operation.ObjectAddedOperation;
 import gx.realtime.operation.Operation;
@@ -66,7 +67,7 @@ public class OperationDeserializerTest extends DeserializerTestHelper
         CompoundOperation operation = (CompoundOperation)parser.readValueAs(Operation.class);
         assertNotNull("Compound operation should be parsed correctly", operation);
         assertEquals(3, operation.getOperations().length);
-        List<BaseModelEvent> events = operation.toEvents("sessId", "userId", false);
+        List<Event> events = operation.toEvents("sessId", "userId", false);
         assertEquals(3, events.size());
     }
 

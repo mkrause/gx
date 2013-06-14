@@ -39,10 +39,10 @@ public class Session
         return modelId;
     }
     
-    public List<BaseModelEvent> getSnapshot()
+    public List<Event> getSnapshot()
     {
         boolean isLocal = false;
-        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+        List<Event> events = new ArrayList<>();
         for(Operation operation : snapshot)
         {
             events.addAll(operation.toEvents(null, null, isLocal));

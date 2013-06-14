@@ -58,8 +58,8 @@ public class Document extends EventTarget {
     }
 
     private void processSnapshot() {
-        List<BaseModelEvent> events = this.session.getSnapshot();
-        for (BaseModelEvent event : events) {
+        List<Event> events = this.session.getSnapshot();
+        for (Event event : events) {
             handleRemoteEvent(event);
         }
     }

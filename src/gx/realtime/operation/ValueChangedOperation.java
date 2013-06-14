@@ -37,7 +37,7 @@ public class ValueChangedOperation extends Operation {
     }
 
     @Override
-    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal)
+    public List<Event> toEvents(String sessionId, String userId, boolean isLocal)
     {
         List<Event> events = new ArrayList<>();
         ValueChangedEvent event = new ValueChangedEvent(objectId, sessionId, userId, isLocal, key, value, null);

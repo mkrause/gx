@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gx.realtime.BaseModelEvent;
+import gx.realtime.Event;
+import gx.realtime.EventTarget;
 import gx.realtime.ObjectChangedEvent;
 import gx.realtime.operation.Operation;
 
@@ -40,8 +42,8 @@ public class ObjectChangedEventDeserializer extends JsonDeserializer<ObjectChang
         jp.nextToken();
         Operation operation = jp.readValueAs(Operation.class);
         boolean isLocal = false;
-        List<BaseModelEvent> events = operation.toEvents(sessionId, userId, isLocal);
-        String targetId = events.size() == 0 ? null : events.get(0).getTargetId();
+        List<Event> events = operation.toEvents(sessionId, userId, isLocal);
+        EventTarget targetId = events.size() == 0 ? null : events.get(0).getTarget();
         
         // Create event
         ObjectChangedEvent event = new ObjectChangedEvent(targetId, sessionId, userId, isLocal, events);

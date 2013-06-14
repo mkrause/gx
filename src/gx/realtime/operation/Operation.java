@@ -15,7 +15,7 @@ public abstract class Operation
 {
     protected Type type;
 
-    public abstract List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal);
+    public abstract List<Event> toEvents(String sessionId, String userId, boolean isLocal);
     
     public enum Type
     {

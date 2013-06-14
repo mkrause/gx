@@ -188,7 +188,7 @@ public class CollaborativeString extends CollaborativeObject {
         fireEvent(event);
         
         // Fire an object changed event that bubbles up the tree
-        List<BaseModelEvent> eventList = new LinkedList<>();
+        List<Event> eventList = new LinkedList<>();
         eventList.add(event);
         fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
     }

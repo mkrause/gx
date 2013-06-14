@@ -20,7 +20,7 @@ public class AcknowledgementOperation extends Operation
     }
 
     @Override
-    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal) {
+    public List<Event> toEvents(String sessionId, String userId, boolean isLocal) {
         return new ArrayList<Event>();
     }
 }

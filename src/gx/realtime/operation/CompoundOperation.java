@@ -31,11 +31,11 @@ public class CompoundOperation extends Operation {
     }
 
     @Override
-    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal) {
+    public List<Event> toEvents(String sessionId, String userId, boolean isLocal) {
         List<Event> events = new ArrayList<>();
         for(Operation operation : operations)
         {
-            events.addAll(operation.toEvents(model, sessionId, userId, isLocal));
+            events.addAll(operation.toEvents(sessionId, userId, isLocal));
         }
         return events;
     }
