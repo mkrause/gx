@@ -173,7 +173,7 @@ public class RealtimeLoader
      */
     public void start()
     {
-        Authorizer authorizer = new Authorizer();
+        AuthorizerInterface authorizer = new Authorizer();
         
         Credential cred;
         try {

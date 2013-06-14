@@ -24,7 +24,8 @@ import java.util.ArrayList;
 /**
  *
  */
-public class Authorizer {
+public class Authorizer implements AuthorizerInterface
+{
     /**
      * Indicates whether to use the service account.
      */
@@ -76,6 +77,7 @@ public class Authorizer {
      * @return
      * @throws Exception
      */
+    @Override
     public Credential authorize() throws Exception
     {
         SCOPES.add(DriveScopes.DRIVE);
