@@ -173,7 +173,7 @@ public class RealtimeLoader
      */
     public void start()
     {
-        AuthorizerInterface authorizer = new Authorizer();
+        AuthorizerInterface authorizer = options.getAuthorizer();
         
         Credential cred;
         try {
