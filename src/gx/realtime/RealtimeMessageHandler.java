@@ -35,19 +35,8 @@ public class RealtimeMessageHandler implements MessageHandler
 
         // Handle events
         for (Event event : events) {
-            if (document != null)
+            if (document != null && event != null) {
                 document.handleRemoteEvent(event);
-
-            if (event instanceof CollaboratorJoinedEvent) {
-                Collaborator user = ((CollaboratorJoinedEvent) event).getCollaborator();
-                logger.debug("Collaborator joined event: {}", user.getDisplayName());
-            } else if (event instanceof CollaboratorLeftEvent) {
-                Collaborator user = ((CollaboratorLeftEvent) event).getCollaborator();
-                logger.debug("Collaborator left event: {}", user.getUserId());
-            } else if (event == null) {
-                logger.error("Received unparsable event from message: {}", data);
-            } else {
-                logger.error("Received unknown event of class {}\n {}", event.getClass(), event);
             }
         }
     }
