@@ -1,20 +1,16 @@
 package gx.realtime;
 
-public class ObjectAddedEvent extends BaseModelEvent {
+public class ObjectAddedEvent extends Event {
 
     private ObjectType objectType;
+    private String objectId;
 
-    public ObjectAddedEvent(String targetId, String sessionId, String userId, boolean local, int type)
-    {
-        this(targetId, sessionId, userId, local, ObjectType.map(type));
+    public ObjectAddedEvent(Model target, ObjectType objectType, String objectId){
+        super(target, EventType.OBJECT_ADDED);
+        this.objectType = objectType;
+        this.objectId = objectId;
     }
 
-    public ObjectAddedEvent(String targetId, String sessionId, String userId, boolean local, ObjectType type)
-    {
-        super(EventType.OBJECT_ADDED, targetId, sessionId, userId, local, false);
-        this.objectType = type;
-    }
-    
     public <T extends CollaborativeObject> Class<T> getObjectType()
     {
         Class cls = null;
@@ -30,5 +26,9 @@ public class ObjectAddedEvent extends BaseModelEvent {
                 break;
         }
         return cls;
+    }
+
+    public String getObjectId(){
+        return objectId;
     }
 }

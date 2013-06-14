@@ -1,6 +1,8 @@
 package gx.realtime.operation;
 
 import gx.realtime.BaseModelEvent;
+import gx.realtime.Event;
+import gx.realtime.Model;
 import gx.realtime.serialize.CompoundOperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -29,11 +31,11 @@ public class CompoundOperation extends Operation {
     }
 
     @Override
-    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal) {
-        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal) {
+        List<Event> events = new ArrayList<>();
         for(Operation operation : operations)
         {
-            events.addAll(operation.toEvents(sessionId, userId, isLocal));
+            events.addAll(operation.toEvents(model, sessionId, userId, isLocal));
         }
         return events;
     }

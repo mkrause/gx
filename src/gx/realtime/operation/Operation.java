@@ -1,6 +1,8 @@
 package gx.realtime.operation;
 
 import gx.realtime.BaseModelEvent;
+import gx.realtime.Event;
+import gx.realtime.Model;
 import gx.realtime.serialize.OperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -13,7 +15,7 @@ public abstract class Operation
 {
     protected Type type;
 
-    public abstract List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal);
+    public abstract List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal);
     
     public enum Type
     {

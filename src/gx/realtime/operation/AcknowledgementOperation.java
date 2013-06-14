@@ -1,6 +1,8 @@
 package gx.realtime.operation;
 
 import gx.realtime.BaseModelEvent;
+import gx.realtime.Event;
+import gx.realtime.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class AcknowledgementOperation extends Operation
     }
 
     @Override
-    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal) {
-        return new ArrayList<BaseModelEvent>();
+    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal) {
+        return new ArrayList<Event>();
     }
 }

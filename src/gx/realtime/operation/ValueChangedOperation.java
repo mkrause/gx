@@ -1,8 +1,6 @@
 package gx.realtime.operation;
 
-import gx.realtime.BaseModelEvent;
-import gx.realtime.ObjectAddedEvent;
-import gx.realtime.ValueChangedEvent;
+import gx.realtime.*;
 import gx.realtime.serialize.ValueChangedOperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -38,9 +36,10 @@ public class ValueChangedOperation extends Operation {
         this(id, key, ValueType.map(type), value);
     }
 
-    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal)
+    @Override
+    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal)
     {
-        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
+        List<Event> events = new ArrayList<>();
         ValueChangedEvent event = new ValueChangedEvent(objectId, sessionId, userId, isLocal, key, value, null);
         event.setValueType(valueType);
         events.add(event);

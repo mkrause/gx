@@ -172,6 +172,9 @@ public class Document extends EventTarget {
      */
     protected void handleRemoteEvent(Event event) {
         // Delegate model events to the model
+        if (event.getType().equals(EventType.OBJECT_ADDED)){
+            getModel().addObject((ObjectAddedEvent) event);
+        }
         if (event instanceof BaseModelEvent) {
             BaseModelEvent modelEvent = (BaseModelEvent)event;
             getModel().handleRemoteEvent(modelEvent);

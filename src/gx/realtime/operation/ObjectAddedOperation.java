@@ -1,8 +1,6 @@
 package gx.realtime.operation;
 
-import gx.realtime.BaseModelEvent;
-import gx.realtime.ObjectAddedEvent;
-import gx.realtime.ObjectType;
+import gx.realtime.*;
 import gx.realtime.serialize.ObjectAddedOperationDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -27,10 +25,11 @@ public class ObjectAddedOperation extends Operation {
         this.objectType = type;
     }
 
-    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal)
+    @Override
+    public List<Event> toEvents(Model model, String sessionId, String userId, boolean isLocal)
     {
-        List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
-        events.add(new ObjectAddedEvent(objectId, sessionId, userId, isLocal, objectType));
+        List<Event> events = new ArrayList<Event>();
+        events.add(new ObjectAddedEvent(model, objectType, objectId));
         return events;
     }
     

@@ -45,6 +45,7 @@ public class DemoGuiApp
             CollaborativeMap root = model.getRoot();
 
             // Iterate over the keys and grab some key
+            System.out.println("Keys in map: " + root.keys());
             String key = root.keys().iterator().next();
 
             if (key != null) {

@@ -1,5 +1,6 @@
 package gx.realtime;
 
+import difflib.DiffUtils;
 import gx.util.RandomUtils;
 
 import javax.xml.transform.sax.SAXSource;
@@ -156,7 +157,7 @@ public class CollaborativeString extends CollaborativeObject {
      * @param text The new value of the string.
      */
 	public void setText(String text){
-		//TODO: perform a text diff
+        //TODO: perform a text diff
         //TODO: alter the text with the minimum amount of text inserts and deletes possible.
         //TODO: create events
 	}

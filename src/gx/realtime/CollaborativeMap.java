@@ -112,6 +112,7 @@ public class CollaborativeMap extends CollaborativeObject {
 	 * @return The old map value, if any, that used to be mapped to the given key.
 	 */
 	public Object set(String key, Object newValue) {
+        System.out.println("Set key value: " + key + "->" + newValue);
         if (newValue instanceof EventTarget){
             ((EventTarget)newValue).addParent(this);
         }
@@ -150,7 +151,8 @@ public class CollaborativeMap extends CollaborativeObject {
         switch (event.getType()) {
             case VALUE_CHANGED:
                 ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
-                //TODO: parse getNewValue() into the actual object using getValueType()
+                System.out.println("putting key: " + valuesChangedEvent.getProperty());
+                System.out.println("putting new value: " + valuesChangedEvent.getNewValue() + valuesChangedEvent.getNewValue().getClass());
                 map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
                 break;
         }
