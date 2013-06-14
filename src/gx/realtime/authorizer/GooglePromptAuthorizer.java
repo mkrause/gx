@@ -1,4 +1,4 @@
-package gx.realtime;
+package gx.realtime.authorizer;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Sample authorizer class that uses a GooglePromptReceiver.
  */
-public class Authorizer implements AuthorizerInterface
+public class GooglePromptAuthorizer implements AuthorizerInterface
 {
     /**
      * Indicates whether to use the service account.
@@ -67,7 +67,7 @@ public class Authorizer implements AuthorizerInterface
      */
     private static String CREDENTIAL_FILE;
 
-    private static Logger logger = LogManager.getLogger(Authorizer.class);
+    private static Logger logger = LogManager.getLogger(GooglePromptAuthorizer.class);
 
     private static long appId;
     

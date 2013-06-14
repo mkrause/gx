@@ -1,4 +1,4 @@
-package gx.realtime;
+package gx.realtime.authorizer;
 
 import com.google.api.client.auth.oauth2.Credential;
 

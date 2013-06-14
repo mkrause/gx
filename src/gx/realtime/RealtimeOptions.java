@@ -3,6 +3,8 @@ package gx.realtime;
 import gx.realtime.RealtimeLoader.OnDocumentLoadedCallback;
 import gx.realtime.RealtimeLoader.InitializeModelCallback;
 import gx.realtime.RealtimeLoader.HandleErrorsCallback;
+import gx.realtime.authorizer.AuthorizerInterface;
+import gx.realtime.authorizer.GooglePromptAuthorizer;
 
 /**
  * Options (key/value) for the RealtimeLoader.
@@ -11,7 +13,7 @@ public class RealtimeOptions {
 
     private String clientId;
     private String docId;
-    private AuthorizerInterface authorizer = new Authorizer();
+    private AuthorizerInterface authorizer = new GooglePromptAuthorizer();
 
     private OnDocumentLoadedCallback onFileLoaded = (doc) -> {
         // By default, do nothing
