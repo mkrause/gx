@@ -46,10 +46,12 @@ public class DemoGuiApp
 
             // Iterate over the keys and grab some key
             String key = root.keys().iterator().next();
+            System.out.println(root.keys());
 
             if (key != null) {
                 // Try to get the key value
                 CollaborativeMap map = (CollaborativeMap) root.get(key);
+                System.out.println("==" + root);
                 System.out.println("Found collaborativeMap: " + map.toString());
 
                 // Start the UI

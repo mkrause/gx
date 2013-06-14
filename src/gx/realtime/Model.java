@@ -328,28 +328,30 @@ public class Model extends EventTarget {
             System.out.println("VALUES_REMOVED: " + id);
         };
     }
+    
+    protected void addNodeFromEvent(ObjectAddedEvent event)
+    {
+        String id = event.getTargetId();
+        
+        System.out.println("OBJECT_ADDED: " + id);
+        CollaborativeObject collabObject = create(id, event.getObjectType());
+        nodes.put(id, collabObject);
 
+        // Update the root node if we're adding an object with the
+        // special "root" ID
+        if (id.equals("root")) {
+            root = (CollaborativeMap)collabObject;
+        }
+    }
+    
     /**
      * Update our local data model based on the given (remote) event.
      * @param event
      */
     private void updateModel(BaseModelEvent event) {
         String id = event.getTargetId();
-        if (event.getType().equals(EventType.OBJECT_ADDED)) {
-            System.out.println("OBJECT_ADDED: " + id);
-            ObjectAddedEvent objectAddedEvent = (ObjectAddedEvent)event;
-            CollaborativeObject collabObject = create(id, objectAddedEvent.getObjectType());
-            nodes.put(id, collabObject);
-
-            // Update the root node if we're adding an object with the
-            // special "root" ID
-            if (id.equals("root")) {
-                root = (CollaborativeMap)collabObject;
-            }
-        } else {
-            CollaborativeObject collabObject = (CollaborativeObject)nodes.get(id);
-            collabObject.updateModel(event);
-        }
+        CollaborativeObject collabObject = (CollaborativeObject)nodes.get(id);
+        collabObject.updateModel(event);
     }
 
     /**
@@ -367,6 +369,11 @@ public class Model extends EventTarget {
             ValueType valueType = vcEvent.getValueType();
             if (valueType.equals(ValueType.COLLABORATIVE_OBJECT)) {
                 Object node = nodes.get(vcEvent.getNewValue());
+                
+                System.out.println("=*=" + vcEvent.getNewValue());
+                System.out.println("=*=" + nodes.keySet());
+                System.out.println((String)vcEvent.getNewValue());
+                System.out.println("=*=" + nodes.containsKey("gdei8wy17hhpsusd9")); //(String)vcEvent.getNewValue()
                 vcEvent.setNewValue(node);
                 
                 // The target node should be a map (since it's a ValueChangedEvent)
@@ -385,8 +392,6 @@ public class Model extends EventTarget {
      * @param event
      */
     protected void handleRemoteEvent(BaseModelEvent event) {
-        updateModel(event);
-
         String targetId = event.getTargetId();
         Object node = getNode(targetId);
 
@@ -404,6 +409,9 @@ public class Model extends EventTarget {
         // The event may still contains some node IDs in string form,
         // deserialize these now that we know the objects have been created
         deserializeEvent(event);
+        
+        // Update out local mode based on this remote event
+        updateModel(event);
         
         fireEvent(event);
     }

@@ -97,5 +97,9 @@ public abstract class BaseModelEvent extends Event
     public boolean isFirstVisit(EventTarget node){
         return !bubbledNodes.contains(node);
     }
-
+    
+    public String toString()
+    {
+        return "[" + this.getType() + " -> " + this.getTargetId() + "]";
+    }
 }

@@ -193,4 +193,9 @@ public class CollaborativeMap extends CollaborativeObject {
         eventList.add(event);
         fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
     }
+    
+    public String toString()
+    {
+        return "CollaborativeMap(id=" + getId() + ", map=" + map + ")";
+    }
 }
