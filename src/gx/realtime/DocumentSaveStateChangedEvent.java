@@ -1,39 +1,47 @@
 package gx.realtime;
 
-public class DocumentSaveStateChangedEvent extends Event {
+public class DocumentSaveStateChangedEvent extends Event
+{
 
     private Document document;
     private boolean isSaving;
     private boolean isPending;
 
-    public DocumentSaveStateChangedEvent(Document document, boolean isSaving, boolean isPending){
+    public DocumentSaveStateChangedEvent(Document document, boolean isSaving, boolean isPending)
+    {
         super(document, EventType.DOCUMENT_SAVE_STATE_CHANGED);
         this.document = document;
         this.isSaving = isSaving;
         this.isPending = isPending;
     }
 
-    public Document getDocument() {
+    public Document getDocument()
+    {
         return document;
     }
 
-    public void setDocument(Document document) {
+    public void setDocument(Document document)
+    {
         this.document = document;
     }
 
-    public boolean isSaving() {
+    public boolean isSaving()
+    {
         return isSaving;
     }
 
-    public void setSaving(boolean saving) {
+    public void setSaving(boolean saving)
+    {
         isSaving = saving;
     }
 
-    public boolean isPending() {
+    public boolean isPending()
+    {
         return isPending;
     }
 
-    public void setPending(boolean pending) {
+    public void setPending(boolean pending)
+    {
         isPending = pending;
     }
 }

@@ -1,38 +1,46 @@
 package gx.realtime;
 
-public class Error {
+public class Error
+{
 
     private ErrorType type;
     private String message;
     private boolean isFatal;
 
-    public Error(ErrorType type, String message, boolean isFatal){
+    public Error(ErrorType type, String message, boolean isFatal)
+    {
         this.type = type;
         this.message = message;
         this.isFatal = isFatal;
     }
 
-    public ErrorType getType() {
+    public ErrorType getType()
+    {
         return type;
     }
 
-    public void setType(ErrorType type) {
+    public void setType(ErrorType type)
+    {
         this.type = type;
     }
 
-    public String getMessage() {
+    public String getMessage()
+    {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(String message)
+    {
         this.message = message;
     }
 
-    public boolean isFatal() {
+    public boolean isFatal()
+    {
         return isFatal;
     }
 
-    public void setFatal(boolean fatal) {
+    public void setFatal(boolean fatal)
+    {
         isFatal = fatal;
     }
 }

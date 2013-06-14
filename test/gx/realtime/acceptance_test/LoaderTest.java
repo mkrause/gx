@@ -5,11 +5,10 @@ import gx.realtime.IdentificationLoader;
 import gx.realtime.RealtimeLoader;
 import gx.realtime.RealtimeOptions;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
@@ -19,6 +18,7 @@ public class LoaderTest
 {
     /**
      * Get the client ID from the default configuration file.
+     *
      * @return
      */
     private String getClientId()
@@ -34,7 +34,7 @@ public class LoaderTest
         }
         return clientId;
     }
-    
+
     @Test
     public void testDocumentIsLoaded()
     {
@@ -44,13 +44,13 @@ public class LoaderTest
 
         RealtimeLoader.OnDocumentLoadedCallback onDocLoaded = mock(RealtimeLoader.OnDocumentLoadedCallback.class);
         options.setOnFileLoaded(onDocLoaded);
-        
+
         RealtimeLoader loader = new RealtimeLoader(options);
-        
+
         loader.start();
-        
+
         verify(onDocLoaded).onFileLoaded(isA(Document.class));
-        
+
         // Close the document properly
         Document doc = loader.getDocument();
         doc.close();

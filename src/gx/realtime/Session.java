@@ -1,7 +1,7 @@
 package gx.realtime;
 
-import gx.realtime.operation.Operation;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gx.realtime.operation.Operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,28 +23,27 @@ public class Session
     {
         return sid;
     }
-    
+
     public int getRevision()
     {
         return revision;
     }
-    
+
     public String getInteractionMode()
     {
         return interactionMode;
     }
-    
+
     public String getModelId()
     {
         return modelId;
     }
-    
+
     public List<BaseModelEvent> getSnapshot()
     {
         boolean isLocal = false;
         List<BaseModelEvent> events = new ArrayList<BaseModelEvent>();
-        for(Operation operation : snapshot)
-        {
+        for (Operation operation : snapshot) {
             events.addAll(operation.toEvents(null, null, isLocal));
         }
         return events;

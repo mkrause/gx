@@ -12,7 +12,8 @@ public class DataMessage extends AbstractMessage
         tryParseTimestamp();
     }
 
-    public JsonNode getContent() {
+    public JsonNode getContent()
+    {
         return content;
     }
 
@@ -22,7 +23,8 @@ public class DataMessage extends AbstractMessage
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return content.toString();
     }
 }

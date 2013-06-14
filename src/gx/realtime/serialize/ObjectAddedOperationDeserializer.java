@@ -1,13 +1,12 @@
 package gx.realtime.serialize;
 
-import java.io.IOException;
-
-import gx.realtime.operation.ObjectAddedOperation;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import gx.realtime.operation.ObjectAddedOperation;
+
+import java.io.IOException;
 
 public class ObjectAddedOperationDeserializer extends JsonDeserializer<ObjectAddedOperation>
 {

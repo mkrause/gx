@@ -204,8 +204,7 @@ public class BrowserChannel
                     if (m instanceof StopMessage) {
                         // Add support for legacy stop message
                         pendingClosed = true;
-                    }
-                    else if (!(m instanceof NoopMessage)) {
+                    } else if (!(m instanceof NoopMessage)) {
                         // Pass message to handlers
                         incomingMessages.add(m);
                     }
@@ -220,6 +219,7 @@ public class BrowserChannel
 
     /**
      * Parses a JSON chunk received by the backward channel into a list of Messages.
+     *
      * @param in
      * @return
      * @throws IOException

@@ -1,42 +1,47 @@
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-public class Java8Test {
+import static org.junit.Assert.assertEquals;
 
-    enum SoccerResult{
+public class Java8Test
+{
+
+    enum SoccerResult
+    {
         WON, LOST, DRAW
     }
 
-    interface SoccerService {
+    interface SoccerService
+    {
         SoccerResult getSoccerResult(Integer teamA, Integer teamB);
     }
 
-    public SoccerResult soccerResultPredictor() {
+    public SoccerResult soccerResultPredictor()
+    {
 
         SoccerService soccerService = (teamA, teamB) -> {
             SoccerResult result = null;
-            if (teamA == teamB){
+            if (teamA == teamB) {
                 result = SoccerResult.DRAW;
-            }else if(teamA < teamB){
+            } else if (teamA < teamB) {
                 result = SoccerResult.LOST;
-            }else{
+            } else {
                 result = SoccerResult.WON;
             }
             return result;
         };
 
         // man utd vs wolves
-        SoccerResult soccerResult = soccerService.getSoccerResult(3,1);
+        SoccerResult soccerResult = soccerService.getSoccerResult(3, 1);
         //System.out.println("soccerResult = " + soccerResult);
         return soccerResult;
 
     }
 
     @Test
-    public void testJava8(){
-        Java8Test firstLambda= new Java8Test();
+    public void testJava8()
+    {
+        Java8Test firstLambda = new Java8Test();
         SoccerResult result = firstLambda.soccerResultPredictor();
         assertEquals(SoccerResult.WON, result);
     }

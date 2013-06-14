@@ -38,7 +38,7 @@ public class RealtimeTableModel extends AbstractTableModel
 
     public Object getValueAt(int row, int col)
     {
-        if(col == 0) {
+        if (col == 0) {
             return mapKeys.get(row);
         } else {
             return collaborativeMap.get(mapKeys.get(row));
@@ -47,6 +47,7 @@ public class RealtimeTableModel extends AbstractTableModel
 
     /**
      * Handles removing a value
+     *
      * @param row
      */
     public void removeValueAt(int row)
@@ -59,6 +60,7 @@ public class RealtimeTableModel extends AbstractTableModel
 
     /**
      * Handles updating the model if a value has been added. Includes checks to see if the key already exists.
+     *
      * @param key
      * @param value
      */
@@ -68,7 +70,7 @@ public class RealtimeTableModel extends AbstractTableModel
         collaborativeMap.set(key, value);
 
         // If it's a new key, add it to the list
-        if(!mapKeys.contains(key)) {
+        if (!mapKeys.contains(key)) {
             mapKeys.add(key);
             Collections.sort(mapKeys);
         }

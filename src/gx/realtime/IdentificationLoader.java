@@ -27,12 +27,12 @@ public class IdentificationLoader
     {
         return new IdentificationLoader(DEFAULT_CLIENT_SECRETS_FILE);
     }
-    
+
     public IdentificationLoader(String clientSecretsFile) throws IOException
     {
         this.clientSecretsFile = clientSecretsFile;
         jsonFactory = new JacksonFactory();
-        
+
         InputStream fis = new FileInputStream(clientSecretsFile);
         clientSecrets = GoogleClientSecrets.load(jsonFactory, fis);
     }
@@ -41,7 +41,7 @@ public class IdentificationLoader
     {
         return clientSecrets.getDetails().getClientId();
     }
-    
+
     public long getAppId()
     {
         String[] parts = getClientId().split("-");

@@ -36,22 +36,23 @@ rtpg.custom.field = null;
 /**
  * Class definition of the custom object.
  */
-rtpg.custom.Movie = function() {};
-rtpg.custom.Movie.prototype.initialize = function(name, director) {
-  this.name = name;
-  this.director = director;
-  this.notes = '';
-  this.rating = '';
+rtpg.custom.Movie = function () {
+};
+rtpg.custom.Movie.prototype.initialize = function (name, director) {
+    this.name = name;
+    this.director = director;
+    this.notes = '';
+    this.rating = '';
 };
 
 /**
  * Starting value of field for Custom Demo.
  */
 rtpg.custom.START_VALUE = {
-  name: 'Kung Fu Hustle',
-  director: 'Stephen Chow',
-  notes: '',
-  rating: '',
+    name: 'Kung Fu Hustle',
+    director: 'Stephen Chow',
+    notes: '',
+    rating: '',
 };
 
 
@@ -70,66 +71,66 @@ rtpg.custom.INPUT_NOTES_SELECTOR = '#demoCustomNotes';
 rtpg.custom.INPUT_RATING_SELECTOR = '#demoCustomRating';
 
 
-rtpg.custom.loadField = function() {
-  rtpg.custom.field = rtpg.getField(rtpg.custom.FIELD_NAME);
+rtpg.custom.loadField = function () {
+    rtpg.custom.field = rtpg.getField(rtpg.custom.FIELD_NAME);
 }
 
-rtpg.custom.initializeModel = function(model) {
-  var start = rtpg.custom.START_VALUE;
-  var field = model.create(rtpg.custom.Movie, start.name, start.director);
-  model.getRoot().set(rtpg.custom.FIELD_NAME, field);
+rtpg.custom.initializeModel = function (model) {
+    var start = rtpg.custom.START_VALUE;
+    var field = model.create(rtpg.custom.Movie, start.name, start.director);
+    model.getRoot().set(rtpg.custom.FIELD_NAME, field);
 }
 
-rtpg.custom.registerTypes = function() {
-  var Movie = rtpg.custom.Movie;
-  var custom = gapi.drive.realtime.custom;
-  custom.registerType(Movie, 'DemoMovie');
-  Movie.prototype.name = custom.collaborativeField('name');
-  Movie.prototype.director = custom.collaborativeField('director');
-  Movie.prototype.notes = custom.collaborativeField('notes');
-  Movie.prototype.rating = custom.collaborativeField('rating');
-  custom.setInitializer(Movie, Movie.prototype.initialize);
+rtpg.custom.registerTypes = function () {
+    var Movie = rtpg.custom.Movie;
+    var custom = gapi.drive.realtime.custom;
+    custom.registerType(Movie, 'DemoMovie');
+    Movie.prototype.name = custom.collaborativeField('name');
+    Movie.prototype.director = custom.collaborativeField('director');
+    Movie.prototype.notes = custom.collaborativeField('notes');
+    Movie.prototype.rating = custom.collaborativeField('rating');
+    custom.setInitializer(Movie, Movie.prototype.initialize);
 }
 
-rtpg.custom.updateUi = function() {
-  $(rtpg.custom.INPUT_NAME_SELECTOR).val(rtpg.custom.field.name);
-  $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).val(rtpg.custom.field.director);
-  $(rtpg.custom.INPUT_NOTES_SELECTOR).val(rtpg.custom.field.notes);
-  $(rtpg.custom.INPUT_RATING_SELECTOR).val(rtpg.custom.field.rating);
+rtpg.custom.updateUi = function () {
+    $(rtpg.custom.INPUT_NAME_SELECTOR).val(rtpg.custom.field.name);
+    $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).val(rtpg.custom.field.director);
+    $(rtpg.custom.INPUT_NOTES_SELECTOR).val(rtpg.custom.field.notes);
+    $(rtpg.custom.INPUT_RATING_SELECTOR).val(rtpg.custom.field.rating);
 };
 
-rtpg.custom.onNameInput = function(evt) {
-  var newValue = $(rtpg.custom.INPUT_NAME_SELECTOR).val();
-  rtpg.custom.field.name = newValue;
+rtpg.custom.onNameInput = function (evt) {
+    var newValue = $(rtpg.custom.INPUT_NAME_SELECTOR).val();
+    rtpg.custom.field.name = newValue;
 };
 
-rtpg.custom.onRealtimeChange = function(evt) {
-  rtpg.custom.updateUi();
-  rtpg.log.logEvent(evt, 'Custom Object Property Changed');
+rtpg.custom.onRealtimeChange = function (evt) {
+    rtpg.custom.updateUi();
+    rtpg.log.logEvent(evt, 'Custom Object Property Changed');
 };
 
-rtpg.custom.onDirectorInput = function(evt) {
-  var newValue = $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).val();
-  rtpg.custom.field.director = newValue;
+rtpg.custom.onDirectorInput = function (evt) {
+    var newValue = $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).val();
+    rtpg.custom.field.director = newValue;
 };
 
-rtpg.custom.onNotesInput = function(evt) {
-  var newValue = $(rtpg.custom.INPUT_NOTES_SELECTOR).val();
-  rtpg.custom.field.notes = newValue;
+rtpg.custom.onNotesInput = function (evt) {
+    var newValue = $(rtpg.custom.INPUT_NOTES_SELECTOR).val();
+    rtpg.custom.field.notes = newValue;
 };
 
-rtpg.custom.onRatingInput = function(evt) {
-  var newValue = $(rtpg.custom.INPUT_RATING_SELECTOR).val();
-  rtpg.custom.field.rating = newValue;
+rtpg.custom.onRatingInput = function (evt) {
+    var newValue = $(rtpg.custom.INPUT_RATING_SELECTOR).val();
+    rtpg.custom.field.rating = newValue;
 };
 
-rtpg.custom.connectUi = function() {
-  $(rtpg.custom.INPUT_NAME_SELECTOR).keyup(rtpg.custom.onNameInput);
-  $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).keyup(rtpg.custom.onDirectorInput);
-  $(rtpg.custom.INPUT_NOTES_SELECTOR).keyup(rtpg.custom.onNotesInput);
-  $(rtpg.custom.INPUT_RATING_SELECTOR).keyup(rtpg.custom.onRatingInput);
+rtpg.custom.connectUi = function () {
+    $(rtpg.custom.INPUT_NAME_SELECTOR).keyup(rtpg.custom.onNameInput);
+    $(rtpg.custom.INPUT_DIRECTOR_SELECTOR).keyup(rtpg.custom.onDirectorInput);
+    $(rtpg.custom.INPUT_NOTES_SELECTOR).keyup(rtpg.custom.onNotesInput);
+    $(rtpg.custom.INPUT_RATING_SELECTOR).keyup(rtpg.custom.onRatingInput);
 };
 
-rtpg.custom.connectRealtime = function() {
-  rtpg.custom.field.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, rtpg.custom.onRealtimeChange);
+rtpg.custom.connectRealtime = function () {
+    rtpg.custom.field.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, rtpg.custom.onRealtimeChange);
 };

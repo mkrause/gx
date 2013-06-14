@@ -1,19 +1,22 @@
 package gx.realtime;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-public class ClientTest {
+import static org.junit.Assert.fail;
 
-	@Test
-	public void testGetToken() {
-		fail("Not yet implemented");
-	}
+public class ClientTest
+{
 
-	@Test
-	public void testLoad() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testGetToken()
+    {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testLoad()
+    {
+        fail("Not yet implemented");
+    }
 
 }

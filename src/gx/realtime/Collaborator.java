@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  *
  */
-public class Collaborator {
+public class Collaborator
+{
 
     @JsonProperty("userId")
     private String userId;
@@ -32,9 +33,11 @@ public class Collaborator {
     private int userType;
 
     public Collaborator()
-    { }
+    {
+    }
 
-    public Collaborator(String userId, String sessionId, String displayName, String color, boolean isMe, boolean isAnonymous, String photoUrl) {
+    public Collaborator(String userId, String sessionId, String displayName, String color, boolean isMe, boolean isAnonymous, String photoUrl)
+    {
         this.userId = userId;
         this.sessionId = sessionId;
         this.displayName = displayName;
@@ -44,59 +47,73 @@ public class Collaborator {
         this.photoUrl = photoUrl;
     }
 
-    public String getUserId() {
+    public String getUserId()
+    {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(String userId)
+    {
         this.userId = userId;
     }
 
-    public String getSessionId() {
+    public String getSessionId()
+    {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
+    public void setSessionId(String sessionId)
+    {
         this.sessionId = sessionId;
     }
 
-    public String getDisplayName() {
+    public String getDisplayName()
+    {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    public void setDisplayName(String displayName)
+    {
         this.displayName = displayName;
     }
 
-    public String getColor() {
+    public String getColor()
+    {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(String color)
+    {
         this.color = color;
     }
 
-    public boolean isMe() {
+    public boolean isMe()
+    {
         return isMe;
     }
 
-    public void setMe(boolean me) {
+    public void setMe(boolean me)
+    {
         isMe = me;
     }
 
-    public boolean isAnonymous() {
+    public boolean isAnonymous()
+    {
         return isAnonymous;
     }
 
-    public void setAnonymous(boolean anonymous) {
+    public void setAnonymous(boolean anonymous)
+    {
         isAnonymous = anonymous;
     }
 
-    public String getPhotoUrl() {
+    public String getPhotoUrl()
+    {
         return photoUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) {
+    public void setPhotoUrl(String photoUrl)
+    {
         this.photoUrl = photoUrl;
     }
 }

@@ -62,14 +62,16 @@ public class ClonerTest
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(Object o)
+        {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            return property.equals(((Something)o).property);
+            return property.equals(((Something) o).property);
         }
 
         @Override
-        public int hashCode() {
+        public int hashCode()
+        {
             return property.hashCode();
         }
     }

@@ -28,6 +28,7 @@ public abstract class BaseModelEvent extends Event
 
     /**
      * Constructor, constructing a
+     *
      * @param type
      * @param target
      * @param sessionId
@@ -86,18 +87,21 @@ public abstract class BaseModelEvent extends Event
         this.targetId = targetId;
     }
 
-    public String getUserId() {
+    public String getUserId()
+    {
         return userId;
     }
 
-    public void addBubbledNode(EventTarget node){
+    public void addBubbledNode(EventTarget node)
+    {
         bubbledNodes.add(node);
     }
 
-    public boolean isFirstVisit(EventTarget node){
+    public boolean isFirstVisit(EventTarget node)
+    {
         return !bubbledNodes.contains(node);
     }
-    
+
     public String toString()
     {
         return "[" + this.getType() + " -> " + this.getTargetId() + "]";

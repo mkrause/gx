@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import gx.realtime.ObjectChangedEvent;
 import org.junit.Test;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  *

@@ -1,5 +1,6 @@
 package gx.realtime;
 
-public class DocumentClosedError {
+public class DocumentClosedError
+{
 
 }

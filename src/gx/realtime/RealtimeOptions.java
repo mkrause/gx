@@ -1,15 +1,16 @@
 package gx.realtime;
 
-import gx.realtime.RealtimeLoader.OnDocumentLoadedCallback;
-import gx.realtime.RealtimeLoader.InitializeModelCallback;
 import gx.realtime.RealtimeLoader.HandleErrorsCallback;
+import gx.realtime.RealtimeLoader.InitializeModelCallback;
+import gx.realtime.RealtimeLoader.OnDocumentLoadedCallback;
 import gx.realtime.authorizer.AuthorizerInterface;
 import gx.realtime.authorizer.GooglePromptAuthorizer;
 
 /**
  * Options (key/value) for the RealtimeLoader.
  */
-public class RealtimeOptions {
+public class RealtimeOptions
+{
 
     private String clientId;
     private String docId;
@@ -28,51 +29,63 @@ public class RealtimeOptions {
     };
 
     // Methods
-    public String getClientId() {
+    public String getClientId()
+    {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
+    public void setClientId(String clientId)
+    {
         this.clientId = clientId;
     }
 
-    public String getDocId() {
+    public String getDocId()
+    {
         return docId;
     }
 
-    public void setDocId(String docId) {
+    public void setDocId(String docId)
+    {
         this.docId = docId;
     }
 
-    public OnDocumentLoadedCallback getOnFileLoaded() {
+    public OnDocumentLoadedCallback getOnFileLoaded()
+    {
         return onFileLoaded;
     }
 
-    public void setOnFileLoaded(OnDocumentLoadedCallback onFileLoaded) {
+    public void setOnFileLoaded(OnDocumentLoadedCallback onFileLoaded)
+    {
         this.onFileLoaded = onFileLoaded;
     }
 
-    public InitializeModelCallback getInitializeModel() {
+    public InitializeModelCallback getInitializeModel()
+    {
         return initializeModel;
     }
 
-    public void setInitializeModel(InitializeModelCallback initializeModel) {
+    public void setInitializeModel(InitializeModelCallback initializeModel)
+    {
         this.initializeModel = initializeModel;
     }
 
-    public HandleErrorsCallback getHandleErrors() {
+    public HandleErrorsCallback getHandleErrors()
+    {
         return handleErrors;
     }
 
-    public void setHandleErrors(HandleErrorsCallback handleErrors) {
+    public void setHandleErrors(HandleErrorsCallback handleErrors)
+    {
         this.handleErrors = handleErrors;
     }
 
-    public AuthorizerInterface getAuthorizer() {
+    public AuthorizerInterface getAuthorizer()
+    {
         return authorizer;
     }
 
-    public void setAuthorizer(AuthorizerInterface authorizer) {
+    public void setAuthorizer(AuthorizerInterface authorizer)
+    {
         this.authorizer = authorizer;
     }
 }

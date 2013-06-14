@@ -18,7 +18,8 @@ public class AcknowledgementOperation extends Operation
     }
 
     @Override
-    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal) {
+    public List<BaseModelEvent> toEvents(String sessionId, String userId, boolean isLocal)
+    {
         return new ArrayList<BaseModelEvent>();
     }
 }

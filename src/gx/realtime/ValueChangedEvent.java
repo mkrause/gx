@@ -5,21 +5,23 @@ import gx.realtime.operation.ValueChangedOperation;
 import gx.realtime.serialize.ValueChangedEventSerializer;
 
 @JsonSerialize(using = ValueChangedEventSerializer.class)
-public class ValueChangedEvent extends RevertableEvent {
+public class ValueChangedEvent extends RevertableEvent
+{
 
     private String property;
     private Object newValue;
     private Object oldValue;
     private ValueChangedOperation.ValueType valueType;
-    
+
     /**
      * Event fired when a map or custom object property changes.
-     * @param target The target object that generated the event.
+     *
+     * @param target    The target object that generated the event.
      * @param sessionId The id of the session that initiated the event.
-     * @param userId The user id of the user that initiated the event.
-     * @param isLocal Whether this event originated in the local session.
-     * @param property The property whose value changed.
-     * @param newValue The new property value.
+     * @param userId    The user id of the user that initiated the event.
+     * @param isLocal   Whether this event originated in the local session.
+     * @param property  The property whose value changed.
+     * @param newValue  The new property value.
      * @param oldValue  The old property value.
      */
     public ValueChangedEvent(String target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
@@ -48,6 +50,7 @@ public class ValueChangedEvent extends RevertableEvent {
 
     /**
      * Set the property that was changed.
+     *
      * @param property The property that was changed.
      */
     public void setProperty(String property)
@@ -65,6 +68,7 @@ public class ValueChangedEvent extends RevertableEvent {
 
     /**
      * Set the new value of the property that was changed.
+     *
      * @param newValue The new value of the property that was changed.
      */
     public void setNewValue(Object newValue)
@@ -82,6 +86,7 @@ public class ValueChangedEvent extends RevertableEvent {
 
     /**
      * Set the old value of the property that was changed.
+     *
      * @param oldValue The old value of the porperty that was changed.
      */
     public void setOldValue(Object oldValue)
@@ -92,26 +97,30 @@ public class ValueChangedEvent extends RevertableEvent {
     /**
      * @return The type of the value that was changed.
      */
-    public ValueChangedOperation.ValueType getValueType() {
+    public ValueChangedOperation.ValueType getValueType()
+    {
         return valueType;
     }
 
     /**
      * Set the type of the value that was changed.
+     *
      * @param valueType The type of the value that was changed.
      */
-    public void setValueType(ValueChangedOperation.ValueType valueType) {
+    public void setValueType(ValueChangedOperation.ValueType valueType)
+    {
         this.valueType = valueType;
     }
 
     @Override
-    public RevertableEvent getReverseEvent(){
+    public RevertableEvent getReverseEvent()
+    {
         return new ValueChangedEvent(target, sessionId, userId, isLocal, property, oldValue, newValue);
     }
 
     public String toString()
     {
         return "[" + this.getType() + " -> " + this.getTargetId() + ", "
-            + property + "=" + newValue + "]";
+                + property + "=" + newValue + "]";
     }
 }

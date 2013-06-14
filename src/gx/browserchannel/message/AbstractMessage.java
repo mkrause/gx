@@ -1,10 +1,7 @@
 package gx.browserchannel.message;
 
-import gx.browserchannel.message.serialize.MessageDeserializer;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import java.util.Date;
+import gx.browserchannel.message.serialize.MessageDeserializer;
 
 /**
  * Abstract parent of the various BrowserChannel message classes
@@ -14,12 +11,12 @@ public abstract class AbstractMessage
 {
     protected int lastArrayId = -1;
     protected long timestamp = -1L;
-    
+
     public void setLastArrayId(int lastArrayId)
     {
         this.lastArrayId = lastArrayId;
     }
-    
+
     public int getLastArrayId()
     {
         return lastArrayId;
@@ -34,7 +31,7 @@ public abstract class AbstractMessage
     {
         return timestamp;
     }
-    
+
     @Override
     public String toString()
     {

@@ -15,6 +15,7 @@ public class ConnectionFactory
 
     /**
      * Creates a HttpUrlConnection for a given UrlWithQuery object
+     *
      * @param url
      * @return
      */
@@ -43,6 +44,7 @@ public class ConnectionFactory
 
     /**
      * Performs a request for a given URL and data string and constructs a NormalizedJsonReader from the responses
+     *
      * @param url
      * @param data
      * @return
@@ -67,6 +69,7 @@ public class ConnectionFactory
 
     /**
      * Performs a non-chunked GET request for the given URL and returns a NormalizedJsonReader on the output stream.
+     *
      * @param url
      * @return
      */
@@ -77,6 +80,7 @@ public class ConnectionFactory
 
     /**
      * Performs a GET request for the given URL and returns a NormalizedJsonReader on the output stream.
+     *
      * @param url
      * @param isChunked
      * @return

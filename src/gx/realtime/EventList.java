@@ -19,7 +19,7 @@ public class EventList implements Iterable<Event>
 
     public EventList(Event event)
     {
-        this(new Event[] { event } );
+        this(new Event[]{event});
     }
 
     public EventList(Event[] events)
@@ -38,7 +38,8 @@ public class EventList implements Iterable<Event>
     }
 
     @Override
-    public Iterator<Event> iterator() {
+    public Iterator<Event> iterator()
+    {
         return events.iterator();
     }
 }

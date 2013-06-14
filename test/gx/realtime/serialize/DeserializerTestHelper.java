@@ -16,7 +16,8 @@ public abstract class DeserializerTestHelper
 
     private JsonFactory jsonFactory = new JsonFactory();
 
-    protected JsonParser getParser(String json) {
+    protected JsonParser getParser(String json)
+    {
         JsonParser parser = null;
         try {
             parser = jsonFactory.createParser(json);

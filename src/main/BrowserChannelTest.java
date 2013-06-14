@@ -21,7 +21,6 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import gx.browserchannel.BrowserChannel;
-import gx.browserchannel.NormalizedJsonReader;
 import gx.browserchannel.message.SaveMessage;
 import gx.browserchannel.util.ConnectionFactory;
 import gx.browserchannel.util.URLWithQuery;
@@ -34,7 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;

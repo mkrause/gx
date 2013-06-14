@@ -1,14 +1,16 @@
 package gx.realtime;
 
-import static org.junit.Assert.*;
-
-import gx.realtime.CollaborativeString;
 import org.junit.Test;
 
-public class CollaborativeStringTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-	@Test
-	public void testInsertString() {
+public class CollaborativeStringTest
+{
+
+    @Test
+    public void testInsertString()
+    {
         CollaborativeString string = new CollaborativeString(null, null);
         string.append("abcdef");
         assertEquals("abcdef", string.getText());
@@ -33,10 +35,11 @@ public class CollaborativeStringTest {
         string = new CollaborativeString(null, null);
         string.insertString(0, "abc");
         assertEquals("abc", string.getText());
-	}
+    }
 
     @Test
-    public void testAppend(){
+    public void testAppend()
+    {
         CollaborativeString string = new CollaborativeString(null, null);
         assertEquals("", string.getText());
         string.append("abc");
@@ -47,8 +50,9 @@ public class CollaborativeStringTest {
         assertEquals("abcdef", string.getText());
     }
 
-	@Test
-	public void testRemoveRange() {
+    @Test
+    public void testRemoveRange()
+    {
         CollaborativeString string = new CollaborativeString(null, null);
         string.append("abcdefghijklmopqrstuvwxyz");
 
@@ -77,10 +81,11 @@ public class CollaborativeStringTest {
         assertEquals("ghijkqrstuvwxy", string.getText());
         string.removeRange(9, 14);
         assertEquals("ghijkqrst", string.getText());
-	}
+    }
 
-	@Test
-	public void testSetText() {
+    @Test
+    public void testSetText()
+    {
         CollaborativeString string = new CollaborativeString(null, null);
         string.setText("abc");
         assertEquals("abc", string.getText());
@@ -90,10 +95,11 @@ public class CollaborativeStringTest {
         string.setText("abc");
         string.setText("axbycz");
         assertEquals("axbycz", string.getText());
-	}
+    }
 
     @Test
-    public void testBasicOperations(){
+    public void testBasicOperations()
+    {
         //test if basic operations are executed according to the default event listeners for this object.
         //also test for impossible operations
         fail("TODO");

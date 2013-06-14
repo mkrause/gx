@@ -1,26 +1,30 @@
 package main.demo.gui;
 
-import java.awt.event.*;
-
-import gx.realtime.*;
+import gx.realtime.CollaborativeMap;
+import gx.realtime.Document;
+import gx.realtime.EventType;
+import gx.realtime.ValueChangedEvent;
 
 import javax.swing.*;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle;
 import javax.swing.event.ListSelectionEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 /**
  * Swing panel that handles the display and interaction with the Realtime library
  */
-public class RealtimePanel extends JPanel {
+public class RealtimePanel extends JPanel
+{
     private RealtimeTableModel model;
 
-    public RealtimePanel(CollaborativeMap collabMap) {
+    public RealtimePanel(CollaborativeMap collabMap)
+    {
         model = new RealtimeTableModel(collabMap);
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
-            model.updateValue(event.getProperty(), (String)event.getNewValue());
+            model.updateValue(event.getProperty(), (String) event.getNewValue());
             eventLogArea.append(event.toString() + "\n");
         });
 
@@ -36,6 +40,7 @@ public class RealtimePanel extends JPanel {
 
     /**
      * Method that creates the frame and handles some of the final setup actions.
+     *
      * @param document
      * @param collabMap
      */
@@ -50,7 +55,7 @@ public class RealtimePanel extends JPanel {
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addWindowStateListener((WindowEvent e) -> {
-            if(e.getNewState() == WindowEvent.WINDOW_CLOSED) {
+            if (e.getNewState() == WindowEvent.WINDOW_CLOSED) {
                 System.out.println("Politely closing API link...");
                 document.close();
             }
@@ -58,21 +63,25 @@ public class RealtimePanel extends JPanel {
         frame.setVisible(true);
     }
 
-    private void clearButtonActionPerformed(ActionEvent e) {
+    private void clearButtonActionPerformed(ActionEvent e)
+    {
         model.removeAll();
     }
 
-    private void removeButtonActionPerformed(ActionEvent e) {
-        for(int row : table.getSelectedRows()) {
+    private void removeButtonActionPerformed(ActionEvent e)
+    {
+        for (int row : table.getSelectedRows()) {
             model.removeValueAt(row);
         }
     }
 
-    private void putButtonActionPerformed(ActionEvent e) {
+    private void putButtonActionPerformed(ActionEvent e)
+    {
         model.updateValue(keyField.getText(), valueField.getText());
     }
 
-    private void initComponents() {
+    private void initComponents()
+    {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - Real Time
         tableScrollPane = new JScrollPane();
@@ -103,43 +112,53 @@ public class RealtimePanel extends JPanel {
 
         //---- clearButton ----
         clearButton.setText("Clear map");
-        clearButton.addActionListener(new ActionListener() {
+        clearButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 clearButtonActionPerformed(e);
             }
         });
 
         //---- removeButton ----
         removeButton.setText("Remove selection");
-        removeButton.addActionListener(new ActionListener() {
+        removeButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 removeButtonActionPerformed(e);
             }
         });
 
         //---- putButton ----
         putButton.setText("Put key-value pair");
-        putButton.addActionListener(new ActionListener() {
+        putButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 putButtonActionPerformed(e);
             }
         });
 
         //---- keyField ----
-        keyField.addActionListener(new ActionListener() {
+        keyField.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 putButtonActionPerformed(e);
             }
         });
 
         //---- valueField ----
-        valueField.addActionListener(new ActionListener() {
+        valueField.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 putButtonActionPerformed(e);
             }
         });
@@ -167,56 +186,56 @@ public class RealtimePanel extends JPanel {
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup()
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
-                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(layout.createParallelGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                            .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-                            .addComponent(putButton, GroupLayout.Alignment.TRAILING)
-                            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(keyLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(valueLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                            .addComponent(separator)
-                            .addComponent(eventLogScrollPane))
-                        .addComponent(eventLogLabel))
-                    .addContainerGap())
+                layout.createParallelGroup()
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup()
+                                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
+                                                .addComponent(putButton, GroupLayout.Alignment.TRAILING)
+                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                        .addComponent(keyLabel)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                        .addComponent(valueLabel)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(separator)
+                                                .addComponent(eventLogScrollPane))
+                                        .addComponent(eventLogLabel))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup()
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(layout.createParallelGroup()
-                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(clearButton)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(removeButton)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(keyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addComponent(keyLabel))
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(valueField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addComponent(valueLabel))
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(putButton)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(eventLogLabel)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)))
-                    .addContainerGap())
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup()
+                                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(clearButton)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(removeButton)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(keyLabel))
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(valueLabel))
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(putButton)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(eventLogLabel)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }

@@ -2,14 +2,14 @@ package gx.realtime;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gx.browserchannel.message.DataMessage;
 import gx.browserchannel.message.MessageEvent;
 import gx.browserchannel.message.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RealtimeMessageHandler implements MessageHandler {
+public class RealtimeMessageHandler implements MessageHandler
+{
 
     private Document document;
     private static Logger logger = LogManager.getLogger(MessageHandler.class);
@@ -20,12 +20,13 @@ public class RealtimeMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void receive(MessageEvent e) {
+    public void receive(MessageEvent e)
+    {
         logger.debug("Received messageEvent {}", e);
         logger.debug("with message {}", e.getMessage());
 
         // Return on invalid data
-        if(!(e.getMessage() instanceof DataMessage))
+        if (!(e.getMessage() instanceof DataMessage))
             return;
 
         // Parse data as events
@@ -33,18 +34,17 @@ public class RealtimeMessageHandler implements MessageHandler {
         EventList events = parseDataMessage(data);
 
         // Handle events
-        for(Event event : events)
-        {
-            if(document != null)
+        for (Event event : events) {
+            if (document != null)
                 document.handleRemoteEvent(event);
 
-            if(event instanceof CollaboratorJoinedEvent) {
-                Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
+            if (event instanceof CollaboratorJoinedEvent) {
+                Collaborator user = ((CollaboratorJoinedEvent) event).getCollaborator();
                 logger.debug("Collaborator joined event: {}", user.getDisplayName());
             } else if (event instanceof CollaboratorLeftEvent) {
-                Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
+                Collaborator user = ((CollaboratorLeftEvent) event).getCollaborator();
                 logger.debug("Collaborator left event: {}", user.getUserId());
-            } else if(event == null) {
+            } else if (event == null) {
                 logger.error("Received unparsable event from message: {}", data);
             } else {
                 logger.error("Received unknown event of class {}\n {}", event.getClass(), event);
@@ -54,6 +54,7 @@ public class RealtimeMessageHandler implements MessageHandler {
 
     /**
      * Parses a given DataMessage into an Event object.
+     *
      * @param data
      * @return
      */

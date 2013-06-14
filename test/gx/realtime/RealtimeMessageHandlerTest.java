@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.BrowserChannel;
-import gx.browserchannel.message.DataMessage;
 import gx.browserchannel.message.AbstractMessage;
+import gx.browserchannel.message.DataMessage;
 import gx.browserchannel.message.MessageEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,7 +97,7 @@ public class RealtimeMessageHandlerTest
 
         assertNotNull(e);
         assertEquals(CollaboratorJoinedEvent.class, e.getClass());
-        assertNotNull(((CollaboratorJoinedEvent)e).getCollaborator());
+        assertNotNull(((CollaboratorJoinedEvent) e).getCollaborator());
     }
 
     @Test
@@ -108,14 +108,14 @@ public class RealtimeMessageHandlerTest
 
         assertNotNull(e);
         assertEquals(CollaboratorLeftEvent.class, e.getClass());
-        assertNotNull(((CollaboratorLeftEvent)e).getCollaborator());
+        assertNotNull(((CollaboratorLeftEvent) e).getCollaborator());
     }
 
     @Test
     public void testParseDataMessage_mapValueChangedMsg_add()
     {
         DataMessage sm = getDataMessage(mapValueChangedMsg_add);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ValueChangedEvent.class, getFirstEvent(e).getClass());
@@ -125,7 +125,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_mapValueChangedMsg_delete()
     {
         DataMessage sm = getDataMessage(mapValueChangedMsg_delete);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ValueChangedEvent.class, getFirstEvent(e).getClass());
@@ -136,7 +136,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesAddedMsg_single()
     {
         DataMessage sm = getDataMessage(listValuesAddedMsg_single);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, e.getClass());
@@ -149,7 +149,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesAddedMsg_multiple()
     {
         DataMessage sm = getDataMessage(listValuesAddedMsg_multiple);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ObjectChangedEvent.class, getFirstEvent(e).getClass());
@@ -161,7 +161,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesSetMsg()
     {
         DataMessage sm = getDataMessage(listValuesSetMsg);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ValuesSetEvent.class, getFirstEvent(e).getClass());
@@ -171,7 +171,7 @@ public class RealtimeMessageHandlerTest
     public void testParseDataMessage_listValuesRemovedMsg()
     {
         DataMessage sm = getDataMessage(listValuesRemovedMsg);
-        ObjectChangedEvent e = (ObjectChangedEvent)handler.parseDataMessage(sm).getEvents().get(0);
+        ObjectChangedEvent e = (ObjectChangedEvent) handler.parseDataMessage(sm).getEvents().get(0);
 
         assertNotNull(e);
         assertEquals(ValuesRemovedEvent.class, getFirstEvent(e).getClass());
@@ -180,19 +180,23 @@ public class RealtimeMessageHandlerTest
 
     /**
      * Constructs a DataMessage from a given json string for testing
+     *
      * @param json
      * @return
      */
-    private DataMessage getDataMessage(String json) {
+    private DataMessage getDataMessage(String json)
+    {
         return new DataMessage(getJsonNode(json));
     }
 
     /**
      * Cosntructs a JsonNode from a given String
+     *
      * @param json
      * @return
      */
-    private JsonNode getJsonNode(String json) {
+    private JsonNode getJsonNode(String json)
+    {
         try {
             JsonParser jp = jsonFactory.createParser(json);
             jp.setCodec(new ObjectMapper());
@@ -203,7 +207,8 @@ public class RealtimeMessageHandlerTest
         }
     }
 
-    private Object getFirstEvent(ObjectChangedEvent e) {
+    private Object getFirstEvent(ObjectChangedEvent e)
+    {
         assertNotEquals(0, e.getEvents().size());
         return e.getEvents().get(0);
     }

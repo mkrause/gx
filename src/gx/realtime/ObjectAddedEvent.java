@@ -1,6 +1,7 @@
 package gx.realtime;
 
-public class ObjectAddedEvent extends BaseModelEvent {
+public class ObjectAddedEvent extends BaseModelEvent
+{
 
     private ObjectType objectType;
 
@@ -14,7 +15,7 @@ public class ObjectAddedEvent extends BaseModelEvent {
         super(EventType.OBJECT_ADDED, targetId, sessionId, userId, local, false);
         this.objectType = type;
     }
-    
+
     public <T extends CollaborativeObject> Class<T> getObjectType()
     {
         Class cls = null;

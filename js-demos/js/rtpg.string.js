@@ -44,41 +44,41 @@ rtpg.string.START_VALUE = 'Edit Me!';
 rtpg.string.INPUT_SELECTOR = '#demoStringInput';
 
 
-rtpg.string.loadField = function() {
-  rtpg.string.field = rtpg.getField(rtpg.string.FIELD_NAME);
+rtpg.string.loadField = function () {
+    rtpg.string.field = rtpg.getField(rtpg.string.FIELD_NAME);
 }
 
-rtpg.string.initializeModel = function(model) {
-  var field = model.createString(rtpg.string.START_VALUE);
-  model.getRoot().set(rtpg.string.FIELD_NAME, field);
+rtpg.string.initializeModel = function (model) {
+    var field = model.createString(rtpg.string.START_VALUE);
+    model.getRoot().set(rtpg.string.FIELD_NAME, field);
 }
 
-rtpg.string.updateUi = function() {
-  $(rtpg.string.INPUT_SELECTOR).val(rtpg.string.field.getText());
+rtpg.string.updateUi = function () {
+    $(rtpg.string.INPUT_SELECTOR).val(rtpg.string.field.getText());
 };
 
-rtpg.string.onInput = function(evt) {
-  var newValue = $(rtpg.string.INPUT_SELECTOR).val();
-  rtpg.string.field.setText(newValue);
+rtpg.string.onInput = function (evt) {
+    var newValue = $(rtpg.string.INPUT_SELECTOR).val();
+    rtpg.string.field.setText(newValue);
 };
 
-rtpg.string.onRealtimeInsert = function(evt) {
-  rtpg.string.updateUi();
-  rtpg.log.logEvent(evt, "String Inserted");
+rtpg.string.onRealtimeInsert = function (evt) {
+    rtpg.string.updateUi();
+    rtpg.log.logEvent(evt, "String Inserted");
 };
 
-rtpg.string.onRealtimeDelete = function(evt) {
-  rtpg.string.updateUi();
-  rtpg.log.logEvent(evt, "String Deleted");
-};
-
-
-rtpg.string.connectUi = function() {
-  $(rtpg.string.INPUT_SELECTOR).keyup(rtpg.string.onInput);
+rtpg.string.onRealtimeDelete = function (evt) {
+    rtpg.string.updateUi();
+    rtpg.log.logEvent(evt, "String Deleted");
 };
 
 
-rtpg.string.connectRealtime = function() {
-  rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, rtpg.string.onRealtimeInsert);
-  rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, rtpg.string.onRealtimeDelete);
+rtpg.string.connectUi = function () {
+    $(rtpg.string.INPUT_SELECTOR).keyup(rtpg.string.onInput);
+};
+
+
+rtpg.string.connectRealtime = function () {
+    rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, rtpg.string.onRealtimeInsert);
+    rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, rtpg.string.onRealtimeDelete);
 };

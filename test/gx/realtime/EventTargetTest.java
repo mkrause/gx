@@ -1,13 +1,12 @@
 package gx.realtime;
 
-import static org.junit.Assert.*;
-
-import gx.realtime.EventType;
-import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-public class EventTargetTest {
+public class EventTargetTest
+{
 
     //Event handlers
     private EventHandler<TestEvent> handler1 = (testEvent) -> {
@@ -21,45 +20,55 @@ public class EventTargetTest {
         TestObject testObject2 = (TestObject) testEvent.getTarget();
         testObject2.setId(testObject2.getId() + 10);
     };
-    
+
     @Test
-    public void testAddEventListener() {
-        EventTarget target = new EventTarget() {};
+    public void testAddEventListener()
+    {
+        EventTarget target = new EventTarget()
+        {
+        };
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
-        
+
         target.fireEvent(new ObjectChangedEvent(target, null, null, true, null));
-        
+
         verify(handler).handleEvent(isA(ObjectChangedEvent.class));
     }
-    
+
     @Test
-    public void testRemoveEventListener() {
-        EventTarget target = new EventTarget() {};
+    public void testRemoveEventListener()
+    {
+        EventTarget target = new EventTarget()
+        {
+        };
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
-        
+
         // Remove the handler we just added
         target.removeEventListener(EventType.OBJECT_CHANGED, handler);
-        
+
         target.fireEvent(new ObjectChangedEvent(target, null, null, true, null));
-        
+
         verify(handler, never()).handleEvent(isA(ObjectChangedEvent.class));
     }
 
     @Test
-    public void testRemovingNonexistentEventListenerIsIgnored() {
-        EventTarget target = new EventTarget() {};
-        
+    public void testRemovingNonexistentEventListenerIsIgnored()
+    {
+        EventTarget target = new EventTarget()
+        {
+        };
+
         // Remove the handler (which we never added in the first place)
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.removeEventListener(EventType.OBJECT_CHANGED, handler);
-        
+
         // Expected: no exception thrown
     }
-    
+
     @Test
-    public void testEventListeners() {
+    public void testEventListeners()
+    {
 
         TestObject simpleObject = new TestObject(100);
 
@@ -116,7 +125,8 @@ public class EventTargetTest {
     }
 
     @Test
-    public void testEventBubbling(){
+    public void testEventBubbling()
+    {
         //"bubbling" without any parents
         TestObject object1 = new TestObject(10);
         TestEvent event = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", "UID", true, true);

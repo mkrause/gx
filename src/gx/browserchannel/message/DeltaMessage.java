@@ -1,8 +1,8 @@
 package gx.browserchannel.message;
 
-import java.util.ArrayList;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
 
 public class DeltaMessage
 {
@@ -10,7 +10,7 @@ public class DeltaMessage
     private ArrayList<Object> mu;
     @JsonProperty("me")
     private MeInfo me;
-    
+
     public static class MeInfo
     {
         @JsonProperty("TITLE")
@@ -19,6 +19,6 @@ public class DeltaMessage
         private ArrayList<Object> parents;
         @JsonProperty("STAR")
         private boolean star;
-        
+
     }
 }

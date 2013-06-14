@@ -57,81 +57,81 @@ rtpg.list.SET_CONTENT_SELECTOR = '#demoListSetContent';
 rtpg.list.INPUT_SELECTOR = '#demoListInput';
 
 
-rtpg.list.loadField = function() {
-  rtpg.list.field = rtpg.getField(rtpg.list.FIELD_NAME);
+rtpg.list.loadField = function () {
+    rtpg.list.field = rtpg.getField(rtpg.list.FIELD_NAME);
 }
 
 
-rtpg.list.initializeModel = function(model) {
-  var field = model.createList();
-  field.pushAll(rtpg.list.START_VALUE);
-  model.getRoot().set(rtpg.list.FIELD_NAME, field);
+rtpg.list.initializeModel = function (model) {
+    var field = model.createList();
+    field.pushAll(rtpg.list.START_VALUE);
+    model.getRoot().set(rtpg.list.FIELD_NAME, field);
 }
 
-rtpg.list.updateUi = function() {
-  $(rtpg.list.INPUT_SELECTOR).empty();
-  var array = rtpg.list.field.asArray();
-  for (var i in array) {
-    var newOption = $('<option>').val(array[i]).text('\xa0\xa0' + array[i]);
-    $(rtpg.list.INPUT_SELECTOR).append(newOption);
-  }
+rtpg.list.updateUi = function () {
+    $(rtpg.list.INPUT_SELECTOR).empty();
+    var array = rtpg.list.field.asArray();
+    for (var i in array) {
+        var newOption = $('<option>').val(array[i]).text('\xa0\xa0' + array[i]);
+        $(rtpg.list.INPUT_SELECTOR).append(newOption);
+    }
 };
 
-rtpg.list.onClearList = function() {
-  rtpg.list.field.clear();
+rtpg.list.onClearList = function () {
+    rtpg.list.field.clear();
 };
 
-rtpg.list.onSetItem = function() {
-  var newValue = $(rtpg.list.SET_CONTENT_SELECTOR).val();
-  var indexToSet = $(rtpg.list.INPUT_SELECTOR).prop("selectedIndex");
-  if (newValue != '' && indexToSet != -1) {
-    rtpg.list.field.set(indexToSet, newValue);
-  }
+rtpg.list.onSetItem = function () {
+    var newValue = $(rtpg.list.SET_CONTENT_SELECTOR).val();
+    var indexToSet = $(rtpg.list.INPUT_SELECTOR).prop("selectedIndex");
+    if (newValue != '' && indexToSet != -1) {
+        rtpg.list.field.set(indexToSet, newValue);
+    }
 };
 
-rtpg.list.onRemoveItem = function() {
-  var indexToRemove = $(rtpg.list.INPUT_SELECTOR).prop("selectedIndex");
-  rtpg.list.field.remove(indexToRemove);
+rtpg.list.onRemoveItem = function () {
+    var indexToRemove = $(rtpg.list.INPUT_SELECTOR).prop("selectedIndex");
+    rtpg.list.field.remove(indexToRemove);
 };
 
 
-rtpg.list.onAddItem = function() {
-  var newValue = $(rtpg.list.ADD_CONTENT_SELECTOR).val();
-  if (newValue != '') {
-    rtpg.list.field.push(newValue);
-  }
+rtpg.list.onAddItem = function () {
+    var newValue = $(rtpg.list.ADD_CONTENT_SELECTOR).val();
+    if (newValue != '') {
+        rtpg.list.field.push(newValue);
+    }
 }
 
 
-rtpg.list.onRealtimeAdded = function(evt) {
-  rtpg.list.updateUi();
-  rtpg.log.logEvent(evt, 'List Items Added');
+rtpg.list.onRealtimeAdded = function (evt) {
+    rtpg.list.updateUi();
+    rtpg.log.logEvent(evt, 'List Items Added');
 };
 
 
-rtpg.list.onRealtimeRemoved = function(evt) {
-  rtpg.list.updateUi();
-  rtpg.log.logEvent(evt, 'List Items Removed');
+rtpg.list.onRealtimeRemoved = function (evt) {
+    rtpg.list.updateUi();
+    rtpg.log.logEvent(evt, 'List Items Removed');
 };
 
 
-rtpg.list.onRealtimeSet = function(evt) {
-  rtpg.list.updateUi();
-  rtpg.log.logEvent(evt, 'List Item Set');
+rtpg.list.onRealtimeSet = function (evt) {
+    rtpg.list.updateUi();
+    rtpg.log.logEvent(evt, 'List Item Set');
 };
 
 
-rtpg.list.connectUi = function() {
-  $(rtpg.list.INPUT_SELECTOR).change(rtpg.list.onSelect);
-  $(rtpg.list.ADD_SELECTOR).click(rtpg.list.onAddItem);
-  $(rtpg.list.REMOVE_SELECTOR).click(rtpg.list.onRemoveItem);
-  $(rtpg.list.CLEAR_SELECTOR).click(rtpg.list.onClearList);
-  $(rtpg.list.SET_SELECTOR).click(rtpg.list.onSetItem);
+rtpg.list.connectUi = function () {
+    $(rtpg.list.INPUT_SELECTOR).change(rtpg.list.onSelect);
+    $(rtpg.list.ADD_SELECTOR).click(rtpg.list.onAddItem);
+    $(rtpg.list.REMOVE_SELECTOR).click(rtpg.list.onRemoveItem);
+    $(rtpg.list.CLEAR_SELECTOR).click(rtpg.list.onClearList);
+    $(rtpg.list.SET_SELECTOR).click(rtpg.list.onSetItem);
 };
 
 
-rtpg.list.connectRealtime = function() {
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, rtpg.list.onRealtimeAdded);
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, rtpg.list.onRealtimeRemoved);
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, rtpg.list.onRealtimeSet);
+rtpg.list.connectRealtime = function () {
+    rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, rtpg.list.onRealtimeAdded);
+    rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, rtpg.list.onRealtimeRemoved);
+    rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, rtpg.list.onRealtimeSet);
 };

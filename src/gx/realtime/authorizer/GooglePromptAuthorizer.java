@@ -7,7 +7,6 @@ import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.java6.auth.oauth2.GooglePromptReceiver;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -68,7 +67,7 @@ public class GooglePromptAuthorizer implements AuthorizerInterface
 
         // Authorize
         Credential credential = authorizeUser(clientSecrets);
-        
+
         // Get token
         credential.refreshToken();
         logger.debug("Access token: {}", credential.getAccessToken());

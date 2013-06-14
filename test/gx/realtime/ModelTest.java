@@ -1,13 +1,11 @@
 package gx.realtime;
 
-import static org.junit.Assert.*;
-
-import gx.realtime.CollaborativeString;
-import gx.realtime.TextDeletedEvent;
-import gx.realtime.TextInsertedEvent;
 import org.junit.Test;
 
-public class ModelTest {
+import static org.junit.Assert.*;
+
+public class ModelTest
+{
 
     private int undoRedoChangeCount = 0;
 
@@ -25,41 +23,48 @@ public class ModelTest {
     };
 
     @Test
-    public void testCreationCompoundOperation(){
+    public void testCreationCompoundOperation()
+    {
         fail("TODO");
     }
 
-	@Test
-    public void testCompoundOperations(){
+    @Test
+    public void testCompoundOperations()
+    {
         //TODO 2
 
         //test with no operation in progress
         fail("TODO");
     }
 
-	@Test
-	public void testCreate() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testCreate()
+    {
+        fail("Not yet implemented");
+    }
 
-	@Test
-	public void testCreateListEArray() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testCreateListEArray()
+    {
+        fail("Not yet implemented");
+    }
 
-	@Test
-	public void testCreateMapMapOfStringE() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testCreateMapMapOfStringE()
+    {
+        fail("Not yet implemented");
+    }
 
-	@Test
-	public void testCreateStringString() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testCreateStringString()
+    {
+        fail("Not yet implemented");
+    }
 
 
-	@Test
-	public void testUndoRedo() {
+    @Test
+    public void testUndoRedo()
+    {
         Model model = new Model(null);
         assertFalse(model.canUndo());
         assertFalse(model.canRedo());
@@ -176,32 +181,37 @@ public class ModelTest {
         assertTrue(model.canUndo());
         assertTrue(model.canRedo());
         assertEquals(14, undoRedoChangeCount);
-	}
+    }
 
     @Test
-    public void testUndoRedoCompoundOperation(){
+    public void testUndoRedoCompoundOperation()
+    {
         fail("TODO");
         //TODO 3
     }
 
     @Test
-    public void testUndoRedoCompounOperationBubbling(){
+    public void testUndoRedoCompounOperationBubbling()
+    {
         fail("TODO");
         //TODO 4
     }
 
-	@Test
-	public void testIsReadOnly() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void testIsReadOnly()
+    {
+        fail("Not yet implemented");
+    }
 
     @Test
-    public void testFireRemoteEvent(){
+    public void testFireRemoteEvent()
+    {
         fail("TODO");
     }
 
     @Test
-    public void testFireEvent(){
+    public void testFireEvent()
+    {
         //TODO
 
         //implicitly tested by others?

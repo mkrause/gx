@@ -1,14 +1,16 @@
 package gx.realtime;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-public class IndexReferenceTest {
+import static org.junit.Assert.fail;
 
-	@Test
-	public void testIndexReference() {
-		fail("Not yet implemented");
-	}
+public class IndexReferenceTest
+{
+
+    @Test
+    public void testIndexReference()
+    {
+        fail("Not yet implemented");
+    }
 
 }

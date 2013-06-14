@@ -22,44 +22,52 @@ import java.util.Map;
 public class RealtimeLoader
 {
     private static final String CHANNEL_URL = "https://drive.google.com/otservice";
-    
+
     // Callback interfaces
-    public interface OnDocumentLoadedCallback {
+    public interface OnDocumentLoadedCallback
+    {
         void onFileLoaded(Document doc);
     }
-    public interface InitializeModelCallback {
+
+    public interface InitializeModelCallback
+    {
         void initializeModel(Model model);
     }
-    public interface HandleErrorsCallback {
+
+    public interface HandleErrorsCallback
+    {
         void handleErrors(Exception e);
     }
-    
+
     private RealtimeOptions options;
     private JsonFactory jfactory = new JsonFactory();
     private String accessToken;
     private Document doc;
-    
+
     private static class ModelResponse
     {
         @JsonProperty("modelId")
         private String modelId;
 
-        public String getModelId() {
+        public String getModelId()
+        {
             return modelId;
         }
     }
 
     /**
      * Return the URL for the channel to the Drive server.
+     *
      * @return String
      */
     public static String getChannelUrl()
     {
         return CHANNEL_URL;
     }
-    
+
     /**
      * Construct a new loader, with the given options.
+     *
      * @param options
      */
     public RealtimeLoader(RealtimeOptions options)
@@ -70,26 +78,28 @@ public class RealtimeLoader
     /**
      * Return the document after it has been loaded, or null if
      * we have not loaded any document yet.
+     *
      * @return Document
      */
     public Document getDocument()
     {
         return doc;
     }
-    
+
     /**
      * Return the OAuth access token, or null if none was yet loaded.
+     *
      * @return String
      */
     public String getToken()
     {
         return accessToken;
     }
-    
+
     private String retrieveModelId(Credential cred, String docId)
     {
         accessToken = cred.getAccessToken();
-        
+
         // Set up parameters
         Map<String, String> parameters = new HashMap<>();
         parameters.put("id", docId);
@@ -114,7 +124,8 @@ public class RealtimeLoader
         }
     }
 
-    private Session createSession(Credential cred, String modelId) {
+    private Session createSession(Credential cred, String modelId)
+    {
         // Set up parameters
         Map<String, String> parameters = new HashMap<>();
         parameters.put("id", modelId);
@@ -139,16 +150,16 @@ public class RealtimeLoader
         }
     }
 
-    private Document buildDocument(Credential cred, String docId){
+    private Document buildDocument(Credential cred, String docId)
+    {
         String modelId = retrieveModelId(cred, docId);
         Session session = createSession(cred, modelId);
 
         Document doc = new Document(cred, session);
         return doc;
     }
-    
+
     /**
-     *
      * @param cred
      * @param docId
      * @param onLoaded
@@ -156,26 +167,26 @@ public class RealtimeLoader
      * @param errorFn
      */
     private void load(
-        Credential cred,
-        String docId,
-        OnDocumentLoadedCallback onLoaded,
-        InitializeModelCallback initializeFn,
-        HandleErrorsCallback errorFn
+            Credential cred,
+            String docId,
+            OnDocumentLoadedCallback onLoaded,
+            InitializeModelCallback initializeFn,
+            HandleErrorsCallback errorFn
     )
     {
         doc = buildDocument(cred, docId);
-        
+
         options.getInitializeModel().initializeModel(doc.getModel());
         options.getOnFileLoaded().onFileLoaded(doc);
     }
-    
+
     /**
      * Main method to start the Realtime process.
      */
     public void start()
     {
         AuthorizerInterface authorizer = options.getAuthorizer();
-        
+
         Credential cred;
         try {
             cred = authorizer.authorize();
@@ -184,13 +195,13 @@ public class RealtimeLoader
             e.printStackTrace();
             return;
         }
-        
+
         load(
-            cred,
-            options.getDocId(),
-            options.getOnFileLoaded(),
-            options.getInitializeModel(),
-            options.getHandleErrors()
+                cred,
+                options.getDocId(),
+                options.getOnFileLoaded(),
+                options.getInitializeModel(),
+                options.getHandleErrors()
         );
     }
 }

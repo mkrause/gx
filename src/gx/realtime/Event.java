@@ -1,14 +1,13 @@
 package gx.realtime;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public abstract class Event {
+public abstract class Event
+{
 
     protected EventType type;
     protected EventTarget target;
 
-    public Event(EventTarget target, EventType type){
+    public Event(EventTarget target, EventType type)
+    {
         this.target = target;
         this.type = type;
     }
@@ -33,7 +32,8 @@ public abstract class Event {
         this.target = target;
     }
 
-    public String toString(){
+    public String toString()
+    {
         return "[" + this.getType() + " -> " + this.getTarget() + "]";
     }
 }

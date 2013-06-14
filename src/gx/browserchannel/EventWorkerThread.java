@@ -3,8 +3,6 @@ package gx.browserchannel;
 import gx.browserchannel.message.AbstractMessage;
 import gx.browserchannel.message.MessageEvent;
 import gx.browserchannel.message.MessageHandler;
-import gx.browserchannel.message.SaveMessage;
-import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +36,7 @@ public class EventWorkerThread extends Thread
 
     /**
      * Consumes the given message and hands the response off to the parent.
+     *
      * @param msg
      */
     private void consume(AbstractMessage msg)

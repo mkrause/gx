@@ -17,9 +17,10 @@ public class RandomUtils
         return Long.toHexString(Double.doubleToLongBits(Math.random()));
     }
 
-    public static String getRandomAlphaNumeric(){
+    public static String getRandomAlphaNumeric()
+    {
         String result = "";
-        for(int i = 0; i < 15; i++){
+        for (int i = 0; i < 15; i++) {
             result += ID_CHARS.charAt((int) Math.floor(Math.random() * ID_CHARS.length()));
         }
         return result;

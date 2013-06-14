@@ -1,6 +1,7 @@
 package gx.realtime;
 
-public enum ErrorType {
+public enum ErrorType
+{
     CLIENT_ERROR,
     CONCURRENT_CREATION,
     FORBIDDEN,
