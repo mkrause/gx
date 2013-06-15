@@ -26,8 +26,6 @@ public class DemoGuiApp
         loggerConfig.setLevel(Level.ERROR);
         ctx.updateLoggers();
 
-        // Initialize Gx before starting the app
-
         DemoGuiApp app = new DemoGuiApp();
         app.start();
     }

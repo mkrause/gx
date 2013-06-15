@@ -25,12 +25,17 @@ public class RealtimePanel extends JPanel
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
-            if(event.isLocal())
-                return;
+            if (!event.isLocal()) {
+                if (event.getNewValue() != null) {
+                    model.updateValue(event.getProperty(), (String) event.getNewValue());
+                } else {
+                    model.removeValue(event.getProperty());
+                }
+            }
 
             System.out.println("Received event for key " + event.getProperty());
-            model.updateValue(event.getProperty(), (String) event.getNewValue());
-            eventLogArea.append(event.toString() + "\n");
+            eventLogArea.append("\n" + event.toString());
+            eventLogArea.setCaretPosition(eventLogArea.getDocument().getLength());
         });
 
         // Init the components
@@ -39,7 +44,7 @@ public class RealtimePanel extends JPanel
         // Put a selection listener on the table to prefill the key/value fields
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             int row = table.getSelectedRow();
-            if(row == -1)
+            if (row == -1)
                 return;
 
             keyField.setText((String) model.getValueAt(row, 0));
@@ -94,7 +99,6 @@ public class RealtimePanel extends JPanel
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Real Time
         tableScrollPane = new JScrollPane();
         table = new JTable(model);
         clearButton = new JButton();
@@ -104,7 +108,6 @@ public class RealtimePanel extends JPanel
         valueField = new JTextField();
         keyLabel = new JLabel();
         valueLabel = new JLabel();
-        separator = new JSeparator();
         eventLogScrollPane = new JScrollPane();
         eventLogArea = new JTextArea();
         eventLogLabel = new JLabel();
@@ -187,7 +190,6 @@ public class RealtimePanel extends JPanel
 
             //---- eventLogArea ----
             eventLogArea.setEditable(false);
-            eventLogArea.setText("qweqwe");
             eventLogScrollPane.setViewportView(eventLogArea);
         }
 
@@ -200,32 +202,35 @@ public class RealtimePanel extends JPanel
                 layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup()
-                                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-                                                .addComponent(putButton, GroupLayout.Alignment.TRAILING)
-                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                        .addComponent(keyLabel)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                        .addComponent(valueLabel)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                                .addComponent(separator)
-                                                .addComponent(eventLogScrollPane))
-                                        .addComponent(eventLogLabel))
-                                .addContainerGap())
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup()
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
+                                                                        .addComponent(putButton, GroupLayout.Alignment.TRAILING)
+                                                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                                                .addComponent(keyLabel)
+                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                                                .addComponent(valueLabel)
+                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))))
+                                                        .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
+                                                .addGap(6, 6, 6))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(eventLogLabel)
+                                                .addContainerGap(408, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup()
-                                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(clearButton)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -240,19 +245,18 @@ public class RealtimePanel extends JPanel
                                                         .addComponent(valueLabel))
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(putButton)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(eventLogLabel)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)))
+                                                .addGap(0, 21, Short.MAX_VALUE))
+                                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(eventLogLabel)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(eventLogScrollPane, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Real Time
     private JScrollPane tableScrollPane;
     private JTable table;
     private JButton clearButton;
@@ -262,7 +266,6 @@ public class RealtimePanel extends JPanel
     private JTextField valueField;
     private JLabel keyLabel;
     private JLabel valueLabel;
-    private JSeparator separator;
     private JScrollPane eventLogScrollPane;
     private JTextArea eventLogArea;
     private JLabel eventLogLabel;

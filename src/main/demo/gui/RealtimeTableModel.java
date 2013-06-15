@@ -52,8 +52,8 @@ public class RealtimeTableModel extends AbstractTableModel
      */
     public void removeValueAt(int row)
     {
-        System.out.println("removeValueAt: " + row);
         String key = mapKeys.remove(row);
+        System.out.println("removeValueAt: " + row + ", key: " + key);
         collaborativeMap.delete(key);
         fireTableRowsDeleted(row, row);
     }
@@ -88,5 +88,15 @@ public class RealtimeTableModel extends AbstractTableModel
         mapKeys.clear();
         collaborativeMap.clear();
         fireTableDataChanged();
+    }
+
+    /**
+     * Helper method to remove a value from the system based on external events.
+     *
+     * @param property
+     */
+    public void removeValue(String property)
+    {
+        removeValueAt(mapKeys.indexOf(property));
     }
 }
