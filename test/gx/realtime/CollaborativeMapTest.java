@@ -1,6 +1,7 @@
 package gx.realtime;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
@@ -19,16 +20,20 @@ public class CollaborativeMapTest {
 	
 	@Before
 	public void setUp(){
-		map = new CollaborativeMap(null, null);
+        Session session = mock(Session.class);
+        when(session.getSessionId()).thenReturn("UID");
+
+        Document document = mock(Document.class);
+        when(document.getSession()).thenReturn(session);
+        Model model = mock(Model.class);
+        when(model.getDocument()).thenReturn(document);
+
+		map = new CollaborativeMap("map1234", model);
+        assertEquals(0, map.size());
+        assertTrue(map.isEmpty());
+
 		simpleObject = new TestObject(123);
 		testObject = new TestObject(456, simpleObject);
-	}
-	
-	@Test
-	public void testCollaborativeMap(){
-		CollaborativeMap map = new CollaborativeMap(null, null);
-		assertEquals(0, map.size());
-		assertTrue(map.isEmpty());
 	}
 	
 	@Test

@@ -116,6 +116,20 @@ public class EventTargetTest {
     }
 
     @Test
+    public void testEventListenerEvent()
+    {
+        //test with normal events instead of BaseModelEvents
+        TestObject simpleObject = new TestObject(100);
+
+        //Events
+        TestEvent joinedEvent = new TestEvent(EventType.COLLABORATOR_JOINED, simpleObject, "SID", "GxTestSuite", true, false);
+        simpleObject.addEventListener(EventType.COLLABORATOR_JOINED, handler1);
+        simpleObject.fireEvent(joinedEvent);
+
+        assertEquals(101, simpleObject.getId());
+    }
+
+    @Test
     public void testEventBubbling(){
         //"bubbling" without any parents
         TestObject object1 = new TestObject(10);
@@ -165,7 +179,5 @@ public class EventTargetTest {
         assertEquals(310, object4.getId());
         assertEquals(410, object5.getId());
         assertEquals(510, object6.getId());
-
-        fail("TODO: test with ordinary events instead of BaseModelEvent");
     }
 }
