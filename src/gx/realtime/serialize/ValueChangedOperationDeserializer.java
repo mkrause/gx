@@ -21,7 +21,7 @@ public class ValueChangedOperationDeserializer extends JsonDeserializer<ValueCha
 
         if (jp.getCurrentToken().equals(JsonToken.END_ARRAY)) {
             // This is a remove action
-            return new ValueChangedOperation(objectId, key, null, null);
+            return new ValueChangedOperation(objectId, key, ValueChangedOperation.ValueType.COLLABORATIVE_OBJECT, null);
         }
 
         JsonNode valueNode = jp.readValueAsTree();
