@@ -89,7 +89,7 @@ public class DemoCliApp
      */
     private void handleInput()
     {
-        String instructions = "Enter q to disconnect, s to set a value to the current time";
+        String instructions = "Options:\n<q> to disconnect\n<s> to set a value to the current time\n<p> to print the map contents\n<?> to display this message";
         System.out.println(instructions);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
@@ -103,6 +103,11 @@ public class DemoCliApp
                     collabMap.set("cli_app", System.currentTimeMillis());
                 } else if (line.equals("?")) {
                     System.out.println(instructions);
+                } else if (line.equals("p")) {
+                    System.out.println("Map contents:");
+                    for (String key : collabMap.keys()) {
+                        System.out.println(key + ": " + collabMap.get(key));
+                    }
                 }
             }
         } catch (Exception ex) {
