@@ -97,10 +97,71 @@ public class CollaborativeMapTest {
         }
 	}
 
+    private EventHandler<BaseModelEvent> handler1 = (event) -> {
+        //System.out.println("--EventHandler 1 called.");
+        CollaborativeMap map = (CollaborativeMap) event.getTarget();
+        ((TestObject) map.get("testObject")).incrementId(1);
+    };
+
     @Test
-    public void testBasicOperations(){
-        //test if basic operations are executed according to the default event listeners for this object.
-        //also test for impossible operations
-        fail("TODO");
+    public void testSet()
+    {
+        TestObject testObject = new TestObject(10);
+        map.set("testObject", testObject);
+        assertFalse(map.isEmpty());
+        assertEquals(1, map.size());
+        assertTrue(map.has("testObject"));
+        assertTrue(map.get("testObject") == testObject);
+
+        map.addEventListener(EventType.OBJECT_CHANGED, handler1);
+
+        //test for objectChangedEvent
+        TestObject object2 = new TestObject(100);
+        map.set("object2", object2);
+        assertEquals(2, map.size());
+        assertTrue(map.has("testObject"));
+        assertTrue(map.get("testObject") == testObject);
+        assertTrue(map.has("object2"));
+        assertTrue(map.get("object2") == object2);
+
+        assertEquals(11, testObject.getId());
+
+        //test for set to null
+        map.set("object2", null);
+        assertEquals(1, map.size());
+        assertFalse(map.has("object2"));
+        assertNull(map.get("object2"));
+        assertTrue(map.has("testObject"));
+        assertTrue(map.get("testObject") == testObject);
+
+        assertEquals(12, testObject.getId());
+    }
+
+    @Test
+    public void testDelete()
+    {
+        TestObject testObject = new TestObject(10);
+        map.set("testObject", testObject);
+        assertEquals(1, map.size());
+
+        map.addEventListener(EventType.OBJECT_CHANGED, handler1);
+
+        //test for objectChangedEvent
+        TestObject object2 = new TestObject(100);
+        map.set("object2", object2);
+        assertEquals(2, map.size());
+        assertTrue(map.has("object2"));
+
+        assertEquals(11, testObject.getId());
+
+        //test for delete
+        map.delete("object2");
+        assertEquals(1, map.size());
+        assertFalse(map.has("object2"));
+        assertNull(map.get("object2"));
+        assertTrue(map.has("testObject"));
+        assertTrue(map.get("testObject") == testObject);
+
+        assertEquals(12, testObject.getId());
     }
 }

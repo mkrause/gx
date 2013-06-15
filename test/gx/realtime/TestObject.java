@@ -20,6 +20,10 @@ public class TestObject extends EventTarget implements Cloneable {
         child.addParent(this);
 	}
 
+    public void incrementId(int amount){
+        this.id += amount;
+    }
+
 	public int getId(){
 		return id;
 	}

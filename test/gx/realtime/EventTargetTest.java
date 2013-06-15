@@ -10,16 +10,16 @@ import static org.mockito.Mockito.*;
 public class EventTargetTest {
 
     //Event handlers
-    private EventHandler<TestEvent> handler1 = (testEvent) -> {
+    public EventHandler<TestEvent> handler1 = (testEvent) -> {
         //System.out.println("--EventHandler 1 called.");
         TestObject testObject = (TestObject) testEvent.getTarget();
-        testObject.setId(testObject.getId() + 1);
+        testObject.incrementId(1);
     };
 
-    private EventHandler<TestEvent> handler2 = (testEvent) -> {
+    public EventHandler<TestEvent> handler2 = (testEvent) -> {
         //System.out.println("--EventHandler2 called.");
         TestObject testObject2 = (TestObject) testEvent.getTarget();
-        testObject2.setId(testObject2.getId() + 10);
+        testObject2.incrementId(10);
     };
     
     @Test
