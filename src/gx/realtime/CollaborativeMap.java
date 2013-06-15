@@ -48,10 +48,10 @@ public class CollaborativeMap extends CollaborativeObject {
 	 * @return The value that was mapped to this key, or null if there was no existing value.
 	 */
 	public Object delete(String key){
-		Object result = map.remove(key);
-        if(result instanceof EventTarget){
-            ((EventTarget) result).removeParent(this);
-        }
+		Object result = this.get(key);
+        //FIXME: this is not identical to deleting a record in the map. We can enfoce the deletion locally, however how will this be enforced for collaborators?
+        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
+
         return result;
 	}
 	
@@ -148,13 +148,23 @@ public class CollaborativeMap extends CollaborativeObject {
 
     @Override
     protected void updateModel(BaseModelEvent event) {
-        switch (event.getType()) {
-            case VALUE_CHANGED:
-                ValueChangedEvent valuesChangedEvent = (ValueChangedEvent)event;
-                System.out.println("putting key: " + valuesChangedEvent.getProperty());
-                System.out.println("putting new value: " + valuesChangedEvent.getNewValue());
-                map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
-                break;
+        if(event.getType().equals(EventType.VALUE_CHANGED)) {
+            ValueChangedEvent valueChangedEvent = (ValueChangedEvent)event;
+            System.out.println("putting key: " + valueChangedEvent.getProperty());
+            System.out.println("putting new value: " + valueChangedEvent.getNewValue());
+
+            //remove this map as parent of the old value
+            Object oldValue = map.get(valueChangedEvent.getProperty());
+            if(oldValue instanceof EventTarget){
+                ((EventTarget) oldValue).removeParent(this);
+            }
+
+            //add new value
+            Object newValue = valueChangedEvent.getNewValue();
+            if(newValue instanceof EventTarget){
+                ((EventTarget) newValue).addParent(this);
+            }
+            map.put(valueChangedEvent.getProperty(), valueChangedEvent.getNewValue());
         }
     }
     
