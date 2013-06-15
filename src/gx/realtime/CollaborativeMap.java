@@ -49,7 +49,6 @@ public class CollaborativeMap extends CollaborativeObject {
 	 */
 	public Object delete(String key){
 		Object result = this.get(key);
-        //FIXME: this is not identical to deleting a record in the map. We can enfoce the deletion locally, however how will this be enforced for collaborators?
         fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
 
         return result;
@@ -107,6 +106,7 @@ public class CollaborativeMap extends CollaborativeObject {
 	
 	/**
 	 * Put the value into the map with the given key, overwriting an existing value for that key.
+     * Note that iff the key is set to null, this will be considered as a deletion, which means that the key itself is also removed from the map.
 	 * @param key The map key.
 	 * @param newValue The map value.
 	 * @return The old map value, if any, that used to be mapped to the given key.
@@ -116,7 +116,7 @@ public class CollaborativeMap extends CollaborativeObject {
         if (newValue instanceof EventTarget){
             ((EventTarget)newValue).addParent(this);
         }
-		Object oldValue = map.put(key, newValue);
+		Object oldValue = map.get(key);
 
         fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
         
@@ -161,10 +161,14 @@ public class CollaborativeMap extends CollaborativeObject {
 
             //add new value
             Object newValue = valueChangedEvent.getNewValue();
-            if(newValue instanceof EventTarget){
-                ((EventTarget) newValue).addParent(this);
+            if(newValue == null){
+                map.remove(valueChangedEvent.getProperty());
+            } else {
+                if(newValue instanceof EventTarget){
+                    ((EventTarget) newValue).addParent(this);
+                }
+                map.put(valueChangedEvent.getProperty(), valueChangedEvent.getNewValue());
             }
-            map.put(valueChangedEvent.getProperty(), valueChangedEvent.getNewValue());
         }
     }
     
