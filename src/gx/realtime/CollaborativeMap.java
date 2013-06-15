@@ -136,7 +136,7 @@ public class CollaborativeMap extends CollaborativeObject
         if (newValue instanceof EventTarget) {
             ((EventTarget) newValue).addParent(this);
         }
-        Object oldValue = map.put(key, newValue);
+        Object oldValue = map.get(key);
 
         fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
 
@@ -176,7 +176,12 @@ public class CollaborativeMap extends CollaborativeObject
             case VALUE_CHANGED:
                 ValueChangedEvent valuesChangedEvent = (ValueChangedEvent) event;
                 //TODO: parse getNewValue() into the actual object using getValueType()
-                map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
+
+                if (valuesChangedEvent.getNewValue() == null) {
+                    map.remove(valuesChangedEvent.getProperty());
+                } else {
+                    map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
+                }
                 break;
         }
     }
