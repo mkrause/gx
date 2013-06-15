@@ -54,11 +54,14 @@ public class CollaborativeMap extends CollaborativeObject
      */
     public Object delete(String key)
     {
-        Object result = map.remove(key);
-        if (result instanceof EventTarget) {
-            ((EventTarget) result).removeParent(this);
+        Object oldValue = map.remove(key);
+        if (oldValue instanceof EventTarget) {
+            ((EventTarget) oldValue).removeParent(this);
         }
-        return result;
+
+        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, oldValue));
+
+        return oldValue;
     }
 
     /**
