@@ -3,8 +3,7 @@ package gx.realtime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestObject extends EventTarget implements Cloneable
-{
+public class TestObject extends EventTarget implements Cloneable {
 
     private int id;
     private Set<TestObject> children;
@@ -23,6 +22,11 @@ public class TestObject extends EventTarget implements Cloneable
         child.addParent(this);
     }
 
+    public void incrementId(int amount)
+    {
+        this.id += amount;
+    }
+
     public int getId()
     {
         return id;
@@ -36,7 +40,7 @@ public class TestObject extends EventTarget implements Cloneable
     public TestObject getChild()
     {
         TestObject result = null;
-        if (children.size() == 1) {
+        if(children.size() == 1) {
             result = children.iterator().next();
         }
         return result;
@@ -58,10 +62,10 @@ public class TestObject extends EventTarget implements Cloneable
     public boolean equals(Object object)
     {
         boolean result = false;
-        if (object instanceof TestObject) {
+        if(object instanceof TestObject) {
             TestObject that = (TestObject) object;
             result = this.getId() == that.getId();
-            if (this.getChild() != null) {
+            if(this.getChild() != null) {
                 result &= this.getChild().equals(that.getChild());
             } else {
                 result &= that.getChild() == null;
@@ -80,7 +84,7 @@ public class TestObject extends EventTarget implements Cloneable
     public TestObject clone()
     {
         TestObject result = null;
-        if (this.getChild() != null) {
+        if(this.getChild() != null) {
             result = new TestObject(this.getId(), this.getChild().clone());
         } else {
             result = new TestObject(this.getId());
