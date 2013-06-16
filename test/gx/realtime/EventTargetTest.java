@@ -1,33 +1,34 @@
 package gx.realtime;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import gx.realtime.EventType;
+import org.junit.Before;
+import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 public class EventTargetTest
 {
 
     //Event handlers
-    private EventHandler<TestEvent> handler1 = (testEvent) -> {
+    public EventHandler<TestEvent> handler1 = (testEvent) ->
+    {
         //System.out.println("--EventHandler 1 called.");
         TestObject testObject = (TestObject) testEvent.getTarget();
-        testObject.setId(testObject.getId() + 1);
+        testObject.incrementId(1);
     };
 
-    private EventHandler<TestEvent> handler2 = (testEvent) -> {
+    public EventHandler<TestEvent> handler2 = (testEvent) ->
+    {
         //System.out.println("--EventHandler2 called.");
         TestObject testObject2 = (TestObject) testEvent.getTarget();
-        testObject2.setId(testObject2.getId() + 10);
+        testObject2.incrementId(10);
     };
 
     @Test
     public void testAddEventListener()
     {
-        EventTarget target = new EventTarget()
-        {
-        };
+        EventTarget target = new EventTarget() {};
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
 
@@ -39,9 +40,7 @@ public class EventTargetTest
     @Test
     public void testRemoveEventListener()
     {
-        EventTarget target = new EventTarget()
-        {
-        };
+        EventTarget target = new EventTarget() {};
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
 
@@ -56,9 +55,7 @@ public class EventTargetTest
     @Test
     public void testRemovingNonexistentEventListenerIsIgnored()
     {
-        EventTarget target = new EventTarget()
-        {
-        };
+        EventTarget target = new EventTarget() {};
 
         // Remove the handler (which we never added in the first place)
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
@@ -126,6 +123,20 @@ public class EventTargetTest
     }
 
     @Test
+    public void testEventListenerEvent()
+    {
+        //test with normal events instead of BaseModelEvents
+        TestObject simpleObject = new TestObject(100);
+
+        //Events
+        TestEvent joinedEvent = new TestEvent(EventType.COLLABORATOR_JOINED, simpleObject, "SID", "GxTestSuite", true, false);
+        simpleObject.addEventListener(EventType.COLLABORATOR_JOINED, handler1);
+        simpleObject.fireEvent(joinedEvent);
+
+        assertEquals(101, simpleObject.getId());
+    }
+
+    @Test
     public void testEventBubbling()
     {
         //"bubbling" without any parents
@@ -176,7 +187,5 @@ public class EventTargetTest
         assertEquals(310, object4.getId());
         assertEquals(410, object5.getId());
         assertEquals(510, object6.getId());
-
-        fail("TODO: test with ordinary events instead of BaseModelEvent");
     }
 }
