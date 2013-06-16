@@ -60,8 +60,7 @@ public abstract class EventTarget
     }
 
     /**
-     * Dispatches the given event to this object.
-     * The corresponding EventHandlers are executed.
+     * Dispatches the given event to this object after which the corresponding EventHandlers are executed.
      * If the event is a BaseModelEvent that is bubbling, the event is passed to the parents of this EventTarget afterwards.
      *
      * @param event The event object, containing any necessary information.
