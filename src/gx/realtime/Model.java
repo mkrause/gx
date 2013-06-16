@@ -34,7 +34,7 @@ public class Model extends EventTarget
     /**
      * Current compound operation.
      */
-    private CompoundOperation compoundOperation;
+    private Stack<CompoundOperation> compoundOperations;
 
     /**
      * Keep track of all the nodes in the data model, indexed
@@ -58,6 +58,7 @@ public class Model extends EventTarget
 
         undoableMutations = new LinkedList<>();
         redoableMutations = new LinkedList<>();
+        compoundOperations = new Stack<>();
     }
 
     /**
@@ -68,7 +69,7 @@ public class Model extends EventTarget
      */
     public void beginCompoundOperation()
     {
-        compoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true);
+        beginCompoundOperation(null);
     }
 
     /**
@@ -77,11 +78,19 @@ public class Model extends EventTarget
      * endCompoundOperation() is called. Compound operations may be nested inside other compound operations. Note that the compound operation
      * MUST start and end in the same synchronous execution block. If this invariant is violated, the data model will become invalid and all future changes will fail.
      *
-     * @param opt_name The name for this compount operation.
+     * @param opt_name The name for this compound operation.
      */
     public void beginCompoundOperation(String opt_name)
     {
-        compoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true, opt_name);
+        CompoundOperation newCompoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true, opt_name);
+
+        // Create nested compound operation
+        if (!compoundOperations.isEmpty()) {
+            CompoundOperation currentCO = compoundOperations.peek();
+            currentCO.addEvent(newCompoundOperation);
+        }
+
+        compoundOperations.push(newCompoundOperation);
     }
 
     public void beginCreationCompoundOperation()
@@ -212,14 +221,17 @@ public class Model extends EventTarget
      */
     public void endCompoundOperation() throws NoCompoundOperationInProgressException
     {
-        if (compoundOperation == null || !compoundOperation.isInProgress()) {
+        if (compoundOperations.isEmpty()) {
             throw new NoCompoundOperationInProgressException();
-        } else {
-            compoundOperation.setInProgress(false);
-            fireEvent(compoundOperation, true);
-            //reset
-            compoundOperation = null;
         }
+
+        // End last compound operation
+        CompoundOperation compoundOperation = compoundOperations.pop();
+        compoundOperation.setInProgress(false);
+
+        // Send changes if the last compound operations is closed
+        if(compoundOperations.isEmpty())
+            fireEvent(compoundOperation, true);
     }
 
     /**
@@ -479,8 +491,8 @@ public class Model extends EventTarget
         if (event instanceof CompoundOperation) {
             executeCompoundOperation((CompoundOperation) event, register);
 
-        } else if (compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent) {
-            compoundOperation.addEvent((RevertableEvent) event);
+        } else if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
+            compoundOperations.peek().addEvent((RevertableEvent) event);
 
         } else {
             super.fireEvent(event);
@@ -552,8 +564,8 @@ public class Model extends EventTarget
     public void fireObjectChangedEvent(EventTarget target, BaseModelEvent event)
     {
         // Buffer events if a compound operation is in progress
-        if (compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent) {
-            compoundOperation.addEvent((RevertableEvent) event);
+        if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
+            compoundOperations.peek().addEvent((RevertableEvent) event);
             return;
         }
 
