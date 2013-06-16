@@ -48,20 +48,15 @@ public class CollaborativeMap extends CollaborativeObject
 
     /**
      * Removes the entry for the given key (if such an entry exists).
-     *
      * @param key The key to unmap.
      * @return The value that was mapped to this key, or null if there was no existing value.
      */
     public Object delete(String key)
     {
-        Object oldValue = map.remove(key);
-        if (oldValue instanceof EventTarget) {
-            ((EventTarget) oldValue).removeParent(this);
-        }
+        Object result = this.get(key);
+        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
 
-        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, oldValue));
-
-        return oldValue;
+        return result;
     }
 
     /**
@@ -169,25 +164,28 @@ public class CollaborativeMap extends CollaborativeObject
         return map.size();
     }
 
-    /**
-     * Updates the CollaborativeMap according to the changes described in the given event.
-     *
-     * @param event
-     */
     @Override
     protected void updateModel(BaseModelEvent event)
     {
-        switch (event.getType()) {
-            case VALUE_CHANGED:
-                ValueChangedEvent valuesChangedEvent = (ValueChangedEvent) event;
-                //TODO: parse getNewValue() into the actual object using getValueType()
+        if(event.getType().equals(EventType.VALUE_CHANGED)) {
+            ValueChangedEvent valueChangedEvent = (ValueChangedEvent)event;
 
-                if (valuesChangedEvent.getNewValue() == null) {
-                    map.remove(valuesChangedEvent.getProperty());
-                } else {
-                    map.put(valuesChangedEvent.getProperty(), valuesChangedEvent.getNewValue());
+            //remove this map as parent of the old value
+            Object oldValue = map.get(valueChangedEvent.getProperty());
+            if(oldValue instanceof EventTarget) {
+                ((EventTarget) oldValue).removeParent(this);
+            }
+
+            //add new value
+            Object newValue = valueChangedEvent.getNewValue();
+            if(newValue == null) {
+                map.remove(valueChangedEvent.getProperty());
+            } else {
+                if(newValue instanceof EventTarget) {
+                    ((EventTarget) newValue).addParent(this);
                 }
-                break;
+                map.put(valueChangedEvent.getProperty(), valueChangedEvent.getNewValue());
+            }
         }
     }
 
