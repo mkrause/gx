@@ -217,4 +217,9 @@ public class Document extends EventTarget
     {
         this.session = session;
     }
+
+    public BrowserChannel getBrowserChannel()
+    {
+        return channel;
+    }
 }

@@ -1,5 +1,7 @@
 package gx.realtime;
 
+import gx.browserchannel.BrowserChannel;
+import gx.browserchannel.message.SaveMessage;
 import gx.realtime.operation.ValueChangedOperation.ValueType;
 import gx.util.RandomUtils;
 
@@ -453,8 +455,8 @@ public class Model extends EventTarget
         // TODO: fire childs of ObjectChangedEvent or parent first?
 
         // Unpack contained events
-        if(event instanceof ObjectChangedEvent) {
-            for(BaseModelEvent e : ((ObjectChangedEvent)event).getEvents()) {
+        if (event instanceof ObjectChangedEvent) {
+            for (BaseModelEvent e : ((ObjectChangedEvent) event).getEvents()) {
                 deserializeEvent(e);
                 updateModel(e);
                 fireEvent(e);
@@ -517,6 +519,18 @@ public class Model extends EventTarget
     protected Document getDocument()
     {
         return document;
+    }
+
+    /**
+     * Sends a BaseModelEvent to the remote server.
+     *
+     * @param event
+     */
+    public void sendToRemote(BaseModelEvent event)
+    {
+        BrowserChannel channel = document.getBrowserChannel();
+        SaveMessage message = new SaveMessage(event);
+        channel.queue(message);
     }
 
     /**

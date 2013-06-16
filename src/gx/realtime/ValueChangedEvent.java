@@ -30,6 +30,8 @@ public class ValueChangedEvent extends RevertableEvent
         this.property = property;
         this.newValue = newValue;
         this.oldValue = oldValue;
+
+        setValueType(newValue);
     }
 
     public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
@@ -38,6 +40,8 @@ public class ValueChangedEvent extends RevertableEvent
         this.property = property;
         this.newValue = newValue;
         this.oldValue = oldValue;
+
+        setValueType(newValue);
     }
 
     /**
@@ -122,5 +126,19 @@ public class ValueChangedEvent extends RevertableEvent
     {
         return "[" + this.getType() + " -> " + this.getTargetId() + ", "
                 + property + "=" + newValue + "]";
+    }
+
+    /**
+     * Sets the value type of the event to the type matching the provided object.
+     *
+     * @param newValue
+     */
+    private void setValueType(Object newValue)
+    {
+        if (newValue instanceof CollaborativeObject) {
+            valueType = ValueChangedOperation.ValueType.COLLABORATIVE_OBJECT;
+        } else {
+            valueType = ValueChangedOperation.ValueType.JSON;
+        }
     }
 }

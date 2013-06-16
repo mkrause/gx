@@ -224,6 +224,9 @@ public class CollaborativeMap extends CollaborativeObject
         // Update the model
         updateModel(event);
 
+        // Send the event to the remote server
+        model.sendToRemote(event);
+
         // Fire the event itself
         fireEvent(event);
 
