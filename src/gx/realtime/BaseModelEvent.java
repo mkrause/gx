@@ -79,6 +79,11 @@ public abstract class BaseModelEvent extends Event
 
     public String getTargetId()
     {
+        // Get actual id of object
+        if (targetId == null && target instanceof CollaborativeObject) {
+            return ((CollaborativeObject) target).getId();
+        }
+
         return targetId;
     }
 

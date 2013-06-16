@@ -21,20 +21,13 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
     }
 
     @Override
-    public void serialize(ValueChangedEvent event, JsonGenerator jgen, SerializerProvider provider) throws IOException,
-            JsonProcessingException
+    public void serialize(ValueChangedEvent event, JsonGenerator jgen, SerializerProvider provider) throws IOException
     {
         Object value = event.getNewValue();
-        String objectId = event.getTargetId();
 
         // Write collaborative objects as their ID
         if (event.getValueType() == ValueChangedOperation.ValueType.COLLABORATIVE_OBJECT) {
             value = ((CollaborativeObject) value).getId();
-        }
-
-        // Get actual id of object
-        if (objectId == null && event.getTarget() instanceof CollaborativeObject) {
-            objectId = ((CollaborativeObject) event.getTarget()).getId();
         }
 
         // [4,[0,[8,"objectid","property",[21,"new"]]]]
@@ -49,16 +42,16 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
         // Value changed operation
         jgen.writeStartArray();
         jgen.writeNumber(8);
-        jgen.writeString(objectId);
+        jgen.writeString(event.getTargetId());
         jgen.writeString(event.getProperty());
 
+        // Check if key must be deleted, otherwise print value
         if(value != null) {
             jgen.writeStartArray();
             jgen.writeNumber(event.getValueType().asInt());
 
             // Try to serialize the object
             jgen.writeObject(value);
-
             jgen.writeEndArray();
         }
 
