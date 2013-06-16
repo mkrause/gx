@@ -34,7 +34,7 @@ public class RealtimePanel extends JPanel
             }
 
             System.out.println("Received event for key " + event.getProperty());
-            eventLogArea.append("\n" + event.toString());
+            eventLogArea.append(event.toString() + "\n");
             eventLogArea.setCaretPosition(eventLogArea.getDocument().getLength());
         });
 
