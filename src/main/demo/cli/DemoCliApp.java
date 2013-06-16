@@ -1,11 +1,6 @@
 package main.demo.cli;
 
 import gx.realtime.*;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,12 +17,12 @@ public class DemoCliApp
     public static void main(String[] args)
     {
         // Tune down the logging of Log4j2 a bit
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.
-                ROOT_LOGGER_NAME);
-        loggerConfig.setLevel(Level.ERROR);
-        ctx.updateLoggers();
+//        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+//        Configuration config = ctx.getConfiguration();
+//        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.
+//                ROOT_LOGGER_NAME);
+//        loggerConfig.setLevel(Level.ERROR);
+//        ctx.updateLoggers();
 
         DemoCliApp demo = new DemoCliApp();
         demo.run();
@@ -41,6 +36,13 @@ public class DemoCliApp
 
         options.setOnFileLoaded((doc) -> {
             document = doc;
+
+            // Add listeners to the model
+            EventHandler modelHandler = (event) -> {
+                System.out.println("Model received " + event.getType() + " event");
+            };
+            doc.getModel().addEventListener(EventType.VALUE_CHANGED, modelHandler);
+            doc.getModel().addEventListener(EventType.OBJECT_CHANGED, modelHandler);
 
             // Add listeners to the document
             EventHandler handler = (event) -> {
