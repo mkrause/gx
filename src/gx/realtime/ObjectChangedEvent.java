@@ -1,10 +1,13 @@
 package gx.realtime;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gx.realtime.serialize.ObjectChangedEventDeserializer;
+import gx.realtime.serialize.ObjectChangedEventSerializer;
 
 import java.util.List;
 
+@JsonSerialize(using = ObjectChangedEventSerializer.class)
 @JsonDeserialize(using = ObjectChangedEventDeserializer.class)
 public class ObjectChangedEvent extends BaseModelEvent
 {

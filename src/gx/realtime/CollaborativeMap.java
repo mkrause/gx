@@ -4,6 +4,7 @@ import gx.realtime.serialize.Cloner;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  * A collaborative map. A map's key must be a String. The values can contain other Realtime collaborative objects,
@@ -43,15 +44,19 @@ public class CollaborativeMap extends CollaborativeObject
      */
     public void clear()
     {
-        // TODO: wrap this in a compound operation to enforce an 'atomic' behavior
-        // TODO: begin compound operation
+        // Wrap this in a compound operation to enforce an 'atomic' behavior
+        model.beginCompoundOperation();
 
         String[] keys = map.keySet().toArray(new String[0]);
         for(String key : keys) {
             delete(key);
         }
 
-        // TODO: end compound operation
+        try {
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException ex) {
+            System.out.println("No compound operation in progress");
+        }
     }
 
     /**

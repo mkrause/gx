@@ -1,8 +1,12 @@
 package gx.realtime;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import gx.realtime.serialize.CompoundOperationSerializer;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonSerialize(using = CompoundOperationSerializer.class)
 public class CompoundOperation extends RevertableEvent
 {
 

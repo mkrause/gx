@@ -476,7 +476,7 @@ public class Model extends EventTarget
     public void fireEvent(Event event, boolean register)
     {
         if (event instanceof CompoundOperation) {
-            executeCompountOperation((CompoundOperation) event, register);
+            executeCompoundOperation((CompoundOperation) event, register);
 
         } else if (compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent) {
             compoundOperation.addEvent((RevertableEvent) event);
@@ -495,7 +495,7 @@ public class Model extends EventTarget
         }
     }
 
-    private void executeCompountOperation(CompoundOperation event, boolean register)
+    private void executeCompoundOperation(CompoundOperation event, boolean register)
     {
         List<RevertableEvent> events = event.getEvents();
         for (RevertableEvent cEvent : events) {
@@ -505,6 +505,9 @@ public class Model extends EventTarget
         if (register) {
             registerMutation(event);
         }
+
+        // TODO: fire ObjectChangedEvent
+        sendToRemote(event);
     }
 
     @Override
@@ -528,6 +531,12 @@ public class Model extends EventTarget
      */
     public void sendToRemote(BaseModelEvent event)
     {
+        // Buffer events if a compound operation is in progress
+        if (compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent) {
+            compoundOperation.addEvent((RevertableEvent) event);
+            return;
+        }
+
         // TODO: set the 'string' targetID so the event can be properly serialized.
         // event.setTargetId(document.getKeyForNode(event.getTarget()));
         BrowserChannel channel = document.getBrowserChannel();
