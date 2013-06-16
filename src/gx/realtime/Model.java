@@ -528,6 +528,8 @@ public class Model extends EventTarget
      */
     public void sendToRemote(BaseModelEvent event)
     {
+        // TODO: set the 'string' targetID so the event can be properly serialized.
+        // event.setTargetId(document.getKeyForNode(event.getTarget()));
         BrowserChannel channel = document.getBrowserChannel();
         SaveMessage message = new SaveMessage(event);
         channel.queue(message);

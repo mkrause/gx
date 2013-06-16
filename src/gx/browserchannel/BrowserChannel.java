@@ -86,7 +86,7 @@ public class BrowserChannel
     protected SaveRevisionResponse send(SaveMessage message)
     {
         // Set the current revision number
-        message.setRequestNumber(revision);
+        message.setRevision(revision);
 
         ObjectMapper mapper = new ObjectMapper();
         String msg;
