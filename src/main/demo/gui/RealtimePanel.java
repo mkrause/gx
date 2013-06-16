@@ -27,7 +27,7 @@ public class RealtimePanel extends JPanel
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
             if (!event.isLocal()) {
                 if (event.getNewValue() != null) {
-                    model.updateValue(event.getProperty(), (String) event.getNewValue());
+                    model.updateValue(event.getProperty(), (String) event.getNewValue(), event.isLocal());
                 } else {
                     model.removeValue(event.getProperty());
                 }
@@ -93,7 +93,7 @@ public class RealtimePanel extends JPanel
 
     private void putButtonActionPerformed(ActionEvent e)
     {
-        model.updateValue(keyField.getText(), valueField.getText());
+        model.updateValue(keyField.getText(), valueField.getText(), true);
     }
 
     private void initComponents()

@@ -64,10 +64,13 @@ public class RealtimeTableModel extends AbstractTableModel
      * @param key
      * @param value
      */
-    public void updateValue(String key, String value)
+    public void updateValue(String key, String value, boolean isLocal)
     {
         System.out.println("updateValue: " + key + " => " + value);
-        collaborativeMap.set(key, value);
+
+        // If this change was local, reflect values to underlying collaborative map
+        if (isLocal)
+            collaborativeMap.set(key, value);
 
         // If it's a new key, add it to the list
         if (!mapKeys.contains(key)) {
