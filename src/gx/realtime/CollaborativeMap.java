@@ -169,6 +169,11 @@ public class CollaborativeMap extends CollaborativeObject
         return map.size();
     }
 
+    /**
+     * Updates the CollaborativeMap according to the changes described in the given event.
+     *
+     * @param event
+     */
     @Override
     protected void updateModel(BaseModelEvent event)
     {
@@ -198,7 +203,7 @@ public class CollaborativeMap extends CollaborativeObject
         //if this object is the target, execute event handlers and bubble back up
         super.fireEvent(event);
 
-        //if not, propagate event to childeren with callback.
+        //if not, propagate event to children with callback.
         if (!this.equals(event.getTarget())) {
             Collection<Object> values = map.values();
             for (Object value : values) {
