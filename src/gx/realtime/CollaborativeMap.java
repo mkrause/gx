@@ -43,7 +43,15 @@ public class CollaborativeMap extends CollaborativeObject
      */
     public void clear()
     {
-        map.clear();
+        // TODO: wrap this in a compound operation to enforce an 'atomic' behavior
+        // TODO: begin compound operation
+
+        String[] keys = map.keySet().toArray(new String[0]);
+        for(String key : keys) {
+            delete(key);
+        }
+
+        // TODO: end compound operation
     }
 
     /**
