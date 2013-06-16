@@ -410,7 +410,7 @@ public class BrowserChannel
 
     public void processResponse(SaveRevisionResponse response)
     {
-        logger.error("Received new revision number: {}", response.getRevision());
+        logger.info("Received new revision number: {}", response.getRevision());
         revision = response.getRevision();
     }
 }

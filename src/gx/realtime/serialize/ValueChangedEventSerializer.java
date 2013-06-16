@@ -25,14 +25,20 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
             JsonProcessingException
     {
         Object value = event.getNewValue();
+        String objectId = event.getTargetId();
 
         // Write collaborative objects as their ID
         if (event.getValueType() == ValueChangedOperation.ValueType.COLLABORATIVE_OBJECT) {
             value = ((CollaborativeObject) value).getId();
         }
 
+        // Get actual id of object
+        if (objectId == null && event.getTarget() instanceof CollaborativeObject) {
+            objectId = ((CollaborativeObject) event.getTarget()).getId();
+        }
+
         // [4,[0,[8,"objectid","property",[21,"new"]]]]
-        // Print the outer wrapper
+        // Print the outer wrapper (compound operation)
         jgen.writeStartArray();
         jgen.writeNumber(4);
 
@@ -40,17 +46,22 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
         jgen.writeStartArray();
         jgen.writeNumber(0);
 
+        // Value changed operation
         jgen.writeStartArray();
         jgen.writeNumber(8);
-        jgen.writeString(event.getTargetId());
+        jgen.writeString(objectId);
         jgen.writeString(event.getProperty());
-        jgen.writeStartArray();
-        jgen.writeNumber(event.getValueType().asInt());
 
-        // Try to serialize the object
-        jgen.writeObject(value);
+        if(value != null) {
+            jgen.writeStartArray();
+            jgen.writeNumber(event.getValueType().asInt());
 
-        jgen.writeEndArray();
+            // Try to serialize the object
+            jgen.writeObject(value);
+
+            jgen.writeEndArray();
+        }
+
         jgen.writeEndArray();
         // close the two outer wrappers
         jgen.writeEndArray();
