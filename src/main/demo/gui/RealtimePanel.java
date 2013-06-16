@@ -1,9 +1,6 @@
 package main.demo.gui;
 
-import gx.realtime.CollaborativeMap;
-import gx.realtime.Document;
-import gx.realtime.EventType;
-import gx.realtime.ValueChangedEvent;
+import gx.realtime.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -25,17 +22,19 @@ public class RealtimePanel extends JPanel
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
-            if (!event.isLocal()) {
-                if (event.getNewValue() != null) {
-                    model.updateValue(event.getProperty(), (String) event.getNewValue(), event.isLocal());
-                } else {
-                    model.removeValue(event.getProperty());
-                }
-            }
+            logEvent(event);
 
-            System.out.println("Received event for key " + event.getProperty());
-            eventLogArea.append(event.toString() + "\n");
-            eventLogArea.setCaretPosition(eventLogArea.getDocument().getLength());
+            if (event.isLocal())
+                return;
+
+            if (event.getNewValue() != null) {
+                model.updateValue(event.getProperty(), (String) event.getNewValue(), event.isLocal());
+            } else {
+                model.removeValue(event.getProperty(), event.isLocal());
+            }
+        });
+        collabMap.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> {
+            logEvent(event);
         });
 
         // Init the components
@@ -50,6 +49,12 @@ public class RealtimePanel extends JPanel
             keyField.setText((String) model.getValueAt(row, 0));
             valueField.setText((String) model.getValueAt(row, 1));
         });
+    }
+
+    public void logEvent(Event event)
+    {
+        eventLogArea.append(event.toString() + "\n");
+        eventLogArea.setCaretPosition(eventLogArea.getDocument().getLength());
     }
 
     /**
@@ -95,7 +100,7 @@ public class RealtimePanel extends JPanel
 
         // Remove values
         for (String key : keys) {
-            model.removeValue(key);
+            model.removeValue(key, true);
         }
     }
 

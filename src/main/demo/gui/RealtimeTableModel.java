@@ -50,11 +50,15 @@ public class RealtimeTableModel extends AbstractTableModel
      *
      * @param row
      */
-    public void removeValueAt(int row)
+    public void removeValueAt(int row, boolean isLocal)
     {
         String key = mapKeys.remove(row);
         System.out.println("removeValueAt: " + row + ", key: " + key);
-        collaborativeMap.delete(key);
+
+        // If this change was local, reflect values to underlying collaborative map
+        if (isLocal)
+            collaborativeMap.delete(key);
+
         fireTableRowsDeleted(row, row);
     }
 
@@ -98,8 +102,8 @@ public class RealtimeTableModel extends AbstractTableModel
      *
      * @param property
      */
-    public void removeValue(String property)
+    public void removeValue(String property, boolean isLocal)
     {
-        removeValueAt(mapKeys.indexOf(property));
+        removeValueAt(mapKeys.indexOf(property), isLocal);
     }
 }
