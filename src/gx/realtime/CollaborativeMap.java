@@ -235,16 +235,11 @@ public class CollaborativeMap extends CollaborativeObject
         // Update the model
         updateModel(event);
 
-        // Send the event to the remote server
-        model.sendToRemote(event);
-
         // Fire the event itself
         fireEvent(event);
 
-        // Fire an object changed event that bubbles up the tree
-        List<BaseModelEvent> eventList = new LinkedList<>();
-        eventList.add(event);
-        fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        model.fireObjectChangedEvent(this, event);
     }
 
     public String toString()

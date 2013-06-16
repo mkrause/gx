@@ -59,6 +59,16 @@ public class Model extends EventTarget
 
         undoableMutations = new LinkedList<>();
         redoableMutations = new LinkedList<>();
+
+        this.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> {
+            // TODO: add event to undo stack
+
+            // Don't send remote events
+            if (!event.isLocal())
+                return;
+
+            sendToRemote(event);
+        });
     }
 
     /**
@@ -510,8 +520,10 @@ public class Model extends EventTarget
             registerMutation(event);
         }
 
-        // TODO: fire ObjectChangedEvent
-        sendToRemote(event);
+        // Fire ObjectChangedEvent on original target
+        ObjectChangedEvent ocEvent = event.toObjectChangedEvent();
+        if(ocEvent != null && ocEvent.getTarget() != null)
+            ocEvent.getTarget().fireEvent(ocEvent);
     }
 
     @Override
@@ -533,7 +545,14 @@ public class Model extends EventTarget
      *
      * @param event
      */
-    public void sendToRemote(BaseModelEvent event)
+    private void sendToRemote(BaseModelEvent event)
+    {
+        BrowserChannel channel = document.getBrowserChannel();
+        SaveMessage message = new SaveMessage(event);
+        channel.queue(message);
+    }
+
+    public void fireObjectChangedEvent(EventTarget target, BaseModelEvent event)
     {
         // Buffer events if a compound operation is in progress
         if (compoundOperation != null && compoundOperation.isInProgress() && event instanceof RevertableEvent) {
@@ -541,11 +560,12 @@ public class Model extends EventTarget
             return;
         }
 
-        // TODO: set the 'string' targetID so the event can be properly serialized.
-        // event.setTargetId(document.getKeyForNode(event.getTarget()));
-        BrowserChannel channel = document.getBrowserChannel();
-        SaveMessage message = new SaveMessage(event);
-        channel.queue(message);
+        // Fire an object changed event that bubbles up the tree
+        String sessionId = document.getSession().getSessionId();
+        String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
+        List<BaseModelEvent> eventList = new LinkedList<>();
+        eventList.add(event);
+        target.fireEvent(new ObjectChangedEvent(target, sessionId, userId, true, eventList));
     }
 
     /**
