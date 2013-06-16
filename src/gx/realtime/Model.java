@@ -55,20 +55,9 @@ public class Model extends EventTarget
         readOnly = false;
 
         root = new CollaborativeMap("root", this);
-        root.addParent(this);
 
         undoableMutations = new LinkedList<>();
         redoableMutations = new LinkedList<>();
-
-        this.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> {
-            // TODO: add event to undo stack
-
-            // Don't send remote events
-            if (!event.isLocal())
-                return;
-
-            sendToRemote(event);
-        });
     }
 
     /**
@@ -348,7 +337,6 @@ public class Model extends EventTarget
             // special "root" ID
             if (id.equals("root")) {
                 root = (CollaborativeMap) collabObject;
-                root.addParent(this);
             }
         };
     }
@@ -399,7 +387,6 @@ public class Model extends EventTarget
         // special "root" ID
         if (id.equals("root")) {
             root = (CollaborativeMap) collabObject;
-            root.addParent(this);
         }
     }
 
@@ -527,6 +514,9 @@ public class Model extends EventTarget
                 oce.getTarget().fireEvent(oce);
             }
         }
+
+        // Send event
+        sendToRemote(event);
     }
 
     @Override
@@ -550,6 +540,10 @@ public class Model extends EventTarget
      */
     private void sendToRemote(BaseModelEvent event)
     {
+        // Don't send remote events
+        if (!event.isLocal())
+            return;
+
         BrowserChannel channel = document.getBrowserChannel();
         SaveMessage message = new SaveMessage(event);
         channel.queue(message);
@@ -568,7 +562,11 @@ public class Model extends EventTarget
         String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
         List<BaseModelEvent> eventList = new LinkedList<>();
         eventList.add(event);
-        target.fireEvent(new ObjectChangedEvent(target, sessionId, userId, true, eventList));
+        ObjectChangedEvent ocEvent = new ObjectChangedEvent(target, sessionId, userId, true, eventList);
+        target.fireEvent(ocEvent);
+
+        // Send event
+        sendToRemote(ocEvent);
     }
 
     /**
