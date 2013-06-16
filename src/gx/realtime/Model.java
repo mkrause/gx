@@ -520,10 +520,13 @@ public class Model extends EventTarget
             registerMutation(event);
         }
 
-        // Fire ObjectChangedEvent on original target
-        ObjectChangedEvent ocEvent = event.toObjectChangedEvent();
-        if(ocEvent != null && ocEvent.getTarget() != null)
-            ocEvent.getTarget().fireEvent(ocEvent);
+        // Fire ObjectChangedEvents on the original targets
+        List<ObjectChangedEvent> ocEvents = event.toObjectChangedEvents();
+        for (ObjectChangedEvent oce : ocEvents) {
+            if (oce.getTarget() != null) {
+                oce.getTarget().fireEvent(oce);
+            }
+        }
     }
 
     @Override

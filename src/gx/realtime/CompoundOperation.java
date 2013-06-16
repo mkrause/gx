@@ -1,7 +1,9 @@
 package gx.realtime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CompoundOperation extends RevertableEvent
 {
@@ -58,12 +60,30 @@ public class CompoundOperation extends RevertableEvent
         return result;
     }
 
-    public ObjectChangedEvent toObjectChangedEvent()
+    public List<ObjectChangedEvent> toObjectChangedEvents()
     {
-        if(events.size() == 0)
-            return null;
+        Map<EventTarget, List<BaseModelEvent>> targetMap = new HashMap<>();
+        List<ObjectChangedEvent> ocEvents = new ArrayList<>();
 
-        return new ObjectChangedEvent(events.get(0).getTarget(), sessionId, userId, true, new ArrayList<BaseModelEvent>(events));
+        // Group events by their target
+        for (BaseModelEvent event : events) {
+            if (event.getTarget() == null)
+                continue;
+
+            if (!targetMap.containsKey(event.getTarget())) {
+                targetMap.put(event.getTarget(), new ArrayList<BaseModelEvent>());
+            }
+
+            targetMap.get(event.getTarget()).add(event);
+        }
+
+        // Create for each target an ObjectChangedEvent
+        for (EventTarget target : targetMap.keySet()) {
+            ObjectChangedEvent ocEvent = new ObjectChangedEvent(target, sessionId, userId, true, targetMap.get(target));
+            ocEvents.add(ocEvent);
+        }
+
+        return ocEvents;
     }
     
 }
