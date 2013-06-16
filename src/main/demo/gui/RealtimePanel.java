@@ -86,8 +86,16 @@ public class RealtimePanel extends JPanel
 
     private void removeButtonActionPerformed(ActionEvent e)
     {
-        for (int row : table.getSelectedRows()) {
-            model.removeValueAt(row);
+        // Save keys first to prevent changing indexes while in the process of deleting rows
+        int[] rows = table.getSelectedRows();
+        String[] keys = new String[rows.length];
+        for (int i = 0; i < rows.length; i++) {
+            keys[i] = (String) model.getValueAt(rows[i], 0);
+        }
+
+        // Remove values
+        for (String key : keys) {
+            model.removeValue(key);
         }
     }
 
