@@ -550,7 +550,7 @@ public class Model extends EventTarget
      *
      * @param event
      */
-    private void sendToRemote(BaseModelEvent event)
+    private void sendToRemote(CompoundOperation event)
     {
         // Don't send remote events
         if (!event.isLocal())
@@ -578,7 +578,9 @@ public class Model extends EventTarget
         target.fireEvent(ocEvent);
 
         // Send event
-        sendToRemote(ocEvent);
+        CompoundOperation compoundOperation = new CompoundOperation(sessionId, userId, true);
+        compoundOperation.addEvent((RevertableEvent)event);
+        sendToRemote(compoundOperation);
     }
 
     /**

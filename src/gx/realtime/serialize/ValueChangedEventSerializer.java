@@ -30,15 +30,7 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
             value = ((CollaborativeObject) value).getId();
         }
 
-        // [4,[0,[8,"objectid","property",[21,"new"]]]]
-        // Print the outer wrapper (compound operation)
-        jgen.writeStartArray();
-        jgen.writeNumber(4);
-
-        // print 0-wrapper
-        jgen.writeStartArray();
-        jgen.writeNumber(0);
-
+        // [8,"objectid","property",[21,"new"]]
         // Value changed operation
         jgen.writeStartArray();
         jgen.writeNumber(8);
@@ -55,9 +47,6 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
             jgen.writeEndArray();
         }
 
-        jgen.writeEndArray();
-        // close the two outer wrappers
-        jgen.writeEndArray();
         jgen.writeEndArray();
     }
 }

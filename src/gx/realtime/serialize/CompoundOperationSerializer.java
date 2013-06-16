@@ -25,7 +25,7 @@ public class CompoundOperationSerializer extends StdSerializer<CompoundOperation
     {
         List<RevertableEvent> events = event.getEvents();
 
-        // [4,[0,[8,"objectid","property",[21,"new"]]]]
+        // [4,[0,[operations]]]]
         // Print the outer wrapper (compound operation)
         jgen.writeStartArray();
         jgen.writeNumber(4);
