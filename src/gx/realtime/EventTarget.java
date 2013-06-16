@@ -92,7 +92,7 @@ public abstract class EventTarget
 
             //execute eventhandlers of this EventTarget if needed.
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            if (this.equals(event.getTarget()) && handlers != null) {
+            if (handlers != null && (this.equals(event.getTarget()) || event.bubbles())) {
                 for (EventHandler handler : handlers) {
                     handler.handleEvent(event);
                 }

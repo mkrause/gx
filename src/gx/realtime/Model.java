@@ -55,6 +55,8 @@ public class Model extends EventTarget
         readOnly = false;
 
         root = new CollaborativeMap("root", this);
+        root.addParent(this);
+
         undoableMutations = new LinkedList<>();
         redoableMutations = new LinkedList<>();
     }
@@ -336,6 +338,7 @@ public class Model extends EventTarget
             // special "root" ID
             if (id.equals("root")) {
                 root = (CollaborativeMap) collabObject;
+                root.addParent(this);
             }
         };
     }
@@ -386,6 +389,7 @@ public class Model extends EventTarget
         // special "root" ID
         if (id.equals("root")) {
             root = (CollaborativeMap) collabObject;
+            root.addParent(this);
         }
     }
 
