@@ -1,10 +1,12 @@
 package gx.realtime;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.DataMessage;
 import gx.browserchannel.message.MessageEvent;
 import gx.browserchannel.message.MessageHandler;
+import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +19,21 @@ public class RealtimeMessageHandler implements MessageHandler
     public RealtimeMessageHandler(Document doc)
     {
         document = doc;
+    }
+
+    @Override
+    public void response(JsonNode data)
+    {
+        JsonParser jParser = data.traverse();
+        jParser.setCodec(new ObjectMapper());
+        SaveRevisionResponse response = null;
+        try {
+            response = jParser.readValueAs(SaveRevisionResponse.class);
+            logger.debug("Received revision response: ", response.getRevision());
+            document.getSession().setRevision(response.getRevision());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

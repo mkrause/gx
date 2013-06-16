@@ -3,12 +3,12 @@ package gx.browserchannel;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gx.browserchannel.message.*;
 import gx.browserchannel.util.ConnectionFactory;
 import gx.browserchannel.util.URLQueryBuilder;
 import gx.browserchannel.util.URLWithQuery;
-import gx.realtime.custom.SaveRevisionResponse;
 import gx.util.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,29 +65,18 @@ public class BrowserChannel
     private Thread eventWorker;
 
     /**
-     * Current revision number, used to properly send save messages.
-     */
-    private int revision = -1;
-
-    /**
      * Constructor of the BrowserChannel object
-     *
-     * @param currentRevision current revision
      */
-    public BrowserChannel(int currentRevision)
+    public BrowserChannel()
     {
         outgoingMessages = new LinkedBlockingQueue<>();
         incomingMessages = new LinkedBlockingQueue<>();
         nextRid = (int) Math.floor(Math.random() * 100000);
-        revision = currentRevision;
         logger.info("Initialized");
     }
 
-    protected SaveRevisionResponse send(SaveMessage message)
+    protected JsonNode send(SaveMessage message)
     {
-        // Set the current revision number
-        message.setRevision(revision);
-
         ObjectMapper mapper = new ObjectMapper();
         String msg;
         try {
@@ -113,8 +102,7 @@ public class BrowserChannel
             // Parse response
             JsonParser jParser = jfactory.createParser(in);
             jParser.setCodec(mapper);
-            SaveRevisionResponse response = jParser.readValueAs(SaveRevisionResponse.class);
-            logger.debug("Received revision response: {}", response.getRevision());
+            JsonNode response = jParser.readValueAsTree();
 
             in.close();
 
@@ -408,9 +396,4 @@ public class BrowserChannel
         outgoingMessages.add(message);
     }
 
-    public void processResponse(SaveRevisionResponse response)
-    {
-        logger.info("Received new revision number: {}", response.getRevision());
-        revision = response.getRevision();
-    }
 }

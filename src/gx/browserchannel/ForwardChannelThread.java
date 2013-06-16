@@ -1,5 +1,7 @@
 package gx.browserchannel;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import gx.browserchannel.message.MessageHandler;
 import gx.browserchannel.message.SaveMessage;
 import gx.realtime.custom.SaveRevisionResponse;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +42,9 @@ public class ForwardChannelThread extends Thread
      */
     private void consume(SaveMessage msg)
     {
-        SaveRevisionResponse response = parent.send(msg);
-        parent.processResponse(response);
+        JsonNode response = parent.send(msg);
+
+        for (MessageHandler handler : parent.getMessageHandlers())
+            handler.response(response);
     }
 }

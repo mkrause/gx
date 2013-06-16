@@ -29,18 +29,21 @@ public class ObjectChangedEventDeserializer extends JsonDeserializer<ObjectChang
             throw new JsonParseException(INVALID_FORMAT, jp.getCurrentLocation());
 
         // Read values
-        int sequenceId = jp.nextIntValue(-1);
-        String timestamp = jp.nextTextValue();
+        int revision = jp.nextIntValue(-1);
+        String timestamp = jp.nextTextValue(); // hexadecimal format
         String userId = jp.nextTextValue();
         String sessionId = jp.nextTextValue();
         jp.nextToken();
         Operation operation = jp.readValueAs(Operation.class);
         boolean isLocal = false;
         List<BaseModelEvent> events = operation.toEvents(sessionId, userId, isLocal);
+
+        // TODO: a compound operation can contain multiple targets
         String targetId = events.size() == 0 ? null : events.get(0).getTargetId();
 
         // Create event
         ObjectChangedEvent event = new ObjectChangedEvent(targetId, sessionId, userId, isLocal, events);
+        event.setRevision(revision);
 
         // Check if next token is array end token
         if (!jp.nextToken().equals(JsonToken.END_ARRAY))

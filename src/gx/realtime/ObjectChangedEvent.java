@@ -11,7 +11,7 @@ import java.util.List;
 @JsonDeserialize(using = ObjectChangedEventDeserializer.class)
 public class ObjectChangedEvent extends BaseModelEvent
 {
-
+    private int revision;
     private List<BaseModelEvent> events;
 
     public ObjectChangedEvent(String targetId, String sessionId, String userId, boolean local, List<BaseModelEvent> events)
@@ -36,5 +36,15 @@ public class ObjectChangedEvent extends BaseModelEvent
     public void setEvents(List<BaseModelEvent> events)
     {
         this.events = events;
+    }
+
+    public int getRevision()
+    {
+        return revision;
+    }
+
+    public void setRevision(int revision)
+    {
+        this.revision = revision;
     }
 }

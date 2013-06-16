@@ -47,7 +47,7 @@ public class Document extends EventTarget
         processSnapshot();
 
         // Set up browser channel
-        this.channel = new BrowserChannel(session.getRevision());
+        this.channel = new BrowserChannel();
         this.channel.addMessageHandler(messageHandler);
         this.channel.addExtraParameter("id", session.getModelId());
         this.channel.addExtraParameter("access_token", credential.getAccessToken());

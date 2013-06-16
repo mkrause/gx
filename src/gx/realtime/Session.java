@@ -51,6 +51,6 @@ public class Session
 
     public void setRevision(int revision)
     {
-        this.revision = revision;
+        this.revision = Math.max(this.revision, revision);
     }
 }

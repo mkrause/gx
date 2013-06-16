@@ -451,6 +451,17 @@ public class Model extends EventTarget
      */
     protected void handleRemoteEvent(BaseModelEvent event)
     {
+        // Unpack contained events
+        if (event instanceof ObjectChangedEvent) {
+            ObjectChangedEvent oceEvent = (ObjectChangedEvent) event;
+            for (BaseModelEvent e : oceEvent.getEvents()) {
+                handleRemoteEvent(e);
+            }
+
+            // Update revision
+            document.getSession().setRevision(oceEvent.getRevision());
+        }
+
         String targetId = event.getTargetId();
         Object node = getNode(targetId);
 
@@ -463,17 +474,6 @@ public class Model extends EventTarget
         if (!(node instanceof EventTarget)) {
             // Not an event target, so ignore
             return;
-        }
-
-        // TODO: fire childs of ObjectChangedEvent or parent first?
-
-        // Unpack contained events
-        if (event instanceof ObjectChangedEvent) {
-            for (BaseModelEvent e : ((ObjectChangedEvent) event).getEvents()) {
-                deserializeEvent(e);
-                updateModel(e);
-                fireEvent(e);
-            }
         }
 
         // The event may still contains some node IDs in string form,
@@ -558,6 +558,7 @@ public class Model extends EventTarget
 
         BrowserChannel channel = document.getBrowserChannel();
         SaveMessage message = new SaveMessage(event);
+        message.setRevision(document.getSession().getRevision());
         channel.queue(message);
     }
 

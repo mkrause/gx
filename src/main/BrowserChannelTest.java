@@ -109,7 +109,7 @@ public class BrowserChannelTest
             // TODO: build document model according to session.snapshot
 
             // Create channel
-            channel = new BrowserChannel(session.getRevision());
+            channel = new BrowserChannel();
             channel.addMessageHandler(new RealtimeMessageHandler(null));
             channel.addExtraParameter("id", session.getModelId());
             channel.addExtraParameter("access_token", credential.getAccessToken());
@@ -122,6 +122,7 @@ public class BrowserChannelTest
             // Sample event submission, note that the target ID is document-specific
             BaseModelEvent event = new ValueChangedEvent("gdei8wy17hhpsusd9", session.getSessionId(), null, false, "ab_de", "new" + RandomUtils.getRandomAlphaNumeric(), "old");
             SaveMessage message = new SaveMessage(event);
+            message.setRevision(session.getRevision());
             channel.queue(message);
 
             logger.debug("Press ENTER to disconnect");
