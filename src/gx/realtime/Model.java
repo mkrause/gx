@@ -562,7 +562,7 @@ public class Model extends EventTarget
         channel.queue(message);
     }
 
-    public void fireObjectChangedEvent(EventTarget target, BaseModelEvent event)
+    public void fireObjectChangedEvent(CollaborativeObject target, BaseModelEvent event)
     {
         // Buffer events if a compound operation is in progress
         if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {

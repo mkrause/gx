@@ -36,7 +36,7 @@ public abstract class BaseModelEvent extends Event
      * @param isLocal
      * @param bubbles
      */
-    public BaseModelEvent(EventType type, EventTarget target, String sessionId, String userId, boolean isLocal, boolean bubbles)
+    public BaseModelEvent(EventType type, CollaborativeObject target, String sessionId, String userId, boolean isLocal, boolean bubbles)
     {
         super(target, type);
         this.sessionId = sessionId;
@@ -45,6 +45,11 @@ public abstract class BaseModelEvent extends Event
         this.userId = userId;
 
         bubbledNodes = new HashSet();
+    }
+
+    @Override
+    public CollaborativeObject getTarget(){
+        return (CollaborativeObject) target;
     }
 
     public String getSessionId()
