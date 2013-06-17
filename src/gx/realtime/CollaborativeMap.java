@@ -67,7 +67,7 @@ public class CollaborativeMap extends CollaborativeObject
     public Object delete(String key)
     {
         Object result = this.get(key);
-        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
+        fireEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
 
         return result;
     }
@@ -146,7 +146,7 @@ public class CollaborativeMap extends CollaborativeObject
         }
         Object oldValue = map.get(key);
 
-        fireWithObjectChangedEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
+        fireEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
 
         return oldValue;
     }
@@ -157,7 +157,6 @@ public class CollaborativeMap extends CollaborativeObject
      *
      * @return The values in this map.
      */
-    @SuppressWarnings("unchecked")
     public List<Object> values()
     {
         List<Object> result = new ArrayList<Object>();
@@ -200,46 +199,6 @@ public class CollaborativeMap extends CollaborativeObject
                 map.put(valueChangedEvent.getProperty(), valueChangedEvent.getNewValue());
             }
         }
-    }
-
-    /**
-     * Method dispatching the given event of the given EventType. If this CollaborativeMap is not the target of the given event, the
-     * event is passed down to its children.
-     *
-     * @param event The event object, containing any necessary information.
-     */
-    @Override
-    protected void fireEvent(Event event)
-    {
-        //if this object is the target, execute event handlers and bubble back up
-        super.fireEvent(event);
-
-        //if not, propagate event to children with callback.
-        if (!this.equals(event.getTarget())) {
-            Collection<Object> values = map.values();
-            for (Object value : values) {
-                if (value instanceof CollaborativeObject) {
-                    ((CollaborativeObject) value).fireEvent(event);
-                }
-            }
-        }
-    }
-
-    /**
-     * Utility method to fire an event with an ObjectChangedEvent.
-     *
-     * @param event
-     */
-    private void fireWithObjectChangedEvent(BaseModelEvent event)
-    {
-        // Update the model
-        updateModel(event);
-
-        // Fire the event itself
-        fireEvent(event);
-
-        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-        model.fireObjectChangedEvent(this, event);
     }
 
     public String toString()
