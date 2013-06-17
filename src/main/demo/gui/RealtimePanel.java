@@ -1,13 +1,19 @@
 package main.demo.gui;
 
+import java.awt.*;
 import gx.realtime.*;
+import gx.realtime.Event;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Swing panel that handles the display and interaction with the Realtime library
@@ -15,8 +21,10 @@ import java.awt.event.WindowEvent;
 public class RealtimePanel extends JPanel
 {
     private RealtimeTableModel model;
+    private DefaultListModel<Collaborator> collaboratorListModel = new DefaultListModel<>();
+    private DefaultListModel<Event> eventListModel = new DefaultListModel<>();
 
-    public RealtimePanel(CollaborativeMap collabMap)
+    public RealtimePanel(Document document, CollaborativeMap collabMap)
     {
         model = new RealtimeTableModel(collabMap);
 
@@ -37,6 +45,15 @@ public class RealtimePanel extends JPanel
             logEvent(event);
         });
 
+        document.addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent event) -> {
+            logEvent(event);
+            collaboratorListModel.addElement(event.getCollaborator());
+        });
+        document.addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent event) -> {
+            logEvent(event);
+            collaboratorListModel.removeElement(event.getCollaborator());
+        });
+
         // Init the components
         initComponents();
 
@@ -53,8 +70,14 @@ public class RealtimePanel extends JPanel
 
     public void logEvent(Event event)
     {
-        eventLogArea.append(event.toString() + "\n");
-        eventLogArea.setCaretPosition(eventLogArea.getDocument().getLength());
+        eventListModel.addElement(event);
+
+        // Scroll to the bottom if the GUI is available already
+        if(eventLogList.getVisibleRect() != null) {
+            Rectangle visibleRect = eventLogList.getVisibleRect();
+            visibleRect.y = eventLogList.getHeight() - visibleRect.height;
+            eventLogList.scrollRectToVisible(visibleRect);
+        }
     }
 
     /**
@@ -67,7 +90,7 @@ public class RealtimePanel extends JPanel
     {
         JFrame frame = new JFrame("Demo Realtime Gx Application");
 
-        RealtimePanel newContentPane = new RealtimePanel(collabMap);
+        RealtimePanel newContentPane = new RealtimePanel(document, collabMap);
         newContentPane.setOpaque(true);
         frame.setContentPane(newContentPane);
 
@@ -122,10 +145,23 @@ public class RealtimePanel extends JPanel
         keyLabel = new JLabel();
         valueLabel = new JLabel();
         eventLogScrollPane = new JScrollPane();
-        eventLogArea = new JTextArea();
+        eventLogList = new JList(eventListModel);
+        eventLogList.setCellRenderer(new EventRenderer());
         eventLogLabel = new JLabel();
+        label1 = new JLabel();
+        collabListScrollPane = new JScrollPane();
+        collabList = new JList(collaboratorListModel);
+        collabList.setCellRenderer(new CollaboratorRenderer());
 
         //======== this ========
+
+        // JFormDesigner evaluation mark
+        setBorder(new javax.swing.border.CompoundBorder(
+            new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                java.awt.Color.red), getBorder())); addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+
 
         //======== tableScrollPane ========
         {
@@ -139,53 +175,43 @@ public class RealtimePanel extends JPanel
 
         //---- clearButton ----
         clearButton.setText("Clear map");
-        clearButton.addActionListener(new ActionListener()
-        {
+        clearButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 clearButtonActionPerformed(e);
             }
         });
 
         //---- removeButton ----
         removeButton.setText("Remove selection");
-        removeButton.addActionListener(new ActionListener()
-        {
+        removeButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 removeButtonActionPerformed(e);
             }
         });
 
         //---- putButton ----
         putButton.setText("Put key-value pair");
-        putButton.addActionListener(new ActionListener()
-        {
+        putButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 putButtonActionPerformed(e);
             }
         });
 
         //---- keyField ----
-        keyField.addActionListener(new ActionListener()
-        {
+        keyField.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 putButtonActionPerformed(e);
             }
         });
 
         //---- valueField ----
-        valueField.addActionListener(new ActionListener()
-        {
+        valueField.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 putButtonActionPerformed(e);
             }
         });
@@ -200,71 +226,85 @@ public class RealtimePanel extends JPanel
         {
             eventLogScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             eventLogScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-            //---- eventLogArea ----
-            eventLogArea.setEditable(false);
-            eventLogScrollPane.setViewportView(eventLogArea);
+            eventLogScrollPane.setViewportView(eventLogList);
         }
 
         //---- eventLogLabel ----
         eventLogLabel.setText("Event log:");
 
+        //---- label1 ----
+        label1.setText("Collaborators:");
+
+        //======== collabListScrollPane ========
+        {
+            collabListScrollPane.setViewportView(collabList);
+        }
+
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup()
+            layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup()
+                        .addComponent(eventLogScrollPane)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup()
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup()
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                        .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(putButton, GroupLayout.Alignment.TRAILING)
-                                                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                                                .addComponent(keyLabel)
-                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                                                .addComponent(valueLabel)
-                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))))
-                                                        .addComponent(eventLogScrollPane, GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
-                                                .addGap(6, 6, 6))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(eventLogLabel)
-                                                .addContainerGap(408, Short.MAX_VALUE))))
+                            .addGroup(layout.createParallelGroup()
+                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(eventLogLabel)
+                                        .addGap(251, 251, 251)))
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup()
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(label1)
+                                        .addGap(0, 124, Short.MAX_VALUE))
+                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGap(0, 60, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup()
+                                                .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
+                                                .addComponent(putButton, GroupLayout.Alignment.TRAILING)
+                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                        .addComponent(keyLabel)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                        .addComponent(valueLabel)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(removeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(collabListScrollPane, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))))
+                    .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup()
+            layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup()
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(clearButton)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(removeButton)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(keyLabel))
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(valueLabel))
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(putButton)
-                                                .addGap(0, 21, Short.MAX_VALUE))
-                                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(eventLogLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(eventLogScrollPane, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+                            .addComponent(clearButton)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(removeButton)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(keyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(keyLabel))
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(valueField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(valueLabel))
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(putButton)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(label1)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(collabListScrollPane, GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
+                        .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(eventLogLabel)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(eventLogScrollPane, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
         );
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -280,7 +320,76 @@ public class RealtimePanel extends JPanel
     private JLabel keyLabel;
     private JLabel valueLabel;
     private JScrollPane eventLogScrollPane;
-    private JTextArea eventLogArea;
+    private JList eventLogList;
     private JLabel eventLogLabel;
+    private JLabel label1;
+    private JScrollPane collabListScrollPane;
+    private JList collabList;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+}
+
+/**
+ * Custom renderer to display the Collaborators in our list
+ */
+class CollaboratorRenderer extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(
+            JList list,
+            Object value,
+            int index,
+            boolean selected,
+            boolean expanded) {
+
+        Collaborator collaborator = (Collaborator) value;
+        JLabel label = null;
+
+        try {
+            String urlString = collaborator.getPhotoUrl();
+            if(!urlString.substring(0, 4).equals("http"))
+                urlString = "https:" + urlString;
+
+            Image image = ImageIO.read(new URL(urlString));
+            ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+            label = new JLabel(collaborator.getDisplayName(), imageIcon, JLabel.LEFT);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        label.setForeground(Color.decode(collaborator.getColor()));
+
+        return label;
+    }
+}
+
+/**
+ * Renderer for the event log list.
+ */
+class EventRenderer extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(
+            JList list,
+            Object value,
+            int index,
+            boolean selected,
+            boolean expanded) {
+
+        JLabel label = new JLabel();
+
+        if (value instanceof ValueChangedEvent) {
+            ValueChangedEvent event = (ValueChangedEvent) value;
+            label.setText(event.toString());
+        } else if (value instanceof CollaboratorJoinedEvent) {
+            CollaboratorJoinedEvent event = (CollaboratorJoinedEvent) value;
+            label.setText(event.toString());
+        } else if (value instanceof CollaboratorLeftEvent) {
+            CollaboratorLeftEvent event = (CollaboratorLeftEvent) value;
+            label.setText(event.toString());
+        }
+
+//        label.setForeground(Color.decode(collaborator.getColor()));
+
+        return label;
+    }
 }

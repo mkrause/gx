@@ -39,6 +39,7 @@ public class DemoGuiApp
         options.setOnFileLoaded((doc) -> {
             document = doc;
 
+
             Model model = doc.getModel();
             CollaborativeMap root = model.getRoot();
 
