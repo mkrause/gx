@@ -57,6 +57,13 @@ public class RealtimePanel extends JPanel
             collaboratorListModel.removeElement(event.getCollaborator());
         });
 
+        //listen to UndoRedoStateChangedEvent to update the UI
+        document.getModel().addEventListener(EventType.UNDO_REDO_STATE_CHANGED, (UndoRedoStateChangedEvent event) -> {
+            logEvent(event);
+            undoButton.setEnabled(event.canUndo());
+            redoButton.setEnabled(event.canRedo());
+        });
+
         // Init the components
         initComponents();
 
@@ -141,7 +148,7 @@ public class RealtimePanel extends JPanel
             document.getModel().undo();
         } else {
             System.err.println("Unable to undo!");
-
+            undoButton.setEnabled(false);
         }
         //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
@@ -151,6 +158,7 @@ public class RealtimePanel extends JPanel
             document.getModel().redo();
         } else {
             System.err.println("Unable to redo!");
+            redoButton.setEnabled(false);
         }
         //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
