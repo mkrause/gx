@@ -46,7 +46,7 @@ public class BrowserChannel
     private long lastSequenceNumber = 0L;
     private String channelSessionId;
     private JsonFactory jfactory = new JsonFactory();
-    private List<MessageHandler> handlers = new ArrayList<>();
+    private MessageHandler handler = null;
     private Map<String, String> extraParams = new HashMap<>();
     /**
      * Thread to handle client-server communication
@@ -341,19 +341,14 @@ public class BrowserChannel
         waitForClosed();
     }
 
-    public void addMessageHandler(MessageHandler handler)
+    public void setMessageHandler(MessageHandler handler)
     {
-        handlers.add(handler);
+        this.handler = handler;
     }
 
-    public void removeMessageHandler(MessageHandler handler)
+    public MessageHandler getMessageHandler()
     {
-        handlers.remove(handler);
-    }
-
-    public List<MessageHandler> getMessageHandlers()
-    {
-        return handlers;
+        return handler;
     }
 
     public boolean isClosed()

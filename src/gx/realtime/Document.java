@@ -48,7 +48,7 @@ public class Document extends EventTarget
 
         // Set up browser channel
         this.channel = new BrowserChannel();
-        this.channel.addMessageHandler(messageHandler);
+        this.channel.setMessageHandler(messageHandler);
         this.channel.addExtraParameter("id", session.getModelId());
         this.channel.addExtraParameter("access_token", credential.getAccessToken());
         this.channel.addExtraParameter("sid", session.getSessionId());

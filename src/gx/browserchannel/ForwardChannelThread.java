@@ -42,9 +42,9 @@ public class ForwardChannelThread extends Thread
      */
     private void consume(SaveMessage msg)
     {
+        int revision = parent.getMessageHandler().getRevision();
+        msg.setRevision(revision);
         JsonNode response = parent.send(msg);
-
-        for (MessageHandler handler : parent.getMessageHandlers())
-            handler.response(response);
+        parent.getMessageHandler().response(response);
     }
 }

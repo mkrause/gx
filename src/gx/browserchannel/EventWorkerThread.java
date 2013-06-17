@@ -42,8 +42,6 @@ public class EventWorkerThread extends Thread
     private void consume(AbstractMessage msg)
     {
         MessageEvent event = new MessageEvent(parent, msg);
-
-        for (MessageHandler handler : parent.getMessageHandlers())
-            handler.receive(event);
+        parent.getMessageHandler().receive(event);
     }
 }

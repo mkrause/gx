@@ -6,4 +6,5 @@ public interface MessageHandler
 {
     public void receive(MessageEvent e);
     public void response(JsonNode response);
+    public int getRevision();
 }

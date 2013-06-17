@@ -37,6 +37,12 @@ public class RealtimeMessageHandler implements MessageHandler
     }
 
     @Override
+    public int getRevision()
+    {
+        return document.getSession().getRevision();
+    }
+
+    @Override
     public void receive(MessageEvent e)
     {
         logger.debug("Received messageEvent {}", e);

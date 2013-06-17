@@ -110,7 +110,7 @@ public class BrowserChannelTest
 
             // Create channel
             channel = new BrowserChannel();
-            channel.addMessageHandler(new RealtimeMessageHandler(null));
+            channel.setMessageHandler(new RealtimeMessageHandler(null));
             channel.addExtraParameter("id", session.getModelId());
             channel.addExtraParameter("access_token", credential.getAccessToken());
             channel.addExtraParameter("sid", session.getSessionId());
