@@ -136,10 +136,17 @@ public class RealtimePanel extends JPanel
         model.updateValue(keyField.getText(), valueField.getText(), true);
     }
 
+    private void undoButtonActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    private void redoButtonActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Real Time
         tableScrollPane = new JScrollPane();
         table = new JTable(model);
         clearButton = new JButton();
@@ -157,16 +164,8 @@ public class RealtimePanel extends JPanel
         collabListScrollPane = new JScrollPane();
         collabList = new JList(collaboratorListModel);
         collabList.setCellRenderer(new CollaboratorRenderer());
-
-        //======== this ========
-
-        // JFormDesigner evaluation mark
-        setBorder(new javax.swing.border.CompoundBorder(
-            new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                java.awt.Color.red), getBorder())); addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
+        redoButton = new JButton();
+        undoButton = new JButton();
 
         //======== tableScrollPane ========
         {
@@ -245,6 +244,24 @@ public class RealtimePanel extends JPanel
             collabListScrollPane.setViewportView(collabList);
         }
 
+        //---- redoButton ----
+        redoButton.setText("Redo");
+        redoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                redoButtonActionPerformed(e);
+            }
+        });
+
+        //---- undoButton ----
+        undoButton.setText("Undo");
+        undoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoButtonActionPerformed(e);
+            }
+        });
+
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(
@@ -255,7 +272,7 @@ public class RealtimePanel extends JPanel
                         .addComponent(eventLogScrollPane)
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup()
-                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
+                                .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(eventLogLabel)
                                     .addGap(251, 251, 251)))
@@ -263,11 +280,11 @@ public class RealtimePanel extends JPanel
                             .addGroup(layout.createParallelGroup()
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(label1)
-                                    .addGap(0, 124, Short.MAX_VALUE))
+                                    .addGap(0, 131, Short.MAX_VALUE))
+                                .addComponent(collabListScrollPane, GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                                 .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addGap(0, 60, Short.MAX_VALUE)
+                                    .addGap(0, 12, Short.MAX_VALUE)
                                     .addGroup(layout.createParallelGroup()
-                                        .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
                                         .addComponent(putButton, GroupLayout.Alignment.TRAILING)
                                         .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                             .addComponent(keyLabel)
@@ -277,8 +294,13 @@ public class RealtimePanel extends JPanel
                                             .addComponent(valueLabel)
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(removeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)))
-                                .addComponent(collabListScrollPane, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))))
+                                        .addComponent(removeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(undoButton)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(redoButton)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(clearButton)))))))
                     .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -287,7 +309,10 @@ public class RealtimePanel extends JPanel
                     .addContainerGap()
                     .addGroup(layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(clearButton)
+                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(clearButton)
+                                .addComponent(redoButton)
+                                .addComponent(undoButton))
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(removeButton)
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -315,7 +340,6 @@ public class RealtimePanel extends JPanel
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Real Time
     private JScrollPane tableScrollPane;
     private JTable table;
     private JButton clearButton;
@@ -331,6 +355,8 @@ public class RealtimePanel extends JPanel
     private JLabel label1;
     private JScrollPane collabListScrollPane;
     private JList collabList;
+    private JButton redoButton;
+    private JButton undoButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
 
