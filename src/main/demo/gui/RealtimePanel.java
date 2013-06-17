@@ -23,15 +23,18 @@ public class RealtimePanel extends JPanel
     private RealtimeTableModel model;
     private DefaultListModel<Collaborator> collaboratorListModel = new DefaultListModel<>();
     private DefaultListModel<Event> eventListModel = new DefaultListModel<>();
+    private Document document;
 
     public RealtimePanel(Document document, CollaborativeMap collabMap)
     {
+        this.document = document;
         model = new RealtimeTableModel(collabMap);
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
             logEvent(event);
 
+            // Don't update the map if we've thrown the events
             if (event.isLocal())
                 return;
 
@@ -70,10 +73,11 @@ public class RealtimePanel extends JPanel
 
     public void logEvent(Event event)
     {
+        System.out.println(event);
         eventListModel.addElement(event);
 
         // Scroll to the bottom if the GUI is available already
-        if(eventLogList.getVisibleRect() != null) {
+        if(eventLogList != null && eventLogList.getVisibleRect() != null) {
             Rectangle visibleRect = eventLogList.getVisibleRect();
             visibleRect.y = eventLogList.getHeight() - visibleRect.height;
             eventLogList.scrollRectToVisible(visibleRect);
@@ -135,6 +139,7 @@ public class RealtimePanel extends JPanel
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Evaluation license - Real Time
         tableScrollPane = new JScrollPane();
         table = new JTable(model);
         clearButton = new JButton();
@@ -146,7 +151,7 @@ public class RealtimePanel extends JPanel
         valueLabel = new JLabel();
         eventLogScrollPane = new JScrollPane();
         eventLogList = new JList(eventListModel);
-        eventLogList.setCellRenderer(new EventRenderer());
+        eventLogList.setCellRenderer(new EventRenderer(document));
         eventLogLabel = new JLabel();
         label1 = new JLabel();
         collabListScrollPane = new JScrollPane();
@@ -252,27 +257,27 @@ public class RealtimePanel extends JPanel
                             .addGroup(layout.createParallelGroup()
                                 .addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
                                 .addGroup(layout.createSequentialGroup()
-                                        .addComponent(eventLogLabel)
-                                        .addGap(251, 251, 251)))
+                                    .addComponent(eventLogLabel)
+                                    .addGap(251, 251, 251)))
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(layout.createParallelGroup()
                                 .addGroup(layout.createSequentialGroup()
-                                        .addComponent(label1)
-                                        .addGap(0, 124, Short.MAX_VALUE))
+                                    .addComponent(label1)
+                                    .addGap(0, 124, Short.MAX_VALUE))
                                 .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGap(0, 60, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup()
-                                                .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-                                                .addComponent(putButton, GroupLayout.Alignment.TRAILING)
-                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                        .addComponent(keyLabel)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                        .addComponent(valueLabel)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-                                                .addComponent(removeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)))
+                                    .addGap(0, 60, Short.MAX_VALUE)
+                                    .addGroup(layout.createParallelGroup()
+                                        .addComponent(clearButton, GroupLayout.Alignment.TRAILING)
+                                        .addComponent(putButton, GroupLayout.Alignment.TRAILING)
+                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(keyLabel)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(keyField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(valueLabel)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(valueField, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(removeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)))
                                 .addComponent(collabListScrollPane, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))))
                     .addContainerGap())
         );
@@ -310,6 +315,7 @@ public class RealtimePanel extends JPanel
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Evaluation license - Real Time
     private JScrollPane tableScrollPane;
     private JTable table;
     private JButton clearButton;
@@ -363,10 +369,17 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
     }
 }
 
+
 /**
  * Renderer for the event log list.
  */
 class EventRenderer extends DefaultListCellRenderer {
+    private Document document;
+
+    public EventRenderer(Document document) {
+        this.document = document;
+    }
+
     @Override
     public Component getListCellRendererComponent(
             JList list,
@@ -388,8 +401,33 @@ class EventRenderer extends DefaultListCellRenderer {
             label.setText(event.toString());
         }
 
-//        label.setForeground(Color.decode(collaborator.getColor()));
-
+        paintLabel(label, value);
         return label;
+    }
+
+    /**
+     * Sets the text color of the provided label to the color of the collaborator.
+     *
+     * @param label
+     * @param event
+     */
+    private void paintLabel(JLabel label, Object event) {
+        String color = null;
+
+        if(event instanceof BaseModelEvent) {
+            String userid = ((BaseModelEvent) event).getUserId();
+            for(Collaborator collab : document.getCollaborators()) {
+                if(collab.getUserId().equals(userid)) {
+                    color = collab.getColor();
+                }
+            }
+        } else if(event instanceof CollaboratorJoinedEvent) {
+            color = ((CollaboratorJoinedEvent)event).getCollaborator().getColor();
+        } else if(event instanceof CollaboratorLeftEvent) {
+            color = ((CollaboratorLeftEvent)event).getCollaborator().getColor();
+        }
+
+        label.setForeground(Color.decode(color));
+
     }
 }
