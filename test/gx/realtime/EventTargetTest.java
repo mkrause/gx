@@ -226,4 +226,11 @@ public class EventTargetTest
         assertEquals(410, object5.getId());
         assertEquals(510, object6.getId());
     }
+
+    @Test
+    public void testObjectChangedEvent()
+    {
+        //TODO
+        fail("TODO");
+    }
 }

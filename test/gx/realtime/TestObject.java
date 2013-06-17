@@ -65,10 +65,10 @@ public class TestObject extends EventTarget implements Cloneable {
         if(object instanceof TestObject) {
             TestObject that = (TestObject) object;
             result = this.getId() == that.getId();
-            if(this.getChild() != null) {
-                result &= this.getChild().equals(that.getChild());
+            if(this.children != null) {
+                result &= this.children.equals(that.children);
             } else {
-                result &= that.getChild() == null;
+                result &= children == null;
             }
         }
         return result;

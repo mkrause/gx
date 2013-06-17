@@ -9,7 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
         ClientTest.class,
         CollaborativeListTest.class,
         CollaborativeMapTest.class,
-        CollaborativeObjectTest.class,
+        ClonerTest.class,
         CollaborativeStringTest.class,
         EventTargetTest.class,
         IndexReferenceTest.class,

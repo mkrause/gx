@@ -61,6 +61,7 @@ public class ModelTest
         fail("Not yet implemented");
     }
 
+    //TODO: check if no methods are skipped.
 
     @Test
     public void testUndoRedo()

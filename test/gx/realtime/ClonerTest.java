@@ -5,8 +5,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
-public class CollaborativeObjectTest
+public class ClonerTest
 {
 
     private static CollaborativeString string;
@@ -15,7 +16,6 @@ public class CollaborativeObjectTest
     public void testClone()
     {
         TestObject simpleObject = new TestObject(123);
-        TestObject testObject = new TestObject(456, simpleObject);
         TestObject clone = Cloner.clone(simpleObject);
         assertEquals(simpleObject, clone);
         assertFalse(simpleObject == clone);
