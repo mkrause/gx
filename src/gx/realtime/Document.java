@@ -69,7 +69,9 @@ public class Document extends EventTarget
     {
         addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent e) -> {
             Collaborator collaborator = e.getCollaborator();
-            collaborators.add(collaborator);
+            if (!collaborators.contains(collaborator)) {
+                collaborators.add(collaborator);
+            }
             if (collaborator.isMe()) {
                 me = collaborator;
             }

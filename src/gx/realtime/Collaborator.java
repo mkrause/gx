@@ -116,4 +116,21 @@ public class Collaborator
     {
         this.photoUrl = photoUrl;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Collaborator other = (Collaborator) o;
+        return userId.equals(other.userId) && sessionId.equals(other.sessionId);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = userId.hashCode();
+        result = 31 * result + sessionId.hashCode();
+        return result;
+    }
 }
