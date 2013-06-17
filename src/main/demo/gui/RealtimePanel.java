@@ -475,7 +475,7 @@ class EventRenderer extends DefaultListCellRenderer {
             color = ((CollaboratorLeftEvent)event).getCollaborator().getColor();
         }
 
-        label.setForeground(Color.decode(color));
-
+        if (color != null)
+            label.setForeground(Color.decode(color));
     }
 }

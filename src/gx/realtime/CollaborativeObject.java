@@ -12,6 +12,9 @@ public abstract class CollaborativeObject extends EventTarget
     private String id;
     protected Model model;
 
+    private String sessionId;
+    private String userId;
+
     //Methods
 
     /**
@@ -36,6 +39,22 @@ public abstract class CollaborativeObject extends EventTarget
     protected void updateModel(BaseModelEvent event)
     {
         // By default, do nothing
+    }
+
+    protected String getUserId()
+    {
+        if(userId == null && model.getDocument().getMe() != null) {
+            userId = model.getDocument().getMe().getUserId();
+        }
+        return userId;
+    }
+
+    protected String getSessionId()
+    {
+        if(sessionId == null) {
+            sessionId = model.getDocument().getSession().getSessionId();
+        }
+        return sessionId;
     }
 
     /**

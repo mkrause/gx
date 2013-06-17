@@ -20,9 +20,6 @@ public class CollaborativeMap extends CollaborativeObject
      */
     private Map<String, Object> map;
 
-    private String sessionId;
-    private String userId;
-
     /**
      * Constructor, constructing a map for the given model. This constructor should not be called directly.
      *
@@ -32,11 +29,6 @@ public class CollaborativeMap extends CollaborativeObject
     {
         super(id, model);
         map = new HashMap<>();
-
-        sessionId = model.getDocument().getSession().getSessionId();
-        if (model.getDocument().getMe() != null) {
-            userId = model.getDocument().getMe().getUserId();
-        }
     }
 
     /**
@@ -69,7 +61,7 @@ public class CollaborativeMap extends CollaborativeObject
         Object result = this.get(key);
 
         // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-        BaseModelEvent event = new ValueChangedEvent(this, sessionId, userId, true, key, null, result);
+        BaseModelEvent event = new ValueChangedEvent(this, getSessionId(), getUserId(), true, key, null, result);
         updateModel(event);
         model.dispatchAndSendEvent(event);
 
@@ -151,7 +143,7 @@ public class CollaborativeMap extends CollaborativeObject
         Object oldValue = map.get(key);
 
         // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-        BaseModelEvent event = new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue);
+        BaseModelEvent event = new ValueChangedEvent(this, getSessionId(), getUserId(), true, key, newValue, oldValue);
         updateModel(event);
         model.dispatchAndSendEvent(event);
 
