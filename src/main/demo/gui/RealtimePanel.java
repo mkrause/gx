@@ -356,7 +356,10 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
 
             Image image = ImageIO.read(new URL(urlString));
             ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-            label = new JLabel(collaborator.getDisplayName(), imageIcon, JLabel.LEFT);
+            String name = collaborator.getDisplayName();
+            if(collaborator.isMe())
+                name += " (me)";
+            label = new JLabel(name, imageIcon, JLabel.LEFT);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
