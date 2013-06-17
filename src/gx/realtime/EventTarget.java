@@ -1,9 +1,6 @@
 package gx.realtime;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An event target which can dispatch events to interested listeners.
@@ -60,14 +57,18 @@ public abstract class EventTarget
     }
 
     /**
-     * Dispatches the given event to this object after which the corresponding EventHandlers are executed.
-     * If the event is a BaseModelEvent that is bubbling, the event is passed to the parents of this EventTarget afterwards.
+     * Dispatches the given event to this object. If the given event is an ObjectChangedEvent, the event will be unpacked, and the
+     * appropriate eventHandlers are being executed, after which the event will be bubbled up to its parents if applicable.
+     * If it is a BaseModelEvent, it will just be bubbled up.
+     * Else, this function will just execute the eventHanders for the given event will be executed.
      *
      * @param event The event object, containing any necessary information.
      */
     protected void fireEvent(Event event)
     {
-        if (event instanceof BaseModelEvent) {
+        if (event instanceof ObjectChangedEvent) {
+            fireObjectChangedEvent((ObjectChangedEvent) event);
+        } else if (event instanceof BaseModelEvent) {
             fireEvent((BaseModelEvent) event);
         } else if (this.equals(event.getTarget())) {
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
@@ -80,29 +81,65 @@ public abstract class EventTarget
     }
 
     /**
-     * Dispatches the given BaseModelEvent to this object. The corresponding EventHandlers are executed. If the event is bubbling,
+     * Dispatches the given BaseModelEvent to this object. If the event is bubbling,
      * the event is passed to the parents of this EventTarget afterwards.
      *
      * @param event The BaseModelEvent, containing any necessary information.
      */
-    private void fireEvent(BaseModelEvent event)
+    protected void fireEvent(BaseModelEvent event)
     {
         if (event.isFirstVisit(this)) {
             event.addBubbledNode(this);
+            bubble(event);
+        }
+    }
 
-            //execute eventhandlers of this EventTarget if needed.
-            Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            if (handlers != null && (this.equals(event.getTarget()) || event.bubbles())) {
-                for (EventHandler handler : handlers) {
-                    handler.handleEvent(event);
-                }
+    /**
+     * This function executes the event handlers for the given ObjectChangedEvent. First, the events that are contained by this OCE are unpacked,
+     * after which the corresponding event handlers are executed. Concludingly, the eventHandlers for the OCE in this EventTarget are executed, after
+     * which the event will be bubbled.
+     * @param event The ObjectChangedEvent containing the necessary information.
+     */
+    private void fireObjectChangedEvent(ObjectChangedEvent event)
+    {
+        if (event.isFirstVisit(this)) {
+            event.addBubbledNode(this);
+            //execute event handlers of packed events
+            List<BaseModelEvent> events = event.getEvents();
+            for(BaseModelEvent bmEvent : events){
+                executeEventHandlers(bmEvent);
             }
 
-            //Bubble if needed.
-            if (event.bubbles()) {
-                for (EventTarget parent : parents) {
-                    parent.fireEvent(event);
-                }
+            //execute eventhandlers for the ObjectChangedEvent itself.
+            executeEventHandlers(event);
+
+        }
+        bubble(event);
+    }
+
+    /**
+     * This method bubbles the given event to its parents iff event.bubbles() == true.
+     * @param event The event that should be bubbled.
+     */
+    private void bubble(BaseModelEvent event){
+        if (event.bubbles()) {
+            for (EventTarget parent : parents) {
+                parent.fireEvent(event);
+            }
+        }
+    }
+
+    /**
+     * This method is a wrapper function for
+     * @param event
+     */
+    private void executeEventHandlers(BaseModelEvent event)
+    {
+        //execute eventhandlers of this EventTarget if needed.
+        Set<EventHandler> handlers = eventHandlers.get(event.getType());
+        if (handlers != null && (this.equals(event.getTarget()))) {
+            for (EventHandler handler : handlers) {
+                handler.handleEvent(event);
             }
         }
     }
