@@ -14,7 +14,6 @@ public class CollaboratorLeftEventDeserializer extends JsonDeserializer<Collabor
     @Override
     public CollaboratorLeftEvent deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException
     {
-        // TODO: pass Document along as parameter
         return new CollaboratorLeftEvent(null, jp.readValueAs(Collaborator.class));
     }
 }

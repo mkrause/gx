@@ -7,7 +7,7 @@ import gx.realtime.serialize.CollaboratorJoinedEventDeserializer;
 public class CollaboratorJoinedEvent extends Event
 {
 
-    Collaborator collaborator;
+    private Collaborator collaborator;
 
     public CollaboratorJoinedEvent(Document document, Collaborator collaborator)
     {

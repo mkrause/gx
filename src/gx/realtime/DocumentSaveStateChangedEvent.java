@@ -22,6 +22,7 @@ public class DocumentSaveStateChangedEvent extends Event
 
     public void setDocument(Document document)
     {
+        this.setTarget(document);
         this.document = document;
     }
 

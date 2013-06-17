@@ -7,7 +7,7 @@ import gx.realtime.serialize.CollaboratorLeftEventDeserializer;
 public class CollaboratorLeftEvent extends Event
 {
 
-    Collaborator collaborator;
+    private Collaborator collaborator;
 
     public CollaboratorLeftEvent(Document document, Collaborator collaborator)
     {
@@ -25,6 +25,11 @@ public class CollaboratorLeftEvent extends Event
     public Collaborator getCollaborator()
     {
         return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator)
+    {
+        this.collaborator = collaborator;
     }
 
     public Document getDocument()

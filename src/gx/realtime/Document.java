@@ -199,6 +199,7 @@ public class Document extends EventTarget
             BaseModelEvent modelEvent = (BaseModelEvent) event;
             getModel().handleRemoteEvent(modelEvent);
         } else {
+            upgradeEvent(event);
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null) {
                 for (EventHandler handler : handlers) {
@@ -206,6 +207,26 @@ public class Document extends EventTarget
                 }
             }
         }
+    }
+
+    private void upgradeEvent(Event event)
+    {
+        event.setTarget(this);
+
+        if (event instanceof CollaboratorLeftEvent) {
+            CollaboratorLeftEvent clEvent = (CollaboratorLeftEvent) event;
+            String c = clEvent.getCollaborator().getSessionId();
+            clEvent.setCollaborator(getCollaboratorBySessionId(c));
+        }
+    }
+
+    private Collaborator getCollaboratorBySessionId(String sessionId)
+    {
+        for (Collaborator collaborator : collaborators) {
+            if (collaborator.getSessionId().equals(sessionId))
+                return collaborator;
+        }
+        return null;
     }
 
     public Session getSession()
