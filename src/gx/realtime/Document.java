@@ -201,7 +201,11 @@ public class Document extends EventTarget
             BaseModelEvent modelEvent = (BaseModelEvent) event;
             getModel().handleRemoteEvent(modelEvent);
         } else {
-            upgradeEvent(event);
+            // Enrich event with up-to-date values
+            event = upgradeEvent(event);
+            if (event == null)
+                return;
+
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null) {
                 for (EventHandler handler : handlers) {
@@ -211,15 +215,19 @@ public class Document extends EventTarget
         }
     }
 
-    private void upgradeEvent(Event event)
+    private Event upgradeEvent(Event event)
     {
         event.setTarget(this);
 
         if (event instanceof CollaboratorLeftEvent) {
             CollaboratorLeftEvent clEvent = (CollaboratorLeftEvent) event;
-            String c = clEvent.getCollaborator().getSessionId();
-            clEvent.setCollaborator(getCollaboratorBySessionId(c));
+            Collaborator c = getCollaboratorBySessionId(clEvent.getCollaborator().getSessionId());
+            if (c == null)
+                return null;
+            clEvent.setCollaborator(c);
         }
+
+        return event;
     }
 
     private Collaborator getCollaboratorBySessionId(String sessionId)

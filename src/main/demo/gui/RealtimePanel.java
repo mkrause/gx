@@ -462,17 +462,19 @@ class EventRenderer extends DefaultListCellRenderer {
     private void paintLabel(JLabel label, Object event) {
         String color = null;
 
-        if(event instanceof BaseModelEvent) {
+        if (event instanceof BaseModelEvent) {
             String userid = ((BaseModelEvent) event).getUserId();
-            for(Collaborator collab : document.getCollaborators()) {
+            for (Collaborator collab : document.getCollaborators()) {
                 if(collab.getUserId().equals(userid)) {
                     color = collab.getColor();
                 }
             }
-        } else if(event instanceof CollaboratorJoinedEvent) {
-            color = ((CollaboratorJoinedEvent)event).getCollaborator().getColor();
-        } else if(event instanceof CollaboratorLeftEvent) {
-            color = ((CollaboratorLeftEvent)event).getCollaborator().getColor();
+        } else if (event instanceof CollaboratorJoinedEvent) {
+            Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
+            color = user != null ? user.getColor() : null;
+        } else if (event instanceof CollaboratorLeftEvent) {
+            Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
+            color = user != null ? user.getColor() : null;
         }
 
         if (color != null)
