@@ -231,7 +231,7 @@ public class Model extends EventTarget
 
         // Send changes if the last compound operations is closed
         if(compoundOperations.isEmpty())
-            fireEvent(compoundOperation, true);
+            executeCompoundOperation(compoundOperation);
     }
 
     /**
@@ -272,7 +272,7 @@ public class Model extends EventTarget
 
             if (oldUndo != canUndo() || oldRedo != canRedo()) {
                 UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-                this.fireEvent(urscEvent);
+                dispatchEvent(urscEvent);
             }
         }
     }
@@ -286,11 +286,14 @@ public class Model extends EventTarget
         boolean oldRedo = canRedo();
 
         RevertableEvent redoableEvent = redoableMutations.pop();
-        fireEvent(redoableEvent);
+
+        // Redo changes
+        updateModel(redoableEvent);
+        dispatchAndSendEvent(redoableEvent);
 
         if (oldUndo != canUndo() || oldRedo != canRedo()) {
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            this.fireEvent(urscEvent);
+            dispatchEvent(urscEvent);
         }
     }
 
@@ -304,12 +307,16 @@ public class Model extends EventTarget
 
         RevertableEvent undoableEvent = undoableMutations.pop();
         BaseModelEvent reverseEvent = undoableEvent.getReverseEvent();
-        fireEvent(reverseEvent, false);
+
+        // Undo changes
+        updateModel(reverseEvent);
+        dispatchAndSendEvent(reverseEvent);
+
         redoableMutations.push(undoableEvent);
 
         if (oldUndo != canUndo() || oldRedo != canRedo()) {
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
-            this.fireEvent(urscEvent);
+            dispatchEvent(urscEvent);
         }
     }
 
@@ -358,8 +365,6 @@ public class Model extends EventTarget
         return (event) -> {
             String id = event.getTargetId();
             System.out.println("VALUES_ADDED: " + id);
-
-
         };
     }
 
@@ -409,9 +414,16 @@ public class Model extends EventTarget
      */
     private void updateModel(BaseModelEvent event)
     {
-        String id = event.getTargetId();
-        CollaborativeObject collabObject = (CollaborativeObject) nodes.get(id);
-        collabObject.updateModel(event);
+        if (event instanceof ObjectChangedEvent) {
+            ObjectChangedEvent ocEvent = (ObjectChangedEvent) event;
+            for (BaseModelEvent e : ocEvent.getEvents()) {
+                updateModel(e);
+            }
+        } else {
+            String id = event.getTargetId();
+            CollaborativeObject collabObject = (CollaborativeObject) nodes.get(id);
+            collabObject.updateModel(event);
+        }
     }
 
     /**
@@ -440,6 +452,11 @@ public class Model extends EventTarget
                 Object currentValue = targetMap.get(vcEvent.getProperty());
                 vcEvent.setOldValue(currentValue);
             }
+        } else if (event instanceof ObjectChangedEvent) {
+            ObjectChangedEvent ocEvent = (ObjectChangedEvent) event;
+            for (BaseModelEvent e : ocEvent.getEvents()) {
+                deserializeEvent(e);
+            }
         }
     }
 
@@ -451,14 +468,9 @@ public class Model extends EventTarget
      */
     protected void handleRemoteEvent(BaseModelEvent event)
     {
-        // Unpack contained events
+        // Update revision
         if (event instanceof ObjectChangedEvent) {
             ObjectChangedEvent oceEvent = (ObjectChangedEvent) event;
-            for (BaseModelEvent e : oceEvent.getEvents()) {
-                handleRemoteEvent(e);
-            }
-
-            // Update revision
             document.getSession().setRevision(oceEvent.getRevision());
         }
 
@@ -483,59 +495,23 @@ public class Model extends EventTarget
         // Update out local mode based on this remote event
         updateModel(event);
 
-        fireEvent(event);
+        dispatchEvent(event);
     }
 
-    public void fireEvent(Event event, boolean register)
+    private void executeCompoundOperation(CompoundOperation event)
     {
-        if (event instanceof CompoundOperation) {
-            executeCompoundOperation((CompoundOperation) event, register);
-
-        } else if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
-            compoundOperations.peek().addEvent((RevertableEvent) event);
-
-        } else {
-            super.fireEvent(event);
-
-            //if other target, fire on target
-            if (!this.equals(event.getTarget())) {
-                event.getTarget().fireEvent(event);
-            }
-
-            if (register) {
-                registerMutation(event);
-            }
-        }
-    }
-
-    private void executeCompoundOperation(CompoundOperation event, boolean register)
-    {
-        List<RevertableEvent> events = event.getEvents();
-        for (RevertableEvent cEvent : events) {
-            this.fireEvent(cEvent, false);
-        }
-
-        if (register) {
-            registerMutation(event);
-        }
+        registerMutation(event);
 
         // Fire ObjectChangedEvents on the original targets
         List<ObjectChangedEvent> ocEvents = event.toObjectChangedEvents();
         for (ObjectChangedEvent oce : ocEvents) {
-            if (oce.getTarget() != null) {
-                oce.getTarget().fireEvent(oce);
-            }
+            dispatchEvent(oce);
         }
 
         // Send event
         sendToRemote(event);
     }
 
-    @Override
-    public void fireEvent(Event event)
-    {
-        fireEvent(event, true);
-    }
 
     /**
      * @return The document of this Model.
@@ -550,19 +526,30 @@ public class Model extends EventTarget
      *
      * @param event
      */
-    private void sendToRemote(CompoundOperation event)
+    private void sendToRemote(BaseModelEvent event)
     {
         // Don't send remote events
         if (!event.isLocal())
             return;
 
+        // Wrap single operation in a compound operation for sending
+        CompoundOperation eventToSend;
+        if (event instanceof CompoundOperation) {
+            eventToSend = (CompoundOperation) event;
+        } else {
+            String sessionId = document.getSession().getSessionId();
+            String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
+            eventToSend = new CompoundOperation(sessionId, userId, true);
+            eventToSend.addEvent((RevertableEvent)event);
+        }
+
         BrowserChannel channel = document.getBrowserChannel();
-        SaveMessage message = new SaveMessage(event);
+        SaveMessage message = new SaveMessage(eventToSend);
         message.setRevision(document.getSession().getRevision());
         channel.queue(message);
     }
 
-    public void fireObjectChangedEvent(EventTarget target, BaseModelEvent event)
+    public void dispatchAndSendEvent(BaseModelEvent event)
     {
         // Buffer events if a compound operation is in progress
         if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
@@ -571,17 +558,31 @@ public class Model extends EventTarget
         }
 
         // Fire an object changed event that bubbles up the tree
-        String sessionId = document.getSession().getSessionId();
-        String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
-        List<BaseModelEvent> eventList = new LinkedList<>();
-        eventList.add(event);
-        ObjectChangedEvent ocEvent = new ObjectChangedEvent(target, sessionId, userId, true, eventList);
-        target.fireObjectChangedEvent(ocEvent);
+        dispatchEvent(event);
 
         // Send event
-        CompoundOperation compoundOperation = new CompoundOperation(sessionId, userId, true);
-        compoundOperation.addEvent((RevertableEvent)event);
-        sendToRemote(compoundOperation);
+        sendToRemote(event);
+    }
+
+    public void dispatchEvent(Event event)
+    {
+        if (event.getTarget() == null)
+            return;
+
+        Event eventToDispatch;
+        if (event instanceof ObjectChangedEvent) {
+            eventToDispatch = event;
+        } else if (event instanceof BaseModelEvent) {
+            String sessionId = document.getSession().getSessionId();
+            String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
+            List<BaseModelEvent> eventList = new LinkedList<>();
+            eventList.add((BaseModelEvent) event);
+            eventToDispatch = new ObjectChangedEvent(event.getTarget(), sessionId, userId, true, eventList);
+        } else {
+            eventToDispatch = event;
+        }
+
+        eventToDispatch.getTarget().fireEvent(eventToDispatch);
     }
 
     /**

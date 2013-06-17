@@ -28,22 +28,6 @@ public abstract class CollaborativeObject extends EventTarget
         this.model = model;
     }
 
-    @Override
-    protected void fireEvent(Event event)
-    {
-        if (event instanceof BaseModelEvent) {
-            //Update the model
-            this.updateModel((BaseModelEvent) event);
-
-            super.fireEvent(event);
-
-            // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-            model.fireObjectChangedEvent(this, (BaseModelEvent) event);
-        } else {
-            super.fireEvent(event);
-        }
-    }
-
     /**
      * Update our local data model based on the given remote event.
      *

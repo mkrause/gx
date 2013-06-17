@@ -67,7 +67,11 @@ public class CollaborativeMap extends CollaborativeObject
     public Object delete(String key)
     {
         Object result = this.get(key);
-        fireEvent(new ValueChangedEvent(this, sessionId, userId, true, key, null, result));
+
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        BaseModelEvent event = new ValueChangedEvent(this, sessionId, userId, true, key, null, result);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
 
         return result;
     }
@@ -146,7 +150,10 @@ public class CollaborativeMap extends CollaborativeObject
         }
         Object oldValue = map.get(key);
 
-        fireEvent(new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue));
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        BaseModelEvent event = new ValueChangedEvent(this, sessionId, userId, true, key, newValue, oldValue);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
 
         return oldValue;
     }

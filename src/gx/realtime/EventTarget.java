@@ -66,55 +66,32 @@ public abstract class EventTarget
      */
     protected void fireEvent(Event event)
     {
-        if (event instanceof ObjectChangedEvent) {
-            fireObjectChangedEvent((ObjectChangedEvent) event);
-        } else if (event instanceof BaseModelEvent) {
-            fireBaseModelEvent((BaseModelEvent) event);
-        } else if (this.equals(event.getTarget())) {
-            Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            if (handlers != null) {
-                for (EventHandler handler : handlers) {
-                    handler.handleEvent(event);
-                }
+        // Fire non-BaseModelEvents
+        if (!(event instanceof BaseModelEvent)) {
+            if (this.equals(event.getTarget()))
+                executeEventHandlers(event);
+            return;
+        }
+
+        // Fire contained events of an ObjectChangedEvent first
+        if (event instanceof ObjectChangedEvent && this.equals(event.getTarget())) {
+            ObjectChangedEvent ocEvent = (ObjectChangedEvent) event;
+            for (BaseModelEvent bmEvent : ocEvent.getEvents()) {
+                fireEvent(bmEvent);
             }
         }
-    }
 
-    /**
-     * Dispatches the given BaseModelEvent to this object. If the event is bubbling,
-     * the event is passed to the parents of this EventTarget afterwards.
-     *
-     * @param event The BaseModelEvent, containing any necessary information.
-     */
-    private void fireBaseModelEvent(BaseModelEvent event)
-    {
-        if (event.isFirstVisit(this)) {
-            event.addBubbledNode(this);
-            bubble(event);
+        // Check if the event targets this object
+        if (!(event instanceof ObjectChangedEvent) && !this.equals(event.getTarget()))
+            return;
+
+        // Fire event
+        BaseModelEvent bmEvent = (BaseModelEvent) event;
+        if (bmEvent.isFirstVisit(this)) {
+            bmEvent.addBubbledNode(this);
+            executeEventHandlers(bmEvent);
+            bubble(bmEvent);
         }
-    }
-
-    /**
-     * This function executes the event handlers for the given ObjectChangedEvent. First, the events that are contained by this OCE are unpacked,
-     * after which the corresponding event handlers are executed. Concludingly, the eventHandlers for the OCE in this EventTarget are executed, after
-     * which the event will be bubbled.
-     * @param event The ObjectChangedEvent containing the necessary information.
-     */
-    public void fireObjectChangedEvent(ObjectChangedEvent event)
-    {
-        if (event.isFirstVisit(this)) {
-            event.addBubbledNode(this);
-            //execute event handlers of packed events
-            List<BaseModelEvent> events = event.getEvents();
-            for(BaseModelEvent bmEvent : events){
-                executeEventHandlers(bmEvent);
-            }
-
-            //execute eventhandlers for the ObjectChangedEvent itself.
-            executeEventHandlers(event);
-
-        }
-        bubble(event);
     }
 
     /**
@@ -133,11 +110,11 @@ public abstract class EventTarget
      * This method is a wrapper function for
      * @param event
      */
-    private void executeEventHandlers(BaseModelEvent event)
+    private void executeEventHandlers(Event event)
     {
         //execute eventhandlers of this EventTarget if needed.
         Set<EventHandler> handlers = eventHandlers.get(event.getType());
-        if (handlers != null && (this.equals(event.getTarget()))) {
+        if (handlers != null) {
             for (EventHandler handler : handlers) {
                 handler.handleEvent(event);
             }
