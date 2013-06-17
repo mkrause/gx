@@ -66,6 +66,10 @@ public abstract class EventTarget
      */
     protected void fireEvent(Event event)
     {
+        // Check if the event targets this object
+        if (!(event instanceof ObjectChangedEvent) && !this.equals(event.getTarget()))
+            return;
+
         // Fire non-BaseModelEvents
         if (!(event instanceof BaseModelEvent)) {
             if (this.equals(event.getTarget()))
@@ -80,10 +84,6 @@ public abstract class EventTarget
                 fireEvent(bmEvent);
             }
         }
-
-        // Check if the event targets this object
-        if (!(event instanceof ObjectChangedEvent) && !this.equals(event.getTarget()))
-            return;
 
         // Fire event
         BaseModelEvent bmEvent = (BaseModelEvent) event;
