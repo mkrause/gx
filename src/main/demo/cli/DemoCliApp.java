@@ -38,11 +38,9 @@ public class DemoCliApp
             document = doc;
 
             // Add listeners to the model
-            EventHandler modelHandler = (event) -> {
+            doc.getModel().addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> {
                 System.out.println("Model received " + event.getType() + " event");
-            };
-            doc.getModel().addEventListener(EventType.VALUE_CHANGED, modelHandler);
-            doc.getModel().addEventListener(EventType.OBJECT_CHANGED, modelHandler);
+            });
 
             // Add listeners to the document
             EventHandler handler = (event) -> {
