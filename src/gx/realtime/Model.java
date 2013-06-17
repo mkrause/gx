@@ -576,7 +576,7 @@ public class Model extends EventTarget
         List<BaseModelEvent> eventList = new LinkedList<>();
         eventList.add(event);
         ObjectChangedEvent ocEvent = new ObjectChangedEvent(target, sessionId, userId, true, eventList);
-        target.fireObjectChangedEvent(ocEvent);
+        target.fireEvent(ocEvent);
 
         // Send event
         CompoundOperation compoundOperation = new CompoundOperation(sessionId, userId, true);

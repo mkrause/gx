@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Set;
 
 public abstract class CollaborativeObject extends EventTarget
 {
@@ -28,19 +30,58 @@ public abstract class CollaborativeObject extends EventTarget
         this.model = model;
     }
 
-    @Override
-    protected void fireEvent(Event event)
+    protected void fireEvent(BaseModelEvent event)
     {
-        if (event instanceof BaseModelEvent) {
-            //Update the model
-            this.updateModel((BaseModelEvent) event);
+        if (event instanceof BaseModelEvent && event.isFirstVisit(this)) {
+            event.addBubbledNode(this);
 
-            super.fireEvent(event);
+            //Update the model
+            this.updateModel(event);
+
+            bubble(event);
 
             // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-            model.fireObjectChangedEvent(this, (BaseModelEvent) event);
+            model.fireObjectChangedEvent(this, event);
         } else {
             super.fireEvent(event);
+        }
+    }
+
+    /**
+     * This function executes the event handlers for the given ObjectChangedEvent. First, the events that are contained by this OCE are unpacked,
+     * after which the corresponding event handlers are executed. Concludingly, the eventHandlers for the OCE in this EventTarget are executed, after
+     * which the event will be bubbled.
+     * @param event The ObjectChangedEvent containing the necessary information.
+     */
+    protected void fireEvent(ObjectChangedEvent event)
+    {
+        if (event.isFirstVisit(this)) {
+            event.addBubbledNode(this);
+            //execute event handlers of packed events
+            List<BaseModelEvent> events = event.getEvents();
+            for(BaseModelEvent bmEvent : events){
+                executeEventHandlers(bmEvent);
+            }
+
+            //execute eventhandlers for the ObjectChangedEvent itself.
+            executeEventHandlers(event);
+
+        }
+        bubble(event);
+    }
+
+    /**
+     * This method is a wrapper function for
+     * @param event
+     */
+    private void executeEventHandlers(BaseModelEvent event)
+    {
+        //execute eventhandlers of this EventTarget if needed.
+        Set<EventHandler> handlers = eventHandlers.get(event.getType());
+        if (handlers != null && (this.equals(event.getTarget()))) {
+            for (EventHandler handler : handlers) {
+                handler.handleEvent(event);
+            }
         }
     }
 
