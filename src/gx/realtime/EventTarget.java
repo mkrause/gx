@@ -57,10 +57,7 @@ public abstract class EventTarget
     }
 
     /**
-     * Dispatches the given event to this object. If the given event is an ObjectChangedEvent, the event will be unpacked, and the
-     * appropriate eventHandlers are being executed, after which the event will be bubbled up to its parents if applicable.
-     * If it is a BaseModelEvent, it will just be bubbled up.
-     * Else, this function will just execute the eventHanders for the given event will be executed.
+     * Dispatches the given event to this object. This function will just execute the eventHanders for the given event, if this object is the target.
      *
      * @param event The event object, containing any necessary information.
      */
@@ -72,18 +69,6 @@ public abstract class EventTarget
                 for (EventHandler handler : handlers) {
                     handler.handleEvent(event);
                 }
-            }
-        }
-    }
-
-    /**
-     * This method bubbles the given event to its parents iff event.bubbles() == true.
-     * @param event The event that should be bubbled.
-     */
-    protected void bubble(BaseModelEvent event){
-        if (event.bubbles()) {
-            for (EventTarget parent : parents) {
-                parent.fireEvent(event);
             }
         }
     }

@@ -30,9 +30,15 @@ public abstract class CollaborativeObject extends EventTarget
         this.model = model;
     }
 
+    /**
+     * This method processes the given BaseModelEvent. If this is the first time this BaseModelEvent passes this object, it is updated
+     * according to the changes proposed by the given event. Next it will bubble if necessary and pass the event to the Model
+     * to generate an ObjectChangedEvent accordingly.
+     * @param event The event that needs to be fired on this object.
+     */
     protected void fireEvent(BaseModelEvent event)
     {
-        if (event instanceof BaseModelEvent && event.isFirstVisit(this)) {
+        if (event.isFirstVisit(this)) {
             event.addBubbledNode(this);
 
             //Update the model
@@ -42,14 +48,12 @@ public abstract class CollaborativeObject extends EventTarget
 
             // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
             model.fireObjectChangedEvent(this, event);
-        } else {
-            super.fireEvent(event);
         }
     }
 
     /**
      * This function executes the event handlers for the given ObjectChangedEvent. First, the events that are contained by this OCE are unpacked,
-     * after which the corresponding event handlers are executed. Concludingly, the eventHandlers for the OCE in this EventTarget are executed, after
+     * after which the corresponding event handlers are executed. Concluding, the eventHandlers for the OCE in this EventTarget are executed, after
      * which the event will be bubbled.
      * @param event The ObjectChangedEvent containing the necessary information.
      */
@@ -71,8 +75,20 @@ public abstract class CollaborativeObject extends EventTarget
     }
 
     /**
-     * This method is a wrapper function for
-     * @param event
+     * This method bubbles the given event to its parents iff event.bubbles() == true.
+     * @param event The event that should be bubbled.
+     */
+    private void bubble(BaseModelEvent event){
+        if (event.bubbles()) {
+            for (EventTarget parent : parents) {
+                parent.fireEvent(event);
+            }
+        }
+    }
+
+    /**
+     * This method is a wrapper function for executing the event handlers of this Object.
+     * @param event The BaseModelEvent for which the event handlers need to be executed.
      */
     private void executeEventHandlers(BaseModelEvent event)
     {

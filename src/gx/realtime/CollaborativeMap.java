@@ -179,7 +179,7 @@ public class CollaborativeMap extends CollaborativeObject
     @Override
     protected void updateModel(BaseModelEvent event)
     {
-        if(event.getType().equals(EventType.VALUE_CHANGED)) {
+        if(this.equals(event.getTarget()) && event.getType().equals(EventType.VALUE_CHANGED)) {
             ValueChangedEvent valueChangedEvent = (ValueChangedEvent)event;
 
             //remove this map as parent of the old value
