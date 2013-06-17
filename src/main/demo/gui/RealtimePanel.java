@@ -137,11 +137,22 @@ public class RealtimePanel extends JPanel
     }
 
     private void undoButtonActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        if (document.getModel().canUndo()) {
+            document.getModel().undo();
+        } else {
+            System.err.println("Unable to undo!");
+
+        }
+        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void redoButtonActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        if(document.getModel().canRedo()){
+            document.getModel().redo();
+        } else {
+            System.err.println("Unable to redo!");
+        }
+        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void initComponents()

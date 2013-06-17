@@ -29,15 +29,19 @@ public abstract class CollaborativeObject extends EventTarget
     }
 
     @Override
-    protected void fireEvent(BaseModelEvent event)
+    protected void fireEvent(Event event)
     {
-        //Update the model
-        this.updateModel(event);
+        if (event instanceof BaseModelEvent) {
+            //Update the model
+            this.updateModel((BaseModelEvent) event);
 
-        super.fireEvent(event);
+            super.fireEvent(event);
 
-        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-        model.fireObjectChangedEvent(this, event);
+            // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+            model.fireObjectChangedEvent(this, (BaseModelEvent) event);
+        } else {
+            super.fireEvent(event);
+        }
     }
 
     /**

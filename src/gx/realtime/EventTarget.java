@@ -69,7 +69,7 @@ public abstract class EventTarget
         if (event instanceof ObjectChangedEvent) {
             fireObjectChangedEvent((ObjectChangedEvent) event);
         } else if (event instanceof BaseModelEvent) {
-            fireEvent((BaseModelEvent) event);
+            fireBaseModelEvent((BaseModelEvent) event);
         } else if (this.equals(event.getTarget())) {
             Set<EventHandler> handlers = eventHandlers.get(event.getType());
             if (handlers != null) {
@@ -86,7 +86,7 @@ public abstract class EventTarget
      *
      * @param event The BaseModelEvent, containing any necessary information.
      */
-    protected void fireEvent(BaseModelEvent event)
+    private void fireBaseModelEvent(BaseModelEvent event)
     {
         if (event.isFirstVisit(this)) {
             event.addBubbledNode(this);
@@ -100,7 +100,7 @@ public abstract class EventTarget
      * which the event will be bubbled.
      * @param event The ObjectChangedEvent containing the necessary information.
      */
-    private void fireObjectChangedEvent(ObjectChangedEvent event)
+    public void fireObjectChangedEvent(ObjectChangedEvent event)
     {
         if (event.isFirstVisit(this)) {
             event.addBubbledNode(this);
