@@ -9,6 +9,15 @@ import static org.mockito.Mockito.*;
 
 public class EventTargetTest
 {
+    TestObject object1 = new TestObject(100);
+    TestObject object2 = new TestObject(110);
+    TestObject object3 = new TestObject(210);
+    TestObject object4 = new TestObject(310);
+    TestObject object5 = new TestObject(410);
+    TestObject object6 = new TestObject(510);
+    TestEvent insertedEvent = new TestEvent(EventType.TEXT_INSERTED, object1, "SID", "GxTestSuite", true, false);
+    TestEvent deletedEvent = new TestEvent(EventType.TEXT_DELETED, object1, "SID", "GxTestSuite", true, false);
+    TestEvent changedEvent = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", "UID", true, true);
 
     //Event handlers
     public EventHandler<TestEvent> handler1 = (testEvent) ->
@@ -65,61 +74,75 @@ public class EventTargetTest
     }
 
     @Test
-    public void testEventListeners()
+    public void testEventListenersNoHandlers()
     {
+        object1.fireEvent(insertedEvent);
+        object1.fireEvent(deletedEvent);
+        assertEquals(100, object1.getId());
+    }
 
-        TestObject simpleObject = new TestObject(100);
-
-        //Events
-        TestEvent insertedEvent = new TestEvent(EventType.TEXT_INSERTED, simpleObject, "SID", "GxTestSuite", true, false);
-        TestEvent deletedEvent = new TestEvent(EventType.TEXT_DELETED, simpleObject, "SID", "GxTestSuite", true, false);
-
-        //fire event with no handlers registered.
-        simpleObject.fireEvent(insertedEvent);
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(100, simpleObject.getId());
-
+    @Test
+    public void testEventListenersInsertHandler()
+    {
         //fire events with handler1 registered for inserted event.
-        simpleObject.addEventListener(insertedEvent.getType(), handler1);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(101, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(101, simpleObject.getId());
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.fireEvent(insertedEvent);
+        assertEquals(101, object1.getId());
+        object1.fireEvent(deletedEvent);
+        assertEquals(101, object1.getId());
+    }
 
+    @Test
+    public void testEventListenersInsertDeleteHandlers()
+    {
         //fire events with handler1 registered for deleted event.
-        simpleObject.addEventListener(deletedEvent.getType(), handler1);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(102, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(103, simpleObject.getId());
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.addEventListener(deletedEvent.getType(), handler1);
+        object1.fireEvent(insertedEvent);
+        assertEquals(101, object1.getId());
+        object1.fireEvent(deletedEvent);
+        assertEquals(102, object1.getId());
+    }
 
+    @Test
+    public void testEventListenersTwoHandlers()
+    {
         //fire events for both handlers registered for inserted event.
-        simpleObject.addEventListener(insertedEvent.getType(), handler2);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(114, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(115, simpleObject.getId());
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.addEventListener(insertedEvent.getType(), handler2);
+        object1.addEventListener(deletedEvent.getType(), handler1);
+        object1.fireEvent(insertedEvent);
+        assertEquals(111, object1.getId());
+        object1.fireEvent(deletedEvent);
+        assertEquals(112, object1.getId());
+    }
 
+    @Test
+    public void testEventListenersDuplicateHandlers()
+    {
         //fire events for duplicate handler1 registered for inserted event.
-        simpleObject.addEventListener(insertedEvent.getType(), handler1);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(126, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(127, simpleObject.getId());
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.addEventListener(insertedEvent.getType(), handler2);
+        object1.addEventListener(deletedEvent.getType(), handler1);
+        object1.fireEvent(insertedEvent);
+        assertEquals(111, object1.getId());
+        object1.fireEvent(deletedEvent);
+        assertEquals(112, object1.getId());
+    }
 
+    @Test
+    public void testEventListenersTwoHandlers2()
+    {
         //fire events for both handlers registered for both event types.
-        simpleObject.addEventListener(deletedEvent.getType(), handler2);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(138, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(149, simpleObject.getId());
-
-        //fire events for duplicate registration of handler2 for deleted type
-        simpleObject.addEventListener(deletedEvent.getType(), handler2);
-        simpleObject.fireEvent(insertedEvent);
-        assertEquals(160, simpleObject.getId());
-        simpleObject.fireEvent(deletedEvent);
-        assertEquals(171, simpleObject.getId());
+        object1.addEventListener(insertedEvent.getType(), handler1);
+        object1.addEventListener(insertedEvent.getType(), handler2);
+        object1.addEventListener(deletedEvent.getType(), handler1);
+        object1.addEventListener(deletedEvent.getType(), handler2);
+        object1.fireEvent(insertedEvent);
+        assertEquals(111, object1.getId());
+        object1.fireEvent(deletedEvent);
+        assertEquals(122, object1.getId());
     }
 
     @Test
@@ -137,43 +160,58 @@ public class EventTargetTest
     }
 
     @Test
-    public void testEventBubbling()
+    public void testEventBubblingWithoutParents()
     {
-        //"bubbling" without any parents
-        TestObject object1 = new TestObject(10);
-        TestEvent event = new TestEvent(EventType.OBJECT_CHANGED, object1, "SID", "UID", true, true);
+        // Create tree
         object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
 
-        object1.fireEvent(event);
-        assertEquals(11, object1.getId());
+        object1.fireEvent(changedEvent);
+        assertEquals(101, object1.getId());
+    }
 
-        //one parent
-        TestObject object2 = new TestObject(110);
+    @Test
+    public void testEventBubblingOneParent()
+    {
+        // Create tree
+        object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
         object1.addChild(object2);
 
         System.out.println("--Firing event on object 2 with object 1 as parent");
-        object2.fireEvent(event);
-        assertEquals(12, object1.getId());
+        object2.fireEvent(changedEvent);
+        assertEquals(101, object1.getId());
         assertEquals(110, object2.getId());
+    }
 
-        //3 parents of object2
-        TestObject object3 = new TestObject(210);
+    @Test
+    public void testEventBubblingThreeParents()
+    {
+        // Create tree
+        object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
+        object1.addChild(object2);
         object3.addChild(object2);
-        TestObject object4 = new TestObject(310);
         object4.addChild(object2);
-        object2.fireEvent(event);
-        assertEquals(13, object1.getId());
+
+        object2.fireEvent(changedEvent);
+        assertEquals(101, object1.getId());
         assertEquals(210, object3.getId());
         assertEquals(310, object4.getId());
+    }
 
-        //two layers of parents, object 5 is leaf node.
-        TestObject object5 = new TestObject(410);
+    @Test
+    public void testEventBubblingTwoLayersParents()
+    {
+        // Two layers of parents, object 5 is leaf node.
+
+        // Create tree
+        object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
+        object1.addChild(object2);
+        object3.addChild(object2);
+        object4.addChild(object2);
         object2.addChild(object5);
-        TestObject object6 = new TestObject(510);
         object6.addChild(object5);
 
-        object5.fireEvent(event);
-        assertEquals(14, object1.getId());
+        object5.fireEvent(changedEvent);
+        assertEquals(101, object1.getId());
         assertEquals(210, object3.getId());
         assertEquals(310, object4.getId());
         assertEquals(410, object5.getId());
@@ -181,8 +219,8 @@ public class EventTargetTest
 
         //test if not fired twice
         object1.addChild(object5);
-        object5.fireEvent(event);
-        assertEquals(15, object1.getId());
+        object5.fireEvent(changedEvent);
+        assertEquals(101, object1.getId());
         assertEquals(210, object3.getId());
         assertEquals(310, object4.getId());
         assertEquals(410, object5.getId());
