@@ -286,10 +286,11 @@ public class Model extends EventTarget
         boolean oldRedo = canRedo();
 
         RevertableEvent redoableEvent = redoableMutations.pop();
+        undoableMutations.push(redoableEvent);
 
         // Redo changes
         updateModel(redoableEvent);
-        dispatchAndSendEvent(redoableEvent);
+        dispatchAndSendEvent(redoableEvent, false);
 
         if (oldUndo != canUndo() || oldRedo != canRedo()) {
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
@@ -310,7 +311,7 @@ public class Model extends EventTarget
 
         // Undo changes
         updateModel(reverseEvent);
-        dispatchAndSendEvent(reverseEvent);
+        dispatchAndSendEvent(reverseEvent, false);
 
         redoableMutations.push(undoableEvent);
 
@@ -551,13 +552,19 @@ public class Model extends EventTarget
 
     public void dispatchAndSendEvent(BaseModelEvent event)
     {
+        dispatchAndSendEvent(event, true);
+    }
+
+    private void dispatchAndSendEvent(BaseModelEvent event, boolean register)
+    {
         // Buffer events if a compound operation is in progress
         if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
             compoundOperations.peek().addEvent((RevertableEvent) event);
             return;
         }
 
-        registerMutation(event);
+        if (register)
+            registerMutation(event);
 
         // Fire an object changed event that bubbles up the tree
         dispatchEvent(event);

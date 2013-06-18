@@ -80,25 +80,29 @@ public class ModelTest
 
         //add string
         CollaborativeString string = model.createString("Hello World!");
-        model.getRoot().set(string.getId(), string);
+        //model.getRoot().set(string.getId(), string);
         assertEquals("Hello World!", string.getText());
 
-        // insert text
-        string.insertString(5, " there");
-        assertEquals("Hello there World!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
         assertEquals(1, undoRedoChangeCount);
 
-        //undo
+        // undo
         model.undo();
-        assertEquals("Hello World!", string.getText());
+        assertEquals("", string.getText());
         assertFalse(model.canUndo());
         assertTrue(model.canRedo());
         assertEquals(2, undoRedoChangeCount);
 
         //redo
         model.redo();
+        assertEquals("Hello World!", string.getText());
+        assertTrue(model.canUndo());
+        assertFalse(model.canRedo());
+        assertEquals(3, undoRedoChangeCount);
+
+        // insert text
+        string.insertString(5, " there");
         assertEquals("Hello there World!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
@@ -107,7 +111,7 @@ public class ModelTest
         //undo
         model.undo();
         assertEquals("Hello World!", string.getText());
-        assertFalse(model.canUndo());
+        assertTrue(model.canUndo());
         assertTrue(model.canRedo());
         assertEquals(4, undoRedoChangeCount);
 
@@ -120,13 +124,13 @@ public class ModelTest
 
         //undo to test if redo stack is cleared on new event.
         model.undo();
-        assertFalse(model.canUndo());
+        assertEquals("Hello World!", string.getText());
+        assertTrue(model.canUndo());
         assertTrue(model.canRedo());
         assertEquals(6, undoRedoChangeCount);
 
         //fire another event
-        TextDeletedEvent deletedEvent = new TextDeletedEvent(string, "SID", "UID", true, 11, " World");
-        string.fireEvent(deletedEvent);
+        string.removeRange(5, 11);
         assertEquals("Hello!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
@@ -159,29 +163,29 @@ public class ModelTest
 
         model.undo();
         assertEquals("Hello World!", string.getText());
-        assertFalse(model.canUndo());
+        assertTrue(model.canUndo());
         assertTrue(model.canRedo());
-        assertEquals(11, undoRedoChangeCount);
+        assertEquals(10, undoRedoChangeCount);
 
         //redo twice
         model.redo();
         assertEquals("Hello!", string.getText());
         assertTrue(model.canUndo());
         assertTrue(model.canRedo());
-        assertEquals(12, undoRedoChangeCount);
+        assertEquals(10, undoRedoChangeCount);
 
         model.redo();
         assertEquals("Hello there!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
-        assertEquals(13, undoRedoChangeCount);
+        assertEquals(11, undoRedoChangeCount);
 
         //undo once
         model.undo();
         assertEquals("Hello!", string.getText());
         assertTrue(model.canUndo());
         assertTrue(model.canRedo());
-        assertEquals(14, undoRedoChangeCount);
+        assertEquals(12, undoRedoChangeCount);
     }
 
     @Test
