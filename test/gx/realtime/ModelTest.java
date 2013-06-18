@@ -72,7 +72,7 @@ public class ModelTest
 
         //track UNDO_REDO_CHANGE_EVENT;
 
-        EventHandler<TestEvent> changeHandler = (event) -> {
+        EventHandler<UndoRedoStateChangedEvent> changeHandler = (event) -> {
             //System.out.println("--EventHandler 1 called.");
             undoRedoChangeCount++;
         };
@@ -81,10 +81,10 @@ public class ModelTest
         //add string
         CollaborativeString string = model.createString("Hello World!");
         model.getRoot().set(string.getId(), string);
-        TextInsertedEvent insertEvent = new TextInsertedEvent(string, "SID", "UID", true, 5, " there");
+        assertEquals("Hello World!", string.getText());
 
-        //fire event
-        string.fireEvent(insertEvent);
+        // insert text
+        string.insertString(5, " there");
         assertEquals("Hello there World!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
@@ -133,7 +133,7 @@ public class ModelTest
         assertEquals(7, undoRedoChangeCount);
 
         //fire one more event, undo, fire another, check redo.
-        string.fireEvent(insertEvent);
+        string.insertString(5, " there");
         assertEquals("Hello there!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());
@@ -144,7 +144,7 @@ public class ModelTest
         assertTrue(model.canRedo());
         assertEquals(8, undoRedoChangeCount);
 
-        string.fireEvent(insertEvent);
+        string.insertString(5, " there");
         assertEquals("Hello there!", string.getText());
         assertTrue(model.canUndo());
         assertFalse(model.canRedo());

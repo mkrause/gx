@@ -66,8 +66,8 @@ public abstract class EventTarget
      */
     protected void fireEvent(Event event)
     {
-        // Check if the event targets this object
-        if (!(event instanceof ObjectChangedEvent) && !this.equals(event.getTarget()))
+        // Check if the event targets (or bubbles through) this object
+        if (!this.equals(event.getTarget()) && !checkBubbles(event))
             return;
 
         // Fire non-BaseModelEvents
@@ -78,10 +78,12 @@ public abstract class EventTarget
         }
 
         // Fire contained events of an ObjectChangedEvent first
-        if (event instanceof ObjectChangedEvent && this.equals(event.getTarget())) {
+        if (this.equals(event.getTarget()) && event instanceof ObjectChangedEvent) {
             ObjectChangedEvent ocEvent = (ObjectChangedEvent) event;
-            for (BaseModelEvent bmEvent : ocEvent.getEvents()) {
-                fireEvent(bmEvent);
+            if (ocEvent.getEvents() != null) {
+                for (BaseModelEvent bmEvent : ocEvent.getEvents()) {
+                    fireEvent(bmEvent);
+                }
             }
         }
 
@@ -92,6 +94,14 @@ public abstract class EventTarget
             executeEventHandlers(bmEvent);
             bubble(bmEvent);
         }
+    }
+
+    private boolean checkBubbles(Event event)
+    {
+        if (event instanceof BaseModelEvent)
+            return ((BaseModelEvent) event).bubbles();
+
+        return false;
     }
 
     /**

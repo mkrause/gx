@@ -43,7 +43,7 @@ public abstract class CollaborativeObject extends EventTarget
 
     protected String getUserId()
     {
-        if(userId == null && model.getDocument().getMe() != null) {
+        if(userId == null && model.getDocument() != null && model.getDocument().getMe() != null) {
             userId = model.getDocument().getMe().getUserId();
         }
         return userId;
@@ -51,7 +51,7 @@ public abstract class CollaborativeObject extends EventTarget
 
     protected String getSessionId()
     {
-        if(sessionId == null) {
+        if(sessionId == null && model.getDocument() != null && model.getDocument().getSession() != null) {
             sessionId = model.getDocument().getSession().getSessionId();
         }
         return sessionId;

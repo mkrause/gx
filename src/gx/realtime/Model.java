@@ -209,7 +209,7 @@ public class Model extends EventTarget
     public CollaborativeString createString(String opt_initialValue)
     {
         CollaborativeString result = createString();
-        result.setText(opt_initialValue);
+        result.append(opt_initialValue);
         return result;
     }
 
@@ -420,9 +420,9 @@ public class Model extends EventTarget
                 updateModel(e);
             }
         } else {
-            String id = event.getTargetId();
-            CollaborativeObject collabObject = (CollaborativeObject) nodes.get(id);
-            collabObject.updateModel(event);
+            EventTarget target = event.getTarget();
+            if (target instanceof CollaborativeObject)
+                ((CollaborativeObject) target).updateModel(event);
         }
     }
 
@@ -529,7 +529,7 @@ public class Model extends EventTarget
     private void sendToRemote(BaseModelEvent event)
     {
         // Don't send remote events
-        if (!event.isLocal())
+        if (!event.isLocal() || document == null)
             return;
 
         // Wrap single operation in a compound operation for sending
@@ -537,8 +537,8 @@ public class Model extends EventTarget
         if (event instanceof CompoundOperation) {
             eventToSend = (CompoundOperation) event;
         } else {
-            String sessionId = document.getSession().getSessionId();
-            String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
+            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
+            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
             eventToSend = new CompoundOperation(sessionId, userId, true);
             eventToSend.addEvent((RevertableEvent)event);
         }
@@ -557,6 +557,8 @@ public class Model extends EventTarget
             return;
         }
 
+        registerMutation(event);
+
         // Fire an object changed event that bubbles up the tree
         dispatchEvent(event);
 
@@ -573,8 +575,8 @@ public class Model extends EventTarget
         if (event instanceof ObjectChangedEvent) {
             eventToDispatch = event;
         } else if (event instanceof BaseModelEvent) {
-            String sessionId = document.getSession().getSessionId();
-            String userId = (document.getMe() != null) ? document.getMe().getUserId() : null;
+            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
+            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
             List<BaseModelEvent> eventList = new LinkedList<>();
             eventList.add((BaseModelEvent) event);
             eventToDispatch = new ObjectChangedEvent(event.getTarget(), sessionId, userId, true, eventList);
