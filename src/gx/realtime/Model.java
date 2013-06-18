@@ -288,6 +288,9 @@ public class Model extends EventTarget
         RevertableEvent redoableEvent = redoableMutations.pop();
         undoableMutations.push(redoableEvent);
 
+        redoableEvent = redoableEvent.getReverseEvent().getReverseEvent();
+        redoableEvent.setLocal(false);
+
         // Redo changes
         updateModel(redoableEvent);
         dispatchAndSendEvent(redoableEvent, false);
@@ -307,13 +310,14 @@ public class Model extends EventTarget
         boolean oldRedo = canRedo();
 
         RevertableEvent undoableEvent = undoableMutations.pop();
+        redoableMutations.push(undoableEvent);
+
         BaseModelEvent reverseEvent = undoableEvent.getReverseEvent();
+        reverseEvent.setLocal(false);
 
         // Undo changes
         updateModel(reverseEvent);
         dispatchAndSendEvent(reverseEvent, false);
-
-        redoableMutations.push(undoableEvent);
 
         if (oldUndo != canUndo() || oldRedo != canRedo()) {
             UndoRedoStateChangedEvent urscEvent = new UndoRedoStateChangedEvent(this, canRedo(), canUndo());
@@ -530,7 +534,7 @@ public class Model extends EventTarget
     private void sendToRemote(BaseModelEvent event)
     {
         // Don't send remote events
-        if (!event.isLocal() || document == null)
+        if (document == null)
             return;
 
         // Wrap single operation in a compound operation for sending

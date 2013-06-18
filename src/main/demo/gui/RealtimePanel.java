@@ -150,7 +150,6 @@ public class RealtimePanel extends JPanel
             System.err.println("Unable to undo!");
             undoButton.setEnabled(false);
         }
-        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void redoButtonActionPerformed(ActionEvent e) {
@@ -160,7 +159,6 @@ public class RealtimePanel extends JPanel
             System.err.println("Unable to redo!");
             redoButton.setEnabled(false);
         }
-        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void initComponents()
@@ -271,6 +269,7 @@ public class RealtimePanel extends JPanel
                 redoButtonActionPerformed(e);
             }
         });
+        redoButton.setEnabled(false);
 
         //---- undoButton ----
         undoButton.setText("Undo");
@@ -280,6 +279,7 @@ public class RealtimePanel extends JPanel
                 undoButtonActionPerformed(e);
             }
         });
+        undoButton.setEnabled(false);
 
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
