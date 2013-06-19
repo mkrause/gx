@@ -18,7 +18,7 @@ public class CompoundOperation extends RevertableEvent
 
     public CompoundOperation(String sessionId, String userId, boolean isLocal)
     {
-        super(EventType.COMPOUND_OPERATION, (EventTarget) null, sessionId, userId, isLocal, false);
+        super(EventType.COMPOUND_OPERATION, (CollaborativeObject) null, sessionId, userId, isLocal, false);
         events = new ArrayList();
         InProgress = true;
     }
@@ -66,7 +66,7 @@ public class CompoundOperation extends RevertableEvent
 
     public List<ObjectChangedEvent> toObjectChangedEvents()
     {
-        Map<EventTarget, List<BaseModelEvent>> targetMap = new HashMap<>();
+        Map<CollaborativeObject, List<BaseModelEvent>> targetMap = new HashMap<>();
         List<ObjectChangedEvent> ocEvents = new ArrayList<>();
 
         // Group events by their target
@@ -82,7 +82,7 @@ public class CompoundOperation extends RevertableEvent
         }
 
         // Create for each target an ObjectChangedEvent
-        for (EventTarget target : targetMap.keySet()) {
+        for (CollaborativeObject target : targetMap.keySet()) {
             ObjectChangedEvent ocEvent = new ObjectChangedEvent(target, sessionId, userId, true, targetMap.get(target));
             ocEvents.add(ocEvent);
         }

@@ -13,13 +13,13 @@ public class ModelTest
     private EventHandler<TestEvent> handler1 = (testEvent) -> {
         //System.out.println("--EventHandler 1 called.");
         TestObject testObject = (TestObject) testEvent.getTarget();
-        testObject.setId(testObject.getId() + 1);
+        testObject.setId(testObject.getIntId() + 1);
     };
 
     private EventHandler<TestEvent> handler2 = (testEvent) -> {
         //System.out.println("--EventHandler2 called.");
         TestObject testObject2 = (TestObject) testEvent.getTarget();
-        testObject2.setId(testObject2.getId() + 10);
+        testObject2.setId(testObject2.getIntId() + 10);
     };
 
     @Test

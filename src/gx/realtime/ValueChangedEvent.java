@@ -34,7 +34,7 @@ public class ValueChangedEvent extends RevertableEvent
         setValueType(newValue);
     }
 
-    public ValueChangedEvent(EventTarget target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
+    public ValueChangedEvent(CollaborativeObject target, String sessionId, String userId, boolean isLocal, String property, Object newValue, Object oldValue)
     {
         super(EventType.VALUE_CHANGED, target, sessionId, userId, isLocal, false);
         this.property = property;
@@ -119,7 +119,7 @@ public class ValueChangedEvent extends RevertableEvent
     @Override
     public RevertableEvent getReverseEvent()
     {
-        return new ValueChangedEvent(target, sessionId, userId, isLocal, property, oldValue, newValue);
+        return new ValueChangedEvent(this.getTarget(), sessionId, userId, isLocal, property, oldValue, newValue);
     }
 
     public String toString()

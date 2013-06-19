@@ -3,7 +3,6 @@ package gx.realtime;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -80,13 +79,13 @@ public class CollaborativeMapTest {
 
         TestObject obj1 = (TestObject)values.get(0);
         TestObject obj2 = (TestObject)values.get(1);
-        if(obj1.getId() == 123){
+        if(obj1.getIntId() == 123){
             //obj1 =  simpleObject, obj2 = testObject
             assertEquals(simpleObject, obj1);
             assertEquals(testObject, obj2);
             assertFalse(simpleObject == obj1);
             assertFalse(testObject == obj2);
-        } else if(obj1.getId() == 456) {
+        } else if(obj1.getIntId() == 456) {
             //obj1 = testObject, obj2 = simpleObject
             assertEquals(testObject, obj1);
             assertEquals(simpleObject, obj2);
@@ -124,7 +123,7 @@ public class CollaborativeMapTest {
         assertTrue(map.has("object2"));
         assertTrue(map.get("object2") == object2);
 
-        assertEquals(11, testObject.getId());
+        assertEquals(11, testObject.getIntId());
 
         //test for set to null
         map.set("object2", null);
@@ -134,7 +133,7 @@ public class CollaborativeMapTest {
         assertTrue(map.has("testObject"));
         assertTrue(map.get("testObject") == testObject);
 
-        assertEquals(12, testObject.getId());
+        assertEquals(12, testObject.getIntId());
     }
 
     @Test
@@ -152,7 +151,7 @@ public class CollaborativeMapTest {
         assertEquals(2, map.size());
         assertTrue(map.has("object2"));
 
-        assertEquals(11, testObject.getId());
+        assertEquals(11, testObject.getIntId());
 
         //test for delete
         map.delete("object2");
@@ -162,6 +161,6 @@ public class CollaborativeMapTest {
         assertTrue(map.has("testObject"));
         assertTrue(map.get("testObject") == testObject);
 
-        assertEquals(12, testObject.getId());
+        assertEquals(12, testObject.getIntId());
     }
 }

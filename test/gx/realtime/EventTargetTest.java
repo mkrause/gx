@@ -2,8 +2,6 @@ package gx.realtime;
 
 import static org.junit.Assert.*;
 
-import gx.realtime.EventType;
-import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +35,7 @@ public class EventTargetTest
     @Test
     public void testAddEventListener()
     {
-        EventTarget target = new EventTarget() {};
+        CollaborativeObject target = new TestObject(123);
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
 
@@ -49,7 +47,7 @@ public class EventTargetTest
     @Test
     public void testRemoveEventListener()
     {
-        EventTarget target = new EventTarget() {};
+        CollaborativeObject target = new TestObject(123);
         EventHandler<ObjectChangedEvent> handler = mock(EventHandler.class);
         target.addEventListener(EventType.OBJECT_CHANGED, handler);
 
@@ -78,7 +76,7 @@ public class EventTargetTest
     {
         object1.fireEvent(insertedEvent);
         object1.fireEvent(deletedEvent);
-        assertEquals(100, object1.getId());
+        assertEquals(100, object1.getIntId());
     }
 
     @Test
@@ -87,9 +85,9 @@ public class EventTargetTest
         //fire events with handler1 registered for inserted event.
         object1.addEventListener(insertedEvent.getType(), handler1);
         object1.fireEvent(insertedEvent);
-        assertEquals(101, object1.getId());
+        assertEquals(101, object1.getIntId());
         object1.fireEvent(deletedEvent);
-        assertEquals(101, object1.getId());
+        assertEquals(101, object1.getIntId());
     }
 
     @Test
@@ -99,9 +97,9 @@ public class EventTargetTest
         object1.addEventListener(insertedEvent.getType(), handler1);
         object1.addEventListener(deletedEvent.getType(), handler1);
         object1.fireEvent(insertedEvent);
-        assertEquals(101, object1.getId());
+        assertEquals(101, object1.getIntId());
         object1.fireEvent(deletedEvent);
-        assertEquals(102, object1.getId());
+        assertEquals(102, object1.getIntId());
     }
 
     @Test
@@ -112,9 +110,9 @@ public class EventTargetTest
         object1.addEventListener(insertedEvent.getType(), handler2);
         object1.addEventListener(deletedEvent.getType(), handler1);
         object1.fireEvent(insertedEvent);
-        assertEquals(111, object1.getId());
+        assertEquals(111, object1.getIntId());
         object1.fireEvent(deletedEvent);
-        assertEquals(112, object1.getId());
+        assertEquals(112, object1.getIntId());
     }
 
     @Test
@@ -126,9 +124,9 @@ public class EventTargetTest
         object1.addEventListener(insertedEvent.getType(), handler2);
         object1.addEventListener(deletedEvent.getType(), handler1);
         object1.fireEvent(insertedEvent);
-        assertEquals(111, object1.getId());
+        assertEquals(111, object1.getIntId());
         object1.fireEvent(deletedEvent);
-        assertEquals(112, object1.getId());
+        assertEquals(112, object1.getIntId());
     }
 
     @Test
@@ -140,9 +138,9 @@ public class EventTargetTest
         object1.addEventListener(deletedEvent.getType(), handler1);
         object1.addEventListener(deletedEvent.getType(), handler2);
         object1.fireEvent(insertedEvent);
-        assertEquals(111, object1.getId());
+        assertEquals(111, object1.getIntId());
         object1.fireEvent(deletedEvent);
-        assertEquals(122, object1.getId());
+        assertEquals(122, object1.getIntId());
     }
 
     @Test
@@ -156,7 +154,7 @@ public class EventTargetTest
         simpleObject.addEventListener(EventType.COLLABORATOR_JOINED, handler1);
         simpleObject.fireEvent(joinedEvent);
 
-        assertEquals(101, simpleObject.getId());
+        assertEquals(101, simpleObject.getIntId());
     }
 
     @Test
@@ -166,7 +164,7 @@ public class EventTargetTest
         object1.addEventListener(EventType.OBJECT_CHANGED, handler1);
 
         object1.fireEvent(changedEvent);
-        assertEquals(101, object1.getId());
+        assertEquals(101, object1.getIntId());
     }
 
     @Test
@@ -178,8 +176,8 @@ public class EventTargetTest
 
         System.out.println("--Firing event on object 2 with object 1 as parent");
         object2.fireEvent(changedEvent);
-        assertEquals(101, object1.getId());
-        assertEquals(110, object2.getId());
+        assertEquals(101, object1.getIntId());
+        assertEquals(110, object2.getIntId());
     }
 
     @Test
@@ -192,9 +190,9 @@ public class EventTargetTest
         object4.addChild(object2);
 
         object2.fireEvent(changedEvent);
-        assertEquals(101, object1.getId());
-        assertEquals(210, object3.getId());
-        assertEquals(310, object4.getId());
+        assertEquals(101, object1.getIntId());
+        assertEquals(210, object3.getIntId());
+        assertEquals(310, object4.getIntId());
     }
 
     @Test
@@ -211,20 +209,20 @@ public class EventTargetTest
         object6.addChild(object5);
 
         object5.fireEvent(changedEvent);
-        assertEquals(101, object1.getId());
-        assertEquals(210, object3.getId());
-        assertEquals(310, object4.getId());
-        assertEquals(410, object5.getId());
-        assertEquals(510, object6.getId());
+        assertEquals(101, object1.getIntId());
+        assertEquals(210, object3.getIntId());
+        assertEquals(310, object4.getIntId());
+        assertEquals(410, object5.getIntId());
+        assertEquals(510, object6.getIntId());
 
         //test if not fired twice
         object1.addChild(object5);
         object5.fireEvent(changedEvent);
-        assertEquals(101, object1.getId());
-        assertEquals(210, object3.getId());
-        assertEquals(310, object4.getId());
-        assertEquals(410, object5.getId());
-        assertEquals(510, object6.getId());
+        assertEquals(101, object1.getIntId());
+        assertEquals(210, object3.getIntId());
+        assertEquals(310, object4.getIntId());
+        assertEquals(410, object5.getIntId());
+        assertEquals(510, object6.getIntId());
     }
 
     @Test
