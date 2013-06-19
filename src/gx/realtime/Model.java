@@ -349,54 +349,11 @@ public class Model extends EventTarget
         return readOnly;
     }
 
-    private EventHandler<ObjectAddedEvent> getObjectAddedBuilder()
-    {
-        return (event) -> {
-            String id = event.getTargetId();
-            System.out.println("OBJECT_ADDED: " + id);
-            CollaborativeObject collabObject = create(id, event.getObjectType());
-            nodes.put(id, collabObject);
-
-            // Update the root node if we're adding an object with the
-            // special "root" ID
-            if (id.equals("root")) {
-                root = (CollaborativeMap) collabObject;
-            }
-        };
-    }
-
-    private EventHandler<ValuesAddedEvent> getValuesAddedBuilder()
-    {
-        return (event) -> {
-            String id = event.getTargetId();
-            System.out.println("VALUES_ADDED: " + id);
-        };
-    }
-
-    private EventHandler<ValueChangedEvent> getValueChangedBuilder()
-    {
-        return (event) -> {
-            String id = event.getTargetId();
-            System.out.println("VALUE_CHANGED: " + id);
-        };
-    }
-
-    private EventHandler<ValuesSetEvent> getValuesSetBuilder()
-    {
-        return (event) -> {
-            String id = event.getTargetId();
-            System.out.println("VALUES_SET: " + id);
-        };
-    }
-
-    private EventHandler<ValuesRemovedEvent> getValuesRemovedBuilder()
-    {
-        return (event) -> {
-            String id = event.getTargetId();
-            System.out.println("VALUES_REMOVED: " + id);
-        };
-    }
-
+    /**
+     * This method adds a node to this model based on the given ObjectAddedEvent. If the event contains a map with ID "root", it will be added
+     * as root of this model.
+     * @param event The ObjectAddedEvent that contains a new object that should be added.
+     */
     protected void addNodeFromEvent(ObjectAddedEvent event)
     {
         String id = event.getTargetId();
@@ -503,6 +460,11 @@ public class Model extends EventTarget
         dispatchEvent(event);
     }
 
+    /**
+     * This method executes a CompoundOperation on this model, which means that a compound operation is started,
+     * the contained events are processed, after which the compound operation is closed an any consecutive event handlers are fired.
+     * @param event The CompoundOperation that needs to be processed.
+     */
     private void executeCompoundOperation(CompoundOperation event)
     {
         registerMutation(event);
@@ -554,11 +516,20 @@ public class Model extends EventTarget
         channel.queue(message);
     }
 
+    /**
+     * This method registers the given BaseModelEvent on the undo stack, dispatches the event to this model and sends it to the remote.
+     * @param event The event that should be dispatched and sent.
+     */
     public void dispatchAndSendEvent(BaseModelEvent event)
     {
         dispatchAndSendEvent(event, true);
     }
 
+    /**
+     * This method registers the given BaseModelEvent iff register = true, dispatches the event to this model and sends it to the remote.
+     * @param event The event that should be dispatched and sent.
+     * @param register Indicate whether the given BaseModelEvent should be pushed on the undo stack.
+     */
     private void dispatchAndSendEvent(BaseModelEvent event, boolean register)
     {
         // Buffer events if a compound operation is in progress
@@ -577,6 +548,11 @@ public class Model extends EventTarget
         sendToRemote(event);
     }
 
+    /**
+     * This method dispatches a ObjectChangedEvent based on the given event to the target of the given event iff the event is an ObjectChangedEvent or a BaseModelEvent.
+     * Else, the event will just be fired on the target.
+     * @param event The event to be dispatched.
+     */
     public void dispatchEvent(Event event)
     {
         if (event.getTarget() == null)
@@ -586,11 +562,12 @@ public class Model extends EventTarget
         if (event instanceof ObjectChangedEvent) {
             eventToDispatch = event;
         } else if (event instanceof BaseModelEvent) {
+            BaseModelEvent bmEvent = (BaseModelEvent) event;
             String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
             String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
             List<BaseModelEvent> eventList = new LinkedList<>();
-            eventList.add((BaseModelEvent) event);
-            eventToDispatch = new ObjectChangedEvent(event.getTarget(), sessionId, userId, true, eventList);
+            eventList.add(bmEvent);
+            eventToDispatch = new ObjectChangedEvent(bmEvent.getTarget(), sessionId, userId, true, eventList);
         } else {
             eventToDispatch = event;
         }

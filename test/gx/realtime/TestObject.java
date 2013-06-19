@@ -3,13 +3,14 @@ package gx.realtime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestObject extends EventTarget implements Cloneable {
+public class TestObject extends CollaborativeObject implements Cloneable {
 
     private int id;
     private Set<TestObject> children;
 
     public TestObject(int id)
     {
+        super(Integer.toString(id), null);
         this.id = id;
         children = new HashSet();
     }
@@ -27,7 +28,7 @@ public class TestObject extends EventTarget implements Cloneable {
         this.id += amount;
     }
 
-    public int getId()
+    public int getIntId()
     {
         return id;
     }
@@ -64,7 +65,7 @@ public class TestObject extends EventTarget implements Cloneable {
         boolean result = false;
         if(object instanceof TestObject) {
             TestObject that = (TestObject) object;
-            result = this.getId() == that.getId();
+            result = this.getIntId() == that.getIntId();
             if(this.children != null) {
                 result &= this.children.equals(that.children);
             } else {
@@ -85,9 +86,9 @@ public class TestObject extends EventTarget implements Cloneable {
     {
         TestObject result = null;
         if(this.getChild() != null) {
-            result = new TestObject(this.getId(), this.getChild().clone());
+            result = new TestObject(this.getIntId(), this.getChild().clone());
         } else {
-            result = new TestObject(this.getId());
+            result = new TestObject(this.getIntId());
         }
         return result;
     }

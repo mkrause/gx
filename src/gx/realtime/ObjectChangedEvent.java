@@ -21,7 +21,7 @@ public class ObjectChangedEvent extends BaseModelEvent
         // bubbles = true
     }
 
-    public ObjectChangedEvent(EventTarget target, String sessionId, String userId, boolean local, List<BaseModelEvent> events)
+    public ObjectChangedEvent(CollaborativeObject target, String sessionId, String userId, boolean local, List<BaseModelEvent> events)
     {
         // bubbles = true
         super(EventType.OBJECT_CHANGED, target, sessionId, userId, local, true);
