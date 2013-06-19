@@ -13,9 +13,6 @@ public class CollaborativeString extends CollaborativeObject
      */
     private String value;
 
-    private String sessionId;
-    private String userId;
-
     /**
      * Creates a new collaborative string. Unlike regular Java Strings, collaborative strings are mutable. Changes to
      * the string will automatically be synced with the server and other collaborators.
@@ -31,16 +28,6 @@ public class CollaborativeString extends CollaborativeObject
     {
         super(id, model);
         value = "";
-
-        if (model != null) {
-            sessionId = model.getDocument().getSession().getSessionId();
-            userId = model.getDocument().getMe().getUserId();
-        }
-
-        sessionId = model.getDocument().getSession().getSessionId();
-        if (model.getDocument().getMe() != null) {
-            userId = model.getDocument().getMe().getUserId();
-        }
     }
 
     /**
@@ -113,7 +100,10 @@ public class CollaborativeString extends CollaborativeObject
     {
         int index = value.length();
 
-        fireWithObjectChangedEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        BaseModelEvent event = new TextInsertedEvent(this, getSessionId(), getUserId(), true, index, text);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -134,7 +124,10 @@ public class CollaborativeString extends CollaborativeObject
      */
     public void insertString(int index, String text)
     {
-        fireWithObjectChangedEvent(new TextInsertedEvent(this, sessionId, userId, true, index, text));
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        BaseModelEvent event = new TextInsertedEvent(this, getSessionId(), getUserId(), true, index, text);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -163,7 +156,10 @@ public class CollaborativeString extends CollaborativeObject
         int index = startIndex;
         String text = value.substring(startIndex, endIndex);
 
-        fireWithObjectChangedEvent(new TextDeletedEvent(this, sessionId, userId, true, index, text));
+        // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
+        BaseModelEvent event = new TextDeletedEvent(this, getSessionId(), getUserId(), true, index, text);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -197,24 +193,5 @@ public class CollaborativeString extends CollaborativeObject
     public int length()
     {
         return value.length();
-    }
-
-    /**
-     * Utility method to fire an event with an ObjectChangedEvent.
-     *
-     * @param event
-     */
-    private void fireWithObjectChangedEvent(BaseModelEvent event)
-    {
-        // Update the model
-        updateModel(event);
-
-        // Fire the event itself
-        fireEvent(event);
-
-        // Fire an object changed event that bubbles up the tree
-        List<BaseModelEvent> eventList = new LinkedList<>();
-        eventList.add(event);
-        fireEvent(new ObjectChangedEvent(this, sessionId, userId, true, eventList));
     }
 }

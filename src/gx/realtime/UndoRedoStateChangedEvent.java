@@ -13,7 +13,7 @@ public class UndoRedoStateChangedEvent extends Event
         this.canUndo = canUndo;
     }
 
-    public boolean isCanRedo()
+    public boolean canRedo()
     {
         return canRedo;
     }
@@ -23,7 +23,7 @@ public class UndoRedoStateChangedEvent extends Event
         this.canRedo = canRedo;
     }
 
-    public boolean isCanUndo()
+    public boolean canUndo()
     {
         return canUndo;
     }

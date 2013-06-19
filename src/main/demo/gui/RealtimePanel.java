@@ -57,6 +57,13 @@ public class RealtimePanel extends JPanel
             collaboratorListModel.removeElement(event.getCollaborator());
         });
 
+        //listen to UndoRedoStateChangedEvent to update the UI
+        document.getModel().addEventListener(EventType.UNDO_REDO_STATE_CHANGED, (UndoRedoStateChangedEvent event) -> {
+            logEvent(event);
+            undoButton.setEnabled(event.canUndo());
+            redoButton.setEnabled(event.canRedo());
+        });
+
         // Init the components
         initComponents();
 
@@ -141,9 +148,8 @@ public class RealtimePanel extends JPanel
             document.getModel().undo();
         } else {
             System.err.println("Unable to undo!");
-
+            undoButton.setEnabled(false);
         }
-        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void redoButtonActionPerformed(ActionEvent e) {
@@ -151,8 +157,8 @@ public class RealtimePanel extends JPanel
             document.getModel().redo();
         } else {
             System.err.println("Unable to redo!");
+            redoButton.setEnabled(false);
         }
-        //TODO: enable / disable buttons based on UndoRedoStateChangedEvent
     }
 
     private void initComponents()
@@ -263,6 +269,7 @@ public class RealtimePanel extends JPanel
                 redoButtonActionPerformed(e);
             }
         });
+        redoButton.setEnabled(false);
 
         //---- undoButton ----
         undoButton.setText("Undo");
@@ -272,6 +279,7 @@ public class RealtimePanel extends JPanel
                 undoButtonActionPerformed(e);
             }
         });
+        undoButton.setEnabled(false);
 
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
@@ -454,20 +462,22 @@ class EventRenderer extends DefaultListCellRenderer {
     private void paintLabel(JLabel label, Object event) {
         String color = null;
 
-        if(event instanceof BaseModelEvent) {
+        if (event instanceof BaseModelEvent) {
             String userid = ((BaseModelEvent) event).getUserId();
-            for(Collaborator collab : document.getCollaborators()) {
+            for (Collaborator collab : document.getCollaborators()) {
                 if(collab.getUserId().equals(userid)) {
                     color = collab.getColor();
                 }
             }
-        } else if(event instanceof CollaboratorJoinedEvent) {
-            color = ((CollaboratorJoinedEvent)event).getCollaborator().getColor();
-        } else if(event instanceof CollaboratorLeftEvent) {
-            color = ((CollaboratorLeftEvent)event).getCollaborator().getColor();
+        } else if (event instanceof CollaboratorJoinedEvent) {
+            Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
+            color = user != null ? user.getColor() : null;
+        } else if (event instanceof CollaboratorLeftEvent) {
+            Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
+            color = user != null ? user.getColor() : null;
         }
 
-        label.setForeground(Color.decode(color));
-
+        if (color != null)
+            label.setForeground(Color.decode(color));
     }
 }
