@@ -69,7 +69,6 @@ public class RealtimePanel extends JPanel
 
         //listen to UndoRedoStateChangedEvent to update the UI
         document.getModel().addEventListener(EventType.UNDO_REDO_STATE_CHANGED, (UndoRedoStateChangedEvent event) -> SwingUtilities.invokeLater(() -> {
-            logEvent(event);
             undoButton.setEnabled(event.canUndo());
             redoButton.setEnabled(event.canRedo());
         }));

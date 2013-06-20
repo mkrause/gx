@@ -64,6 +64,16 @@ public class CompoundOperation extends RevertableEvent
         return result;
     }
 
+    @Override
+    public void setLocal(boolean local)
+    {
+        super.setLocal(local);
+
+        for (BaseModelEvent event : events) {
+            event.setLocal(local);
+        }
+    }
+
     public List<ObjectChangedEvent> toObjectChangedEvents()
     {
         Map<CollaborativeObject, List<BaseModelEvent>> targetMap = new HashMap<>();

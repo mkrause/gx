@@ -47,4 +47,14 @@ public class ObjectChangedEvent extends BaseModelEvent
     {
         this.revision = revision;
     }
+
+    @Override
+    public void setLocal(boolean local)
+    {
+        super.setLocal(local);
+
+        for (BaseModelEvent event : events) {
+            event.setLocal(local);
+        }
+    }
 }

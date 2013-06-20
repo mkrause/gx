@@ -381,6 +381,11 @@ public class Model extends EventTarget
             for (BaseModelEvent e : ocEvent.getEvents()) {
                 updateModel(e);
             }
+        } else if (event instanceof CompoundOperation) {
+            CompoundOperation coEvent = (CompoundOperation) event;
+            for (BaseModelEvent e : coEvent.getEvents()) {
+                updateModel(e);
+            }
         } else {
             EventTarget target = event.getTarget();
             if (target instanceof CollaborativeObject)
@@ -470,10 +475,7 @@ public class Model extends EventTarget
         registerMutation(event);
 
         // Fire ObjectChangedEvents on the original targets
-        List<ObjectChangedEvent> ocEvents = event.toObjectChangedEvents();
-        for (ObjectChangedEvent oce : ocEvents) {
-            dispatchEvent(oce);
-        }
+        dispatchEvent(event);
 
         // Send event
         sendToRemote(event);
@@ -555,6 +557,14 @@ public class Model extends EventTarget
      */
     public void dispatchEvent(Event event)
     {
+        if (event instanceof CompoundOperation) {
+            List<ObjectChangedEvent> ocEvents = ((CompoundOperation) event).toObjectChangedEvents();
+            for (ObjectChangedEvent oce : ocEvents) {
+                dispatchEvent(oce);
+            }
+            return;
+        }
+
         if (event.getTarget() == null)
             return;
 
