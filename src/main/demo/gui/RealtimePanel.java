@@ -98,7 +98,7 @@ public class RealtimePanel extends JPanel
     {
         System.out.println(event);
         eventListModel.addElement(event);
-        
+
         // Scroll to the bottom if the GUI is available already
         if(eventLogList != null && eventLogList.getVisibleRect() != null) {
             Rectangle visibleRect = eventLogList.getVisibleRect();
@@ -431,7 +431,7 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
             String name = collaborator.getDisplayName();
             if(collaborator.isMe())
                 name += " (me)";
-            label.setName(name);
+            label.setText(name);
             label.setIcon(imageIcon);
             label.setHorizontalAlignment(JLabel.LEFT);
         } catch (MalformedURLException e) {
