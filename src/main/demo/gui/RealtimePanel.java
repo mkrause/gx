@@ -156,9 +156,18 @@ public class RealtimePanel extends JPanel
             keys[i] = (String) model.getValueAt(rows[i], 0);
         }
 
+        // Start compound operation for multiple deletes
+        document.getModel().beginCompoundOperation();
+
         // Remove values
         for (String key : keys) {
             model.removeValue(key, true);
+        }
+
+        try {
+            document.getModel().endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e1) {
+            System.err.println("NoCompoundOperationInProgressException");
         }
     }
 
