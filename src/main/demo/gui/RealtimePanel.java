@@ -170,6 +170,7 @@ public class RealtimePanel extends JPanel
     private void undoButtonActionPerformed(ActionEvent e) {
         if (document.getModel().canUndo()) {
             document.getModel().undo();
+            this.repaint();
         } else {
             System.err.println("Unable to undo!");
             undoButton.setEnabled(false);
@@ -179,6 +180,7 @@ public class RealtimePanel extends JPanel
     private void redoButtonActionPerformed(ActionEvent e) {
         if(document.getModel().canRedo()){
             document.getModel().redo();
+            this.repaint();
         } else {
             System.err.println("Unable to redo!");
             redoButton.setEnabled(false);
