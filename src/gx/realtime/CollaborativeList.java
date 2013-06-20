@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class CollaborativeList<E> extends CollaborativeObject
+public class CollaborativeList extends CollaborativeObject
 {
 
     /**
      * Contents of this ColaborativeList
      */
-    private List<E> values;
+    private List<Object> values;
 
     /**
      * A collaborative list. A list can contain other Realtime collaborative objects, custom collaborative objects,
@@ -31,7 +31,7 @@ public class CollaborativeList<E> extends CollaborativeObject
     public CollaborativeList(String id, Model model)
     {
         super(id, model);
-        this.values = new ArrayList<E>();
+        this.values = new ArrayList<Object>();
     }
 
     /**
@@ -40,10 +40,10 @@ public class CollaborativeList<E> extends CollaborativeObject
      *
      * @return A copy of the contents of this collaborative list.
      */
-    public ArrayList<E> asArray()
+    public ArrayList<Object> asArray()
     {
-        ArrayList<E> result = new ArrayList<E>();
-        for (E value : values) {
+        ArrayList<Object> result = new ArrayList();
+        for (Object value : values) {
             result.add(Cloner.clone(value));
         }
         return result;
@@ -54,7 +54,8 @@ public class CollaborativeList<E> extends CollaborativeObject
      */
     public void clear()
     {
-        values.clear();
+        //TODO: make event based.
+        //values.clear();
     }
 
     /**
@@ -63,7 +64,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param index The index.
      * @return The value at the given index.
      */
-    public E get(int index)
+    public Object get(int index)
     {
         return values.get(index);
     }
@@ -74,7 +75,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param value The value to find.
      * @return The index of the given value, or -1 if it cannot be found.
      */
-    public int indexOf(E value)
+    public int indexOf(Object value)
     {
         return values.indexOf(value);
     }
@@ -86,7 +87,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param opt_comparatorFn Optional comparator function used to determine the equality of two items.
      * @return The index of the given value, or -1 if it cannot be found.
      */
-    public int indexOf(E value, Comparator<E> opt_comparatorFn)
+    public int indexOf(Object value, Comparator<Object> opt_comparatorFn)
     {
         int result = -1;
         int i = 0;
@@ -106,12 +107,15 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param index The index to insert at.
      * @param value The value to add.
      */
-    public void insert(int index, E value)
+    public void insert(int index, Object value)
     {
+        //TODO: make event based
+        /*
         if (value instanceof EventTarget) {
             ((EventTarget) value).addParent(this);
         }
         values.add(index, value);
+        */
     }
 
     /**
@@ -120,7 +124,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param index  The index at which to insert.
      * @param values The values to insert.
      */
-    public void insertAll(int index, List<E> values)
+    public void insertAll(int index, List<Object> values)
     {
         for (E value : values) {
             this.insert(index, value);
@@ -134,7 +138,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param value The value to find.
      * @return The index of the given value, or -1 if it cannot be found.
      */
-    public int lastIndexOf(E value)
+    public int lastIndexOf(Object value)
     {
         return values.lastIndexOf(value);
     }
@@ -146,7 +150,7 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param opt_comparatorFn Optional comparator function used to determine the equality of two items.
      * @return The index of the given value, or -1 if it cannot be found.
      */
-    public int lastIndexOf(E value, Comparator<E> opt_comparatorFn)
+    public int lastIndexOf(Object value, Comparator<Object> opt_comparatorFn)
     {
         int result = -1;
         for (int i = 0; i < values.size(); i++) {
@@ -163,13 +167,16 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param value The value to add.
      * @return The new array length.
      */
-    public int push(E value)
+    public int push(Object value)
     {
+        //TODO: make event based.
+        /*
         if (value instanceof EventTarget) {
             ((EventTarget) value).addParent(this);
         }
         values.add(value);
         return this.length();
+        */
     }
 
     /**
@@ -177,9 +184,9 @@ public class CollaborativeList<E> extends CollaborativeObject
      *
      * @param values The values to add.
      */
-    public void pushAll(List<E> values)
+    public void pushAll(List<Object> values)
     {
-        for (E value : values) {
+        for (Object value : values) {
             this.push(value);
         }
     }
@@ -204,10 +211,13 @@ public class CollaborativeList<E> extends CollaborativeObject
      */
     public void remove(int index)
     {
+        //TODO: make event based
+        /*
         E removed = values.remove(index);
         if (removed instanceof EventTarget) {
             ((EventTarget) removed).removeParent(this);
         }
+        */
     }
 
     /**
@@ -230,12 +240,15 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param value The value to remove.
      * @return Whether the item was removed.
      */
-    public boolean removeValue(E value)
+    public boolean removeValue(Object value)
     {
+        //TODO: make evnet based: use remove(index) with use of indexOf
+        /*
         if (value instanceof EventTarget) {
             ((EventTarget) value).removeParent(this);
         }
         return values.remove(value);
+        */
     }
 
     /**
@@ -244,9 +257,9 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param index  The index to set at.
      * @param values The values to insert.
      */
-    public void replaceRange(int index, List<E> values)
+    public void replaceRange(int index, List<Object> values)
     {
-        for (E value : values) {
+        for (Object value : values) {
             this.set(index, value);
             index++;
         }
@@ -258,9 +271,10 @@ public class CollaborativeList<E> extends CollaborativeObject
      * @param index The index to insert at.
      * @param value The value to set.
      */
-    public void set(int index, E value)
+    public void set(int index, Object value)
     {
-        values.set(index, value);
+        //TODO: make event based
+        //values.set(index, value);
     }
 
     /**
@@ -287,7 +301,8 @@ public class CollaborativeList<E> extends CollaborativeObject
      */
     public void setLength(int length)
     {
-        values = values.subList(0, length);
+        //TODO: make event based.
+        //values = values.subList(0, length);
     }
 
     @Override
@@ -296,18 +311,51 @@ public class CollaborativeList<E> extends CollaborativeObject
         switch (event.getType()) {
             case VALUES_ADDED:
                 ValuesAddedEvent valuesAddedEvent = (ValuesAddedEvent) event;
-                //TODO: fix cast to generic E
-                insertAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
+                values.addAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
                 break;
             case VALUES_SET:
                 ValuesSetEvent valuesSetEvent = (ValuesSetEvent) event;
-                //TODO: fix cast to generic E
-                replaceRange(valuesSetEvent.getIndex(), valuesSetEvent.getNewValues());
+                int index = valuesSetEvent.getIndex();
+                ArrayList<Object> newValues = valuesSetEvent.getNewValues();
+                ArrayList<Object> oldValues = valuesSetEvent.getOldValues();
+                for (Object value : newValues) {
+                    if(values.get(index).equals(oldValues.get(index))){
+                        values.set(index, value);
+                    } else {
+                        System.err.println("Could not set value at index " + index);
+                    }
+                    index++;
+                }
                 break;
             case VALUES_REMOVED:
                 ValuesRemovedEvent valuesRemovedEvent = (ValuesRemovedEvent) event;
-                removeRange(valuesRemovedEvent.getIndex(), valuesRemovedEvent.getValues().size());
+                for(int i = 0; i < valuesRemovedEvent.getValues().size(); i++){
+                    int firstIndex = getFirstIndexOfAfter(valuesRemovedEvent.getValues().get(i), valuesRemovedEvent.getIndex());
+                    if (firstIndex >= 0) {
+                        values.remove(firstIndex);
+                    } else {
+                        //Item is probably already removed. No error is thrown.
+                    }
+                }
                 break;
         }
+    }
+
+    /**
+     * This function returns the index of the first occurrence after the given index of the given object in this list. Iff the object was not found
+     * after the given index, -1 is returned.
+     * @param object The object of which the index should be returned.
+     * @param after The index from which an occurrence of the given object should be detected.
+     * @return The index of the first occurrence after the given index of the given object iff found. -1 otherwise.
+     */
+    private int getFirstIndexOfAfter(Object object, int after){
+        int result = -1;
+        while(result == -1 && after < values.size()){
+            if(object == null && values.get(after) == null || object != null && object.equals(values.get(after))){
+                result = after;
+            }
+            after++;
+        }
+        return result;
     }
 }
