@@ -25,10 +25,18 @@ public class RealtimePanel extends JPanel
     private DefaultListModel<Event> eventListModel = new DefaultListModel<>();
     private Document document;
 
-    public RealtimePanel(Document document, CollaborativeMap collabMap)
+    public RealtimePanel()
+    {
+        // Init the components
+        initComponents();
+
+        this.setEnabled(false);
+    }
+    public void initialize(Document document, CollaborativeMap collabMap)
     {
         this.document = document;
         model = new RealtimeTableModel(collabMap);
+        table.setModel(model);
 
         // Listen for ValueChangedEvents to update the UI
         collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
@@ -50,11 +58,13 @@ public class RealtimePanel extends JPanel
 
         document.addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent event) -> {
             logEvent(event);
-            collaboratorListModel.addElement(event.getCollaborator());
+            if (!collaboratorListModel.contains(event.getCollaborator()))
+                collaboratorListModel.addElement(event.getCollaborator());
         });
         document.addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent event) -> {
             logEvent(event);
-            collaboratorListModel.removeElement(event.getCollaborator());
+            if (collaboratorListModel.contains(event.getCollaborator()))
+                collaboratorListModel.removeElement(event.getCollaborator());
         });
 
         //listen to UndoRedoStateChangedEvent to update the UI
@@ -63,9 +73,6 @@ public class RealtimePanel extends JPanel
             undoButton.setEnabled(event.canUndo());
             redoButton.setEnabled(event.canRedo());
         });
-
-        // Init the components
-        initComponents();
 
         // Put a selection listener on the table to prefill the key/value fields
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
@@ -76,6 +83,15 @@ public class RealtimePanel extends JPanel
             keyField.setText((String) model.getValueAt(row, 0));
             valueField.setText((String) model.getValueAt(row, 1));
         });
+
+        this.setEnabled(true);
+        undoButton.setEnabled(false);
+        redoButton.setEnabled(false);
+    }
+
+    public Document getDocument()
+    {
+        return document;
     }
 
     public void logEvent(Event event)
@@ -91,17 +107,23 @@ public class RealtimePanel extends JPanel
         }
     }
 
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+
+        for (Component com : getComponents()) {
+            com.setEnabled(enabled);
+        }
+    }
     /**
      * Method that creates the frame and handles some of the final setup actions.
-     *
-     * @param document
-     * @param collabMap
      */
-    public static void createUI(Document document, CollaborativeMap collabMap)
+    public static RealtimePanel createUI()
     {
         JFrame frame = new JFrame("Demo Realtime Gx Application");
 
-        RealtimePanel newContentPane = new RealtimePanel(document, collabMap);
+        RealtimePanel newContentPane = new RealtimePanel();
         newContentPane.setOpaque(true);
         frame.setContentPane(newContentPane);
 
@@ -112,10 +134,12 @@ public class RealtimePanel extends JPanel
             public void windowClosing(WindowEvent e)
             {
                 System.out.println("Politely closing API link...");
-                document.close();
+                if (newContentPane != null && newContentPane.document != null)
+                    newContentPane.document.close();
             }
         });
         frame.setVisible(true);
+        return newContentPane;
     }
 
     private void clearButtonActionPerformed(ActionEvent e)
@@ -175,7 +199,7 @@ public class RealtimePanel extends JPanel
         valueLabel = new JLabel();
         eventLogScrollPane = new JScrollPane();
         eventLogList = new JList(eventListModel);
-        eventLogList.setCellRenderer(new EventRenderer(document));
+        eventLogList.setCellRenderer(new EventRenderer(this));
         eventLogLabel = new JLabel();
         label1 = new JLabel();
         collabListScrollPane = new JScrollPane();
@@ -422,10 +446,10 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
  * Renderer for the event log list.
  */
 class EventRenderer extends DefaultListCellRenderer {
-    private Document document;
+    private RealtimePanel panel;
 
-    public EventRenderer(Document document) {
-        this.document = document;
+    public EventRenderer(RealtimePanel panel) {
+        this.panel = panel;
     }
 
     @Override
@@ -462,9 +486,12 @@ class EventRenderer extends DefaultListCellRenderer {
     private void paintLabel(JLabel label, Object event) {
         String color = null;
 
+        if(panel == null || panel.getDocument() == null)
+            return;
+
         if (event instanceof BaseModelEvent) {
             String userid = ((BaseModelEvent) event).getUserId();
-            for (Collaborator collab : document.getCollaborators()) {
+            for (Collaborator collab : panel.getDocument().getCollaborators()) {
                 if(collab.getUserId().equals(userid)) {
                     color = collab.getColor();
                 }

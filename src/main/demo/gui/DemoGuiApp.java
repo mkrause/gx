@@ -32,13 +32,15 @@ public class DemoGuiApp
 
     public void start()
     {
+        // Start the UI
+        RealtimePanel panel = RealtimePanel.createUI();
+
         RealtimeOptions options = new RealtimeOptions();
         options.setClientId(getClientId());
         options.setDocId("0B6gFLa0mYRcOUHlpUlFTTm5EaDQ");
 
         options.setOnFileLoaded((doc) -> {
             document = doc;
-
 
             Model model = doc.getModel();
             CollaborativeMap root = model.getRoot();
@@ -52,8 +54,7 @@ public class DemoGuiApp
                 CollaborativeMap map = (CollaborativeMap) root.get(key);
                 System.out.println("Found collaborativeMap: " + map.toString());
 
-                // Start the UI
-                SwingUtilities.invokeLater(() -> RealtimePanel.createUI(document, map));
+                panel.initialize(document, map);
             } else {
                 // TODO: v2 - create a new CollaborativeMap to play with
                 System.out.println("Found no collaborativeMap in the specified document - closing.");
