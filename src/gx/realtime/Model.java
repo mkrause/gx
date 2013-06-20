@@ -107,6 +107,7 @@ public class Model extends EventTarget
      */
     public <T extends CollaborativeObject> T create(Class<T> collabType)
     {
+        // TODO: send event to remote
         return create(RandomUtils.getRandomAlphaNumeric(), collabType);
     }
 
@@ -147,7 +148,10 @@ public class Model extends EventTarget
      */
     public <E> CollaborativeList<E> createList()
     {
-        return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeList list = new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(list.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
+        sendToRemote(event);
+        return list;
     }
 
     /**
@@ -159,8 +163,16 @@ public class Model extends EventTarget
      */
     public <E> CollaborativeList<E> createList(List<E> opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeList<E> result = createList();
         result.pushAll(opt_initialValue);
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -171,7 +183,10 @@ public class Model extends EventTarget
      */
     public CollaborativeMap createMap()
     {
-        return new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeMap map = new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(map.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
+        sendToRemote(event);
+        return map;
     }
 
     /**
@@ -182,10 +197,18 @@ public class Model extends EventTarget
      */
     public CollaborativeMap createMap(Map<String, Object> opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeMap result = createMap();
         Set<Entry<String, Object>> entries = opt_initialValue.entrySet();
         for (Entry<String, Object> entry : entries) {
             result.set(entry.getKey(), entry.getValue());
+        }
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -197,7 +220,10 @@ public class Model extends EventTarget
      */
     public CollaborativeString createString()
     {
-        return new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeString string = new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(string.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
+        sendToRemote(event);
+        return string;
     }
 
     /**
@@ -208,8 +234,16 @@ public class Model extends EventTarget
      */
     public CollaborativeString createString(String opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeString result = createString();
         result.append(opt_initialValue);
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -583,6 +617,14 @@ public class Model extends EventTarget
         }
 
         eventToDispatch.getTarget().fireEvent(eventToDispatch);
+    }
+
+    private String getSessionId() {
+        return (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
+    }
+
+    private String getUserId() {
+        return (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
     }
 
     /**

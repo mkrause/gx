@@ -39,8 +39,14 @@ public class CompoundOperationSerializer extends StdSerializer<CompoundOperation
             jgen.writeObject(e);
         }
 
-        // close the two outer wrappers
+        // close the outer wrapper
         jgen.writeEndArray();
+
+        if(event.getName() != null) {
+            jgen.writeString(event.getName());
+        }
+
+        // close the outer wrapper
         jgen.writeEndArray();
     }
 }
