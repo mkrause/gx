@@ -39,7 +39,7 @@ public class RealtimePanel extends JPanel
         table.setModel(model);
 
         // Listen for ValueChangedEvents to update the UI
-        collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> {
+        collabMap.addEventListener(EventType.VALUE_CHANGED, (ValueChangedEvent event) -> SwingUtilities.invokeLater(() -> {
             logEvent(event);
 
             // Don't update the map if we've thrown the events
@@ -51,28 +51,28 @@ public class RealtimePanel extends JPanel
             } else {
                 model.removeValue(event.getProperty(), event.isLocal());
             }
-        });
-        collabMap.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> {
+        }));
+        collabMap.addEventListener(EventType.OBJECT_CHANGED, (ObjectChangedEvent event) -> SwingUtilities.invokeLater(() -> {
             logEvent(event);
-        });
+        }));
 
-        document.addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent event) -> {
+        document.addEventListener(EventType.COLLABORATOR_JOINED, (CollaboratorJoinedEvent event) -> SwingUtilities.invokeLater(() -> {
             logEvent(event);
             if (!collaboratorListModel.contains(event.getCollaborator()))
                 collaboratorListModel.addElement(event.getCollaborator());
-        });
-        document.addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent event) -> {
+        }));
+        document.addEventListener(EventType.COLLABORATOR_LEFT, (CollaboratorLeftEvent event) -> SwingUtilities.invokeLater(() -> {
             logEvent(event);
             if (collaboratorListModel.contains(event.getCollaborator()))
                 collaboratorListModel.removeElement(event.getCollaborator());
-        });
+        }));
 
         //listen to UndoRedoStateChangedEvent to update the UI
-        document.getModel().addEventListener(EventType.UNDO_REDO_STATE_CHANGED, (UndoRedoStateChangedEvent event) -> {
+        document.getModel().addEventListener(EventType.UNDO_REDO_STATE_CHANGED, (UndoRedoStateChangedEvent event) -> SwingUtilities.invokeLater(() -> {
             logEvent(event);
             undoButton.setEnabled(event.canUndo());
             redoButton.setEnabled(event.canRedo());
-        });
+        }));
 
         // Put a selection listener on the table to prefill the key/value fields
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
