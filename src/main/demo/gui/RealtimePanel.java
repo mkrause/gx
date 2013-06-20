@@ -409,6 +409,8 @@ public class RealtimePanel extends JPanel
  * Custom renderer to display the Collaborators in our list
  */
 class CollaboratorRenderer extends DefaultListCellRenderer {
+    JLabel label = new JLabel();
+
     @Override
     public Component getListCellRendererComponent(
             JList list,
@@ -418,7 +420,6 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
             boolean expanded) {
 
         Collaborator collaborator = (Collaborator) value;
-        JLabel label = null;
 
         try {
             String urlString = collaborator.getPhotoUrl();
@@ -430,7 +431,9 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
             String name = collaborator.getDisplayName();
             if(collaborator.isMe())
                 name += " (me)";
-            label = new JLabel(name, imageIcon, JLabel.LEFT);
+            label.setName(name);
+            label.setIcon(imageIcon);
+            label.setHorizontalAlignment(JLabel.LEFT);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -449,6 +452,7 @@ class CollaboratorRenderer extends DefaultListCellRenderer {
  */
 class EventRenderer extends DefaultListCellRenderer {
     private RealtimePanel panel;
+    private JLabel label = new JLabel();
 
     public EventRenderer(RealtimePanel panel) {
         this.panel = panel;
@@ -462,8 +466,6 @@ class EventRenderer extends DefaultListCellRenderer {
             boolean selected,
             boolean expanded) {
 
-        JLabel label = new JLabel();
-
         if (value instanceof ValueChangedEvent) {
             ValueChangedEvent event = (ValueChangedEvent) value;
             label.setText(event.toString());
@@ -473,40 +475,41 @@ class EventRenderer extends DefaultListCellRenderer {
         } else if (value instanceof CollaboratorLeftEvent) {
             CollaboratorLeftEvent event = (CollaboratorLeftEvent) value;
             label.setText(event.toString());
+        } else {
+            label.setText(value.toString());
         }
 
-        paintLabel(label, value);
+        Color color = getColor(value);
+        if (color != null)
+            label.setForeground(color);
+
         return label;
     }
 
     /**
      * Sets the text color of the provided label to the color of the collaborator.
      *
-     * @param label
      * @param event
      */
-    private void paintLabel(JLabel label, Object event) {
-        String color = null;
-
+    private Color getColor(Object event) {
         if(panel == null || panel.getDocument() == null)
-            return;
+            return null;
+
+        Collaborator user = null;
 
         if (event instanceof BaseModelEvent) {
             String userid = ((BaseModelEvent) event).getUserId();
             for (Collaborator collab : panel.getDocument().getCollaborators()) {
                 if(collab.getUserId().equals(userid)) {
-                    color = collab.getColor();
+                    user = collab;
                 }
             }
         } else if (event instanceof CollaboratorJoinedEvent) {
-            Collaborator user = ((CollaboratorJoinedEvent)event).getCollaborator();
-            color = user != null ? user.getColor() : null;
+            user = ((CollaboratorJoinedEvent)event).getCollaborator();
         } else if (event instanceof CollaboratorLeftEvent) {
-            Collaborator user = ((CollaboratorLeftEvent)event).getCollaborator();
-            color = user != null ? user.getColor() : null;
+            user = ((CollaboratorLeftEvent)event).getCollaborator();
         }
 
-        if (color != null)
-            label.setForeground(Color.decode(color));
+        return user != null ? Color.decode(user.getColor()) : null;
     }
 }
