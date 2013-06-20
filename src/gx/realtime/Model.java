@@ -4,6 +4,7 @@ import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.message.SaveMessage;
 import gx.realtime.operation.ValueChangedOperation.ValueType;
 import gx.util.RandomUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -96,6 +97,7 @@ public class Model extends EventTarget
     public void beginCreationCompoundOperation()
     {
         //TODO
+        throw new NotImplementedException();
     }
 
     /**
@@ -149,8 +151,8 @@ public class Model extends EventTarget
     public <E> CollaborativeList<E> createList()
     {
         CollaborativeList list = new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
-        BaseModelEvent event = new ObjectAddedEvent(list.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
-        sendToRemote(event);
+        BaseModelEvent event = new ObjectAddedEvent(list.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_LIST);
+        dispatchAndSendEvent(event);
         return list;
     }
 
@@ -184,8 +186,8 @@ public class Model extends EventTarget
     public CollaborativeMap createMap()
     {
         CollaborativeMap map = new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
-        BaseModelEvent event = new ObjectAddedEvent(map.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
-        sendToRemote(event);
+        BaseModelEvent event = new ObjectAddedEvent(map.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_MAP);
+        dispatchAndSendEvent(event);
         return map;
     }
 
@@ -222,7 +224,7 @@ public class Model extends EventTarget
     {
         CollaborativeString string = new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
         BaseModelEvent event = new ObjectAddedEvent(string.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
-        sendToRemote(event);
+        dispatchAndSendEvent(event);
         return string;
     }
 
@@ -540,10 +542,8 @@ public class Model extends EventTarget
         if (event instanceof CompoundOperation) {
             eventToSend = (CompoundOperation) event;
         } else {
-            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
-            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
-            eventToSend = new CompoundOperation(sessionId, userId, true);
-            eventToSend.addEvent((RevertableEvent)event);
+            eventToSend = new CompoundOperation(getSessionId(), getUserId(), true);
+            eventToSend.addEvent(event);
         }
 
         BrowserChannel channel = document.getBrowserChannel();
@@ -569,8 +569,8 @@ public class Model extends EventTarget
     private void dispatchAndSendEvent(BaseModelEvent event, boolean register)
     {
         // Buffer events if a compound operation is in progress
-        if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
-            compoundOperations.peek().addEvent((RevertableEvent) event);
+        if (!compoundOperations.isEmpty()) {
+            compoundOperations.peek().addEvent(event);
             return;
         }
 
@@ -599,6 +599,9 @@ public class Model extends EventTarget
             return;
         }
 
+        if (event instanceof ObjectAddedEvent)
+            return;
+
         if (event.getTarget() == null)
             return;
 
@@ -607,11 +610,9 @@ public class Model extends EventTarget
             eventToDispatch = event;
         } else if (event instanceof BaseModelEvent) {
             BaseModelEvent bmEvent = (BaseModelEvent) event;
-            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
-            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
             List<BaseModelEvent> eventList = new LinkedList<>();
             eventList.add(bmEvent);
-            eventToDispatch = new ObjectChangedEvent(bmEvent.getTarget(), sessionId, userId, true, eventList);
+            eventToDispatch = new ObjectChangedEvent(bmEvent.getTarget(), getSessionId(), getUserId(), true, eventList);
         } else {
             eventToDispatch = event;
         }

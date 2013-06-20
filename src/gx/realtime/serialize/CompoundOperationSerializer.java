@@ -23,7 +23,7 @@ public class CompoundOperationSerializer extends StdSerializer<CompoundOperation
     @Override
     public void serialize(CompoundOperation event, JsonGenerator jgen, SerializerProvider provider) throws IOException
     {
-        List<RevertableEvent> events = event.getEvents();
+        List<BaseModelEvent> events = event.getEvents();
 
         // [4,[0,[operations]]]]
         // Print the outer wrapper (compound operation)
