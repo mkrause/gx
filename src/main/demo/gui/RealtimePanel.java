@@ -98,7 +98,7 @@ public class RealtimePanel extends JPanel
     {
         System.out.println(event);
         eventListModel.addElement(event);
-
+        
         // Scroll to the bottom if the GUI is available already
         if(eventLogList != null && eventLogList.getVisibleRect() != null) {
             Rectangle visibleRect = eventLogList.getVisibleRect();

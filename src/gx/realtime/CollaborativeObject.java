@@ -80,6 +80,17 @@ public abstract class CollaborativeObject extends EventTarget
         }
         bubble(event);
     }
+    
+    @Override
+    protected void fireEvent(Event event) {
+        if (event instanceof ObjectChangedEvent) {
+            this.fireEvent((ObjectChangedEvent)event);
+        } else if (event instanceof BaseModelEvent) {
+            this.fireEvent((BaseModelEvent)event);
+        } else {
+            super.fireEvent(event);
+        }
+    }
 
     /**
      * This method bubbles the given event to its parents iff event.bubbles() == true.
