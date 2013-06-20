@@ -34,61 +34,40 @@ public abstract class CollaborativeObject extends EventTarget
     }
 
     /**
-     * This method processes the given BaseModelEvent. If this is the first time this BaseModelEvent passes this object, it is updated
-     * according to the changes proposed by the given event. Next it will bubble if necessary and pass the event to the Model
-     * to generate an ObjectChangedEvent accordingly.
-     * @param event The event that needs to be fired on this object.
-     */
-    protected void fireEvent(BaseModelEvent event)
-    {
-        if (event.isFirstVisit(this)) {
-            event.addBubbledNode(this);
-
-            //Update the model
-            this.updateModel(event);
-
-            bubble(event);
-
-            // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
-            if(event.isLocal()){
-                model.dispatchAndSendEvent(event);
-            } else {
-                model.dispatchEvent(event);
-            }
-        }
-    }
-
-    /**
-     * This function executes the event handlers for the given ObjectChangedEvent. First, the events that are contained by this OCE are unpacked,
-     * after which the corresponding event handlers are executed. Concluding, the eventHandlers for the OCE in this EventTarget are executed, after
-     * which the event will be bubbled.
+     * This function executes the event handlers for the given Event. If this is the first time this BaseModelEvent
+     * passes this object, it is handled. If it is a ObjectChangedEvent the events that are contained by this OCE are
+     * unpacked, after which the corresponding event handlers are executed. Concluding, the eventHandlers for the OCE in
+     * this EventTarget are executed, after which the event will be bubbled.
      * @param event The ObjectChangedEvent containing the necessary information.
      */
-    protected void fireEvent(ObjectChangedEvent event)
-    {
-        if (event.isFirstVisit(this)) {
-            event.addBubbledNode(this);
-            //execute event handlers of packed events
-            List<BaseModelEvent> events = event.getEvents();
-            for(BaseModelEvent bmEvent : events){
-                executeEventHandlers(bmEvent);
-            }
-
-            //execute eventhandlers for the ObjectChangedEvent itself.
-            executeEventHandlers(event);
-
-        }
-        bubble(event);
-    }
-    
     @Override
     protected void fireEvent(Event event) {
-        if (event instanceof ObjectChangedEvent) {
-            this.fireEvent((ObjectChangedEvent)event);
-        } else if (event instanceof BaseModelEvent) {
-            this.fireEvent((BaseModelEvent)event);
-        } else {
+        if(!(event instanceof BaseModelEvent)) {
             super.fireEvent(event);
+            return;
+        }
+
+        BaseModelEvent bmEvent = (BaseModelEvent) event;
+
+        // Check if the event targets (or bubbles through) this object
+        if (!this.equals(event.getTarget()) && !bmEvent.bubbles())
+            return;
+
+        // Fire contained events of an ObjectChangedEvent first
+        if (this.equals(event.getTarget()) && event instanceof ObjectChangedEvent) {
+            ObjectChangedEvent ocEvent = (ObjectChangedEvent) event;
+            if (ocEvent.getEvents() != null) {
+                for (BaseModelEvent e : ocEvent.getEvents()) {
+                    fireEvent(e);
+                }
+            }
+        }
+
+        // Fire event
+        if (bmEvent.isFirstVisit(this)) {
+            bmEvent.addBubbledNode(this);
+            executeEventHandlers(bmEvent);
+            bubble(bmEvent);
         }
     }
 
@@ -112,7 +91,7 @@ public abstract class CollaborativeObject extends EventTarget
     {
         //execute eventhandlers of this EventTarget if needed.
         Set<EventHandler> handlers = eventHandlers.get(event.getType());
-        if (handlers != null && (this.equals(event.getTarget()))) {
+        if (handlers != null) {
             for (EventHandler handler : handlers) {
                 handler.handleEvent(event);
             }
