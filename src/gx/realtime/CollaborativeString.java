@@ -1,7 +1,11 @@
 package gx.realtime;
 
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
 import gx.util.RandomUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,6 +16,11 @@ public class CollaborativeString extends CollaborativeObject
      * The contents of this CollaborativeString
      */
     private String value;
+
+    /**
+     * A list of all references in this CollaborativeString.
+     */
+    private List<IndexReference> references;
 
     /**
      * Creates a new collaborative string. Unlike regular Java Strings, collaborative strings are mutable. Changes to
@@ -28,6 +37,7 @@ public class CollaborativeString extends CollaborativeObject
     {
         super(id, model);
         value = "";
+        references = new ArrayList<>();
     }
 
     /**
@@ -79,7 +89,9 @@ public class CollaborativeString extends CollaborativeObject
      */
     public IndexReference registerReference(int index, boolean canBeDeleted)
     {
-        return new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        references.add(result);
+        return result;
     }
 
     /**
@@ -110,9 +122,16 @@ public class CollaborativeString extends CollaborativeObject
      */
     public void setText(String text)
     {
-        //TODO: perform a text diff
-        //TODO: alter the text with the minimum amount of text inserts and deletes possible.
-        //TODO: create events
+        try{
+            model.beginCompoundOperation();
+
+            this.removeRange(0, this.length());
+            this.append(text);
+
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -153,6 +172,7 @@ public class CollaborativeString extends CollaborativeObject
      */
     private void insertText(TextInsertedEvent tiEvent)
     {
+        //TODO: update references of this collabString.
         int index = tiEvent.getIndex();
         String insertedText = tiEvent.getText();
 
@@ -168,6 +188,7 @@ public class CollaborativeString extends CollaborativeObject
      */
     private void deleteText(TextDeletedEvent tdEvent)
     {
+        //TODO: update references of this collabString.
         int deleteIndex = tdEvent.getIndex();
         String deletedText = tdEvent.getText();
 

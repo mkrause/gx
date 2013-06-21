@@ -16,6 +16,11 @@ public class CollaborativeList extends CollaborativeObject
     private List<Object> values;
 
     /**
+     * A list containting all the registered references of this CollabList.
+     */
+    private List<IndexReference> references;
+
+    /**
      * A collaborative list. A list can contain other Realtime collaborative objects, custom collaborative objects,
      * Java primitive values, or Java objects that can be serialized to JSON.
      * Changes to the list will automatically be synced with the server and other collaborators.
@@ -195,7 +200,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public IndexReference registerReference(int index, boolean canBeDeleted)
     {
-        return new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        references.add(result);
+        return result;
     }
 
     /**
@@ -314,6 +321,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     private void setValues(ValuesSetEvent valuesSetEvent)
     {
+        //TODO: update references.
         int index = valuesSetEvent.getIndex();
         List<Object> newValues = valuesSetEvent.getNewValues();
         List<Object> oldValues = valuesSetEvent.getOldValues();
@@ -345,7 +353,9 @@ public class CollaborativeList extends CollaborativeObject
      * collabList as a parent from the contained eventTargets.
      * @param valuesRemovedEvent The ValuesRemovedEvent that needs to be handled.
      */
-    private void removeValues(ValuesRemovedEvent valuesRemovedEvent){
+    private void removeValues(ValuesRemovedEvent valuesRemovedEvent)
+    {
+        //TODO: update references.
         try {
             model.beginCompoundOperation();
             for (Object value : valuesRemovedEvent.getValues()) {
