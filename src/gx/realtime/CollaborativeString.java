@@ -31,67 +31,6 @@ public class CollaborativeString extends CollaborativeObject
     }
 
     /**
-     * Generic handler for TEXT_INSERTED events. Inserts the text in the
-     * specified position, as specified by the event.
-     *
-     * @return EventHandler<TextInsertedEvent>
-     */
-    private EventHandler<TextInsertedEvent> textInsertedHandler()
-    {
-        return (TextInsertedEvent event) -> {
-            int index = event.getIndex();
-            String insertedText = event.getText();
-
-            // Build the new text with the string inserted
-            value = value.substring(0, index)
-                    + insertedText
-                    + value.substring(index);
-        };
-    }
-
-    /**
-     * Generic handler for TEXT_DELETED events. Deletes the text from the
-     * string, as specified by the event.
-     *
-     * @return EventHandler<TextInsertedEvent>
-     */
-    private EventHandler<TextDeletedEvent> textDeletedHandler()
-    {
-        return (TextDeletedEvent event) -> {
-            int index = event.getIndex();
-            String deletedText = event.getText();
-
-            // Nothing to delete
-            if (deletedText.length() == 0)
-                return;
-
-            // If the text at the specified position is not equal to the
-            // text from the event, something went wrong (so ignore it).
-            String toBeDeleted = value.substring(index, index + deletedText.length());
-            if (!toBeDeleted.equals(deletedText)) {
-                return;
-            }
-
-            // Build the new text with the string deleted
-            value = value.substring(0, index)
-                    + value.substring(index + deletedText.length());
-        };
-    }
-
-    @Override
-    protected void updateModel(BaseModelEvent event)
-    {
-        switch (event.getType()) {
-            case TEXT_INSERTED:
-                textInsertedHandler().handleEvent((TextInsertedEvent) event);
-                break;
-            case TEXT_DELETED:
-                textDeletedHandler().handleEvent((TextDeletedEvent) event);
-                break;
-        }
-    }
-
-    /**
      * Appends a string to the end of this one.
      *
      * @param text The new text to append.
@@ -194,4 +133,58 @@ public class CollaborativeString extends CollaborativeObject
     {
         return value.length();
     }
+
+    @Override
+    protected void updateModel(BaseModelEvent event)
+    {
+        switch (event.getType()) {
+            case TEXT_INSERTED:
+                insertText((TextInsertedEvent) event);
+                break;
+            case TEXT_DELETED:
+                deleteText((TextDeletedEvent) event);
+                break;
+        }
+    }
+
+    /**
+     * This method inserts the text of the given TextInsertedEvent in this collabString.
+     * @param tiEvent The TextInsertedEvent to be handled.
+     */
+    private void insertText(TextInsertedEvent tiEvent)
+    {
+        int index = tiEvent.getIndex();
+        String insertedText = tiEvent.getText();
+
+        // Build the new text with the string inserted
+        value = value.substring(0, index)
+                + insertedText
+                + value.substring(index);
+    }
+
+    /**
+     * This method deletes the text of the given TextDeletedEvent from this collabString.
+     * @param tdEvent The TextDeletedEvent to be handled.
+     */
+    private void deleteText(TextDeletedEvent tdEvent)
+    {
+        int deleteIndex = tdEvent.getIndex();
+        String deletedText = tdEvent.getText();
+
+        // Nothing to delete
+        if (deletedText.length() == 0)
+            return;
+
+        // If the text at the specified position is not equal to the
+        // text from the event, something went wrong (so ignore it).
+        String toBeDeleted = value.substring(deleteIndex, deleteIndex + deletedText.length());
+        if (!toBeDeleted.equals(deletedText)) {
+            return;
+        }
+
+        // Build the new text with the string deleted
+        value = value.substring(0, deleteIndex)
+                + value.substring(deleteIndex + deletedText.length());
+    }
+
 }

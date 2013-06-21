@@ -299,53 +299,69 @@ public class CollaborativeList extends CollaborativeObject
                 values.addAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
                 break;
             case VALUES_SET:
-                ValuesSetEvent valuesSetEvent = (ValuesSetEvent) event;
-                int index = valuesSetEvent.getIndex();
-                List<Object> newValues = valuesSetEvent.getNewValues();
-                List<Object> oldValues = valuesSetEvent.getOldValues();
-
-                try{
-                    model.beginCompoundOperation();
-                    for (Object value : newValues) {
-                        if (values.get(index).equals(oldValues.get(index))) {
-                            if (value instanceof EventTarget) {
-                                ((EventTarget) value).addParent(this);
-                            }
-                            if (values.get(index) instanceof EventTarget) {
-                                ((EventTarget) values.get(index)).removeParent(this);
-                            }
-                            values.set(index, value);
-                        } else {
-                            System.err.println("Could not set value at index " + index);
-                        }
-                        index++;
-                    }
-                    model.endCompoundOperation();
-                } catch (Model.NoCompoundOperationInProgressException e) {
-                    e.printStackTrace();
-                }
+                setValues((ValuesSetEvent) event);
                 break;
             case VALUES_REMOVED:
-                ValuesRemovedEvent valuesRemovedEvent = (ValuesRemovedEvent) event;
-
-                try {
-                    model.beginCompoundOperation();
-                    for (Object value : valuesRemovedEvent.getValues()) {
-                        int firstIndex = getFirstIndexOfAfter(value, valuesRemovedEvent.getIndex());
-                        if (firstIndex >= 0) {
-                            if (values.get(firstIndex) instanceof EventTarget) {
-                                ((EventTarget) values.get(firstIndex)).removeParent(this);
-                            }
-                            values.remove(firstIndex);
-                        } else {
-                            //Item is probably already removed. No error is thrown.
-                        }
-                    }
-                    model.endCompoundOperation();
-                } catch (Model.NoCompoundOperationInProgressException e) {
-                    e.printStackTrace();
-                }
+                removeValues((ValuesRemovedEvent) event);
                 break;
+        }
+    }
+
+    /**
+     * This method handles a ValueSetEvent and adds the contained values to this CollabList. It also handles adding and removing this
+     * collabList as a parrent to / from the contained EventTargets.
+     * @param valuesSetEvent The ValueSetEvent that needs to be handled.
+     */
+    private void setValues(ValuesSetEvent valuesSetEvent)
+    {
+        int index = valuesSetEvent.getIndex();
+        List<Object> newValues = valuesSetEvent.getNewValues();
+        List<Object> oldValues = valuesSetEvent.getOldValues();
+
+        try{
+            model.beginCompoundOperation();
+            for (Object value : newValues) {
+                if (values.get(index).equals(oldValues.get(index))) {
+                    if (value instanceof EventTarget) {
+                        ((EventTarget) value).addParent(this);
+                    }
+                    if (values.get(index) instanceof EventTarget) {
+                        ((EventTarget) values.get(index)).removeParent(this);
+                    }
+                    values.set(index, value);
+                } else {
+                    System.err.println("Could not set value at index " + index);
+                }
+                index++;
+            }
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method removes the values contained by the given ValuesRemovedEvent. This method also handles removing this
+     * collabList as a parent from the contained eventTargets.
+     * @param valuesRemovedEvent The ValuesRemovedEvent that needs to be handled.
+     */
+    private void removeValues(ValuesRemovedEvent valuesRemovedEvent){
+        try {
+            model.beginCompoundOperation();
+            for (Object value : valuesRemovedEvent.getValues()) {
+                int firstIndex = getFirstIndexOfAfter(value, valuesRemovedEvent.getIndex());
+                if (firstIndex >= 0) {
+                    if (values.get(firstIndex) instanceof EventTarget) {
+                        ((EventTarget) values.get(firstIndex)).removeParent(this);
+                    }
+                    values.remove(firstIndex);
+                } else {
+                    //Item is probably already removed. No error is thrown.
+                }
+            }
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
         }
     }
 
