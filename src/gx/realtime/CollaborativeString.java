@@ -2,8 +2,10 @@ package gx.realtime;
 
 import gx.util.RandomUtils;
 
+import name.fraser.neil.plaintext.DiffMatchPatch;
+import name.fraser.neil.plaintext.DiffMatchPatch.*;
+
 import java.util.LinkedList;
-import java.util.List;
 
 public class CollaborativeString extends CollaborativeObject
 {
@@ -171,9 +173,32 @@ public class CollaborativeString extends CollaborativeObject
      */
     public void setText(String text)
     {
-        //TODO: perform a text diff
-        //TODO: alter the text with the minimum amount of text inserts and deletes possible.
-        //TODO: create events
+        model.beginCompoundOperation();
+
+        String oldText = value;
+        DiffMatchPatch dmp = new DiffMatchPatch();
+        LinkedList<Diff> diffs = dmp.diff_main(oldText, text);
+
+        int index = 0;
+        for (Diff diff : diffs) {
+            if (diff.operation == Operation.INSERT) {
+                BaseModelEvent event = new TextInsertedEvent(this, getSessionId(), getUserId(), true, index, diff.text);
+                model.dispatchAndSendEvent(event);
+            } else if (diff.operation == Operation.DELETE) {
+                BaseModelEvent event = new TextDeletedEvent(this, getSessionId(), getUserId(), true, index, diff.text);
+                model.dispatchAndSendEvent(event);
+            }
+            index += diff.text.length();
+        }
+
+        // Update model
+        value = text;
+
+        try {
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
