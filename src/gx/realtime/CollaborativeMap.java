@@ -137,9 +137,6 @@ public class CollaborativeMap extends CollaborativeObject
      */
     public Object set(String key, Object newValue)
     {
-        if (newValue instanceof EventTarget) {
-            ((EventTarget) newValue).addParent(this);
-        }
         Object oldValue = map.get(key);
 
         // Let the model decide to fire a ObjectChangedEvent (could be a compound operation)
