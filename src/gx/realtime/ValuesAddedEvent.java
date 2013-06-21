@@ -1,12 +1,13 @@
 package gx.realtime;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ValuesAddedEvent extends RevertableEvent
 {
 
     private int index;
-    private ArrayList values;
+    private List<Object> values;
 
     /**
      * Event fired when items are added to a collaborative list.
@@ -18,7 +19,7 @@ public class ValuesAddedEvent extends RevertableEvent
      * @param index     The index where values were added.
      * @param values    The values added.
      */
-    public ValuesAddedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, ArrayList values)
+    public ValuesAddedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, List<Object> values)
     {
         super(EventType.VALUES_ADDED, target, sessionId, userId, isLocal, false);
         this.index = index;
@@ -46,7 +47,7 @@ public class ValuesAddedEvent extends RevertableEvent
     /**
      * @return The values that were added.
      */
-    public ArrayList getValues()
+    public List getValues()
     {
         return values;
     }

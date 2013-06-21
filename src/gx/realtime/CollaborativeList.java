@@ -54,8 +54,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void clear()
     {
-        //TODO: make event based.
-        //values.clear();
+        this.removeRange(0, this.length());
     }
 
     /**
@@ -102,20 +101,18 @@ public class CollaborativeList extends CollaborativeObject
     }
 
     /**
-     * Inserts an item into the list at a given index.
+     * Inserts an item into the list at a given index. It will push the element at the given index to the right.
      *
      * @param index The index to insert at.
      * @param value The value to add.
      */
     public void insert(int index, Object value)
     {
-        //TODO: make event based
-        /*
-        if (value instanceof EventTarget) {
-            ((EventTarget) value).addParent(this);
-        }
-        values.add(index, value);
-        */
+        ArrayList<Object> newValues = new ArrayList<>();
+        newValues.add(value);
+        BaseModelEvent event = new ValuesAddedEvent(this, getSessionId(), getUserId(), true, index, newValues);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -126,10 +123,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void insertAll(int index, List<Object> values)
     {
-        for (E value : values) {
-            this.insert(index, value);
-            index++;
-        }
+        BaseModelEvent event = new ValuesAddedEvent(this, getSessionId(), getUserId(), true, index, values);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -169,14 +165,12 @@ public class CollaborativeList extends CollaborativeObject
      */
     public int push(Object value)
     {
-        //TODO: make event based.
-        /*
-        if (value instanceof EventTarget) {
-            ((EventTarget) value).addParent(this);
-        }
-        values.add(value);
+        ArrayList<Object> newValues = new ArrayList<>();
+        newValues.add(value);
+        BaseModelEvent event = new ValuesAddedEvent(this, getSessionId(), getUserId(), true, this.length(), newValues);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
         return this.length();
-        */
     }
 
     /**
@@ -186,9 +180,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void pushAll(List<Object> values)
     {
-        for (Object value : values) {
-            this.push(value);
-        }
+        BaseModelEvent event = new ValuesAddedEvent(this, getSessionId(), getUserId(), true, this.length(), values);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -211,13 +205,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void remove(int index)
     {
-        //TODO: make event based
-        /*
-        E removed = values.remove(index);
-        if (removed instanceof EventTarget) {
-            ((EventTarget) removed).removeParent(this);
-        }
-        */
+        this.removeRange(index, index + 1);
     }
 
     /**
@@ -228,10 +216,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void removeRange(int startIndex, int endIndex)
     {
-        while (startIndex < endIndex) {
-            this.remove(startIndex);
-            endIndex--;
-        }
+        BaseModelEvent event = new ValuesRemovedEvent(this, getSessionId(), getUserId(), true, startIndex, values.subList(startIndex, endIndex));
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -242,13 +229,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public boolean removeValue(Object value)
     {
-        //TODO: make evnet based: use remove(index) with use of indexOf
-        /*
-        if (value instanceof EventTarget) {
-            ((EventTarget) value).removeParent(this);
-        }
-        return values.remove(value);
-        */
+        int oldLength = this.length();
+        this.remove(this.indexOf(value));
+        return this.length() == oldLength - 1;
     }
 
     /**
@@ -259,10 +242,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void replaceRange(int index, List<Object> values)
     {
-        for (Object value : values) {
-            this.set(index, value);
-            index++;
-        }
+        BaseModelEvent event = new ValuesSetEvent(this, getSessionId(), getUserId(), true, index, values.subList(index, index + values.size()), values);
+        updateModel(event);
+        model.dispatchAndSendEvent(event);
     }
 
     /**
@@ -273,8 +255,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void set(int index, Object value)
     {
-        //TODO: make event based
-        //values.set(index, value);
+        ArrayList<Object> newValues = new ArrayList<>();
+        newValues.add(value);
+        replaceRange(index, newValues);
     }
 
     /**
@@ -301,8 +284,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     public void setLength(int length)
     {
-        //TODO: make event based.
-        //values = values.subList(0, length);
+        if (length < this.length()) {
+            removeRange(length, this.length());
+        }
     }
 
     @Override
@@ -311,33 +295,70 @@ public class CollaborativeList extends CollaborativeObject
         switch (event.getType()) {
             case VALUES_ADDED:
                 ValuesAddedEvent valuesAddedEvent = (ValuesAddedEvent) event;
+                addThisAsParent(valuesAddedEvent.getValues());
                 values.addAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
                 break;
             case VALUES_SET:
                 ValuesSetEvent valuesSetEvent = (ValuesSetEvent) event;
                 int index = valuesSetEvent.getIndex();
-                ArrayList<Object> newValues = valuesSetEvent.getNewValues();
-                ArrayList<Object> oldValues = valuesSetEvent.getOldValues();
-                for (Object value : newValues) {
-                    if(values.get(index).equals(oldValues.get(index))){
-                        values.set(index, value);
-                    } else {
-                        System.err.println("Could not set value at index " + index);
+                List<Object> newValues = valuesSetEvent.getNewValues();
+                List<Object> oldValues = valuesSetEvent.getOldValues();
+
+                try{
+                    model.beginCompoundOperation();
+                    for (Object value : newValues) {
+                        if (values.get(index).equals(oldValues.get(index))) {
+                            if (value instanceof EventTarget) {
+                                ((EventTarget) value).addParent(this);
+                            }
+                            if (values.get(index) instanceof EventTarget) {
+                                ((EventTarget) values.get(index)).removeParent(this);
+                            }
+                            values.set(index, value);
+                        } else {
+                            System.err.println("Could not set value at index " + index);
+                        }
+                        index++;
                     }
-                    index++;
+                    model.endCompoundOperation();
+                } catch (Model.NoCompoundOperationInProgressException e) {
+                    e.printStackTrace();
                 }
                 break;
             case VALUES_REMOVED:
                 ValuesRemovedEvent valuesRemovedEvent = (ValuesRemovedEvent) event;
-                for(int i = 0; i < valuesRemovedEvent.getValues().size(); i++){
-                    int firstIndex = getFirstIndexOfAfter(valuesRemovedEvent.getValues().get(i), valuesRemovedEvent.getIndex());
-                    if (firstIndex >= 0) {
-                        values.remove(firstIndex);
-                    } else {
-                        //Item is probably already removed. No error is thrown.
+
+                try {
+                    model.beginCompoundOperation();
+                    for (Object value : valuesRemovedEvent.getValues()) {
+                        int firstIndex = getFirstIndexOfAfter(value, valuesRemovedEvent.getIndex());
+                        if (firstIndex >= 0) {
+                            if (values.get(firstIndex) instanceof EventTarget) {
+                                ((EventTarget) values.get(firstIndex)).removeParent(this);
+                            }
+                            values.remove(firstIndex);
+                        } else {
+                            //Item is probably already removed. No error is thrown.
+                        }
                     }
+                    model.endCompoundOperation();
+                } catch (Model.NoCompoundOperationInProgressException e) {
+                    e.printStackTrace();
                 }
                 break;
+        }
+    }
+
+    /**
+     * This method adds this CollabList as a parent to all of the objects in the given list that are an EventTarget.
+     * @param objects The objects to which this collabList should be added as a parent iff they are an EventTarget.
+     */
+    private void addThisAsParent(List<Object> objects)
+    {
+        for (Object object : objects) {
+            if (object instanceof EventTarget) {
+                ((EventTarget) object).addParent(this);
+            }
         }
     }
 
@@ -348,10 +369,11 @@ public class CollaborativeList extends CollaborativeObject
      * @param after The index from which an occurrence of the given object should be detected.
      * @return The index of the first occurrence after the given index of the given object iff found. -1 otherwise.
      */
-    private int getFirstIndexOfAfter(Object object, int after){
+    private int getFirstIndexOfAfter(Object object, int after)
+    {
         int result = -1;
-        while(result == -1 && after < values.size()){
-            if(object == null && values.get(after) == null || object != null && object.equals(values.get(after))){
+        while (result == -1 && after < values.size()) {
+            if (object == null && values.get(after) == null || object != null && object.equals(values.get(after))) {
                 result = after;
             }
             after++;

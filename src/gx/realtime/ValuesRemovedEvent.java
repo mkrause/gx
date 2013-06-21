@@ -1,12 +1,13 @@
 package gx.realtime;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ValuesRemovedEvent extends RevertableEvent
 {
 
     private int index;
-    private ArrayList<Object> values;
+    private List<Object> values;
 
     /**
      * Event fired when items are removed from a collaborative list.
@@ -18,7 +19,7 @@ public class ValuesRemovedEvent extends RevertableEvent
      * @param index     The index where values were removed.
      * @param values    The values removed.
      */
-    public ValuesRemovedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, ArrayList<Object> values)
+    public ValuesRemovedEvent(CollaborativeList target, String sessionId, String userId, boolean isLocal, int index, List<Object> values)
     {
         super(EventType.VALUES_REMOVED, target, sessionId, userId, isLocal, false);
         this.index = index;
@@ -46,7 +47,7 @@ public class ValuesRemovedEvent extends RevertableEvent
     /**
      * @return The values that were removed.
      */
-    public ArrayList<Object> getValues()
+    public List<Object> getValues()
     {
         return values;
     }

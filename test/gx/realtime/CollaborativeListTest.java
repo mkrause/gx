@@ -13,7 +13,7 @@ public class CollaborativeListTest
 
     private TestObject simpleObject;
     private TestObject testObject;
-    private CollaborativeList<TestObject> list;
+    private CollaborativeList list;
 
     @Before
     public void setUp()
@@ -21,7 +21,7 @@ public class CollaborativeListTest
         simpleObject = new TestObject(123);
         testObject = new TestObject(456, simpleObject);
 
-        list = new CollaborativeList<TestObject>("listId", null);
+        list = new CollaborativeList("listId", null);
         list.push(simpleObject);
         list.push(testObject);
     }
@@ -29,7 +29,7 @@ public class CollaborativeListTest
     @Test
     public void testCollaborativeList()
     {
-        CollaborativeList<TestObject> list = new CollaborativeList<TestObject>("listId", null);
+        CollaborativeList list = new CollaborativeList("listId", null);
         assertNotNull(list.getId());
         assertEquals(0, list.length());
     }
@@ -37,7 +37,7 @@ public class CollaborativeListTest
     @Test
     public void testAsArray()
     {
-        ArrayList<TestObject> array = list.asArray();
+        ArrayList<Object> array = list.asArray();
         assertEquals(2, array.size());
 
         //test if everything is unchanged
@@ -63,7 +63,7 @@ public class CollaborativeListTest
         assertFalse(simpleObject == array.get(0));
 
         //test on empty list
-        list = new CollaborativeList<TestObject>("listId", null);
+        list = new CollaborativeList("listId", null);
         array = list.asArray();
         assertEquals(0, array.size());
     }
@@ -71,7 +71,7 @@ public class CollaborativeListTest
     @Test
     public void testIndexOfEComparatorOfE()
     {
-        Comparator<TestObject> comparator = new TestObjectComparator();
+        Comparator<Object> comparator = new TestObjectComparator();
         assertEquals(0, list.indexOf(simpleObject, comparator));
         assertEquals(1, list.indexOf(testObject, comparator));
         assertEquals(-1, list.indexOf(new TestObject(999), comparator));
@@ -80,14 +80,14 @@ public class CollaborativeListTest
     @Test
     public void testInsertAll()
     {
-        list = new CollaborativeList<TestObject>("listId", null);
+        list = new CollaborativeList("listId", null);
 
         //test for no inserts
-        list.insertAll(0, new ArrayList<TestObject>());
+        list.insertAll(0, new ArrayList<Object>());
         assertEquals(0, list.length());
 
         //test for set of inserts at start
-        ArrayList<TestObject> objects = new ArrayList();
+        ArrayList<Object> objects = new ArrayList();
         objects.add(simpleObject);
         objects.add(testObject);
         list.insertAll(0, objects);
@@ -106,7 +106,7 @@ public class CollaborativeListTest
         //test for inserting list at beginning
         TestObject object1 = new TestObject(1);
         TestObject object2 = new TestObject(2);
-        ArrayList<TestObject> objects2 = new ArrayList();
+        ArrayList<Object> objects2 = new ArrayList();
         objects2.add(object1);
         objects2.add(object2);
         list.insertAll(0, objects2);
@@ -121,7 +121,7 @@ public class CollaborativeListTest
         //test for set of inserts in middle (one element)
         TestObject object3 = new TestObject(3);
         TestObject object4 = new TestObject(4);
-        ArrayList<TestObject> objects3 = new ArrayList();
+        ArrayList<Object> objects3 = new ArrayList();
         objects3.add(object3);
         objects3.add(object4);
         list.insertAll(5, objects3);
@@ -138,18 +138,18 @@ public class CollaborativeListTest
         //test for set of inserts at end
         TestObject object5 = new TestObject(5);
         TestObject object6 = new TestObject(6);
-        ArrayList<TestObject> objects4 = new ArrayList();
+        ArrayList<Object> objects4 = new ArrayList();
         objects4.add(object5);
         objects4.add(object5);
         list.insertAll(8, objects4);
         testLastList(object1, object2, object3, object4, object5, object6);
 
         //test for no inserts
-        list.insertAll(0, new ArrayList<TestObject>());
+        list.insertAll(0, new ArrayList<Object>());
         testLastList(object1, object2, object3, object4, object5, object6);
-        list.insertAll(5, new ArrayList<TestObject>());
+        list.insertAll(5, new ArrayList<Object>());
         testLastList(object1, object2, object3, object4, object5, object6);
-        list.insertAll(10, new ArrayList<TestObject>());
+        list.insertAll(10, new ArrayList<Object>());
         testLastList(object1, object2, object3, object4, object5, object6);
     }
 
@@ -172,7 +172,7 @@ public class CollaborativeListTest
     public void testLastIndexOfEComparatorOfE()
     {
         list.push(testObject.clone());
-        Comparator<TestObject> comparator = new TestObjectComparator();
+        Comparator<Object> comparator = new TestObjectComparator();
         assertEquals(2, list.lastIndexOf(testObject, comparator));
         assertEquals(0, list.lastIndexOf(simpleObject, comparator));
         assertEquals(-1, list.lastIndexOf(new TestObject(999), comparator));
@@ -236,7 +236,7 @@ public class CollaborativeListTest
     public void testRemoveValueInteger()
     {
         //Test for integers, as the remove() of a java List is used, which has different behavior for ints than for Integers
-        CollaborativeList<Integer> list = new CollaborativeList<Integer>("listId", null);
+        CollaborativeList list = new CollaborativeList("listId", null);
         list.push(3);
         list.push(2);
         list.push(1);
@@ -253,12 +253,12 @@ public class CollaborativeListTest
     public void testReplaceRange()
     {
         //Test with empty array
-        list.replaceRange(0, new ArrayList<TestObject>());
+        list.replaceRange(0, new ArrayList<Object>());
 
         //Replace first x element
         TestObject object1 = new TestObject(1);
         TestObject object2 = new TestObject(2);
-        ArrayList<TestObject> objects = new ArrayList();
+        ArrayList<Object> objects = new ArrayList();
         objects.add(object1);
         objects.add(object2);
         list.pushAll(objects);
@@ -295,7 +295,7 @@ public class CollaborativeListTest
     {
         TestObject object1 = new TestObject(1);
         TestObject object2 = new TestObject(2);
-        ArrayList<TestObject> objects = new ArrayList();
+        ArrayList<Object> objects = new ArrayList();
         objects.add(object1);
         objects.add(object2);
         list.pushAll(objects);
@@ -331,13 +331,17 @@ public class CollaborativeListTest
 
 }
 
-class TestObjectComparator implements Comparator<TestObject>
+class TestObjectComparator implements Comparator<Object>
 {
 
     @Override
-    public int compare(TestObject o1, TestObject o2)
+    public int compare(Object o1, Object o2)
     {
-        return o1.getIntId() - o2.getIntId();
+        int result = 0;
+        if(o1 instanceof TestObject && o2 instanceof TestObject){
+            result = ((TestObject) o1).getIntId() - ((TestObject) o2).getIntId();
+        }
+        return result;
     }
 
 }

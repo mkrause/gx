@@ -142,24 +142,22 @@ public class Model extends EventTarget
     /**
      * Creates an empty Collaborative List.
      *
-     * @param <E> The generic type of the Collaborative List that should be created.
      * @return A new empty Collaborative List.
      */
-    public <E> CollaborativeList<E> createList()
+    public CollaborativeList createList()
     {
-        return new CollaborativeList<E>(RandomUtils.getRandomAlphaNumeric(), this);
+        return new CollaborativeList(RandomUtils.getRandomAlphaNumeric(), this);
     }
 
     /**
      * Creates a Collaborative List with the given initial values.
      *
      * @param opt_initialValue Initial value for the list.
-     * @param <E>              The generic type of the newly created list.
      * @return A Collaborative List with the given initial values.
      */
-    public <E> CollaborativeList<E> createList(List<E> opt_initialValue)
+    public CollaborativeList createList(List opt_initialValue)
     {
-        CollaborativeList<E> result = createList();
+        CollaborativeList result = createList();
         result.pushAll(opt_initialValue);
         return result;
     }
