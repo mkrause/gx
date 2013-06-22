@@ -85,7 +85,7 @@ public class Model extends EventTarget
         CompoundOperation newCompoundOperation = new CompoundOperation(document.getSession().getSessionId(), document.getMe().getUserId(), true, opt_name);
 
         // Create nested compound operation
-        if (!compoundOperations.isEmpty()) {
+        if (compoundOperationInProgress()) {
             CompoundOperation currentCO = compoundOperations.peek();
             currentCO.addEvent(newCompoundOperation);
         }
@@ -219,7 +219,7 @@ public class Model extends EventTarget
      */
     public void endCompoundOperation() throws NoCompoundOperationInProgressException
     {
-        if (compoundOperations.isEmpty()) {
+        if (!compoundOperationInProgress()) {
             throw new NoCompoundOperationInProgressException();
         }
 
@@ -228,8 +228,14 @@ public class Model extends EventTarget
         compoundOperation.setInProgress(false);
 
         // Send changes if the last compound operations is closed
-        if(compoundOperations.isEmpty())
+        if(!compoundOperationInProgress()) {
             executeCompoundOperation(compoundOperation);
+        }
+    }
+
+    public boolean compoundOperationInProgress()
+    {
+        return !compoundOperations.isEmpty();
     }
 
     /**
@@ -531,7 +537,7 @@ public class Model extends EventTarget
     private void dispatchAndSendEvent(BaseModelEvent event, boolean register)
     {
         // Buffer events if a compound operation is in progress
-        if (!compoundOperations.isEmpty() && event instanceof RevertableEvent) {
+        if (compoundOperationInProgress() && event instanceof RevertableEvent) {
             compoundOperations.peek().addEvent((RevertableEvent) event);
             return;
         }

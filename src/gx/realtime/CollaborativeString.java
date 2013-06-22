@@ -1,12 +1,8 @@
 package gx.realtime;
 
-import difflib.Delta;
-import difflib.DiffUtils;
-import difflib.Patch;
 import gx.util.RandomUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class CollaborativeString extends CollaborativeObject
@@ -89,7 +85,7 @@ public class CollaborativeString extends CollaborativeObject
      */
     public IndexReference registerReference(int index, boolean canBeDeleted)
     {
-        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, this, index, canBeDeleted);
         references.add(result);
         return result;
     }
@@ -172,7 +168,6 @@ public class CollaborativeString extends CollaborativeObject
      */
     private void insertText(TextInsertedEvent tiEvent)
     {
-        //TODO: update references of this collabString.
         int index = tiEvent.getIndex();
         String insertedText = tiEvent.getText();
 
@@ -180,6 +175,27 @@ public class CollaborativeString extends CollaborativeObject
         value = value.substring(0, index)
                 + insertedText
                 + value.substring(index);
+        incrementReferences(index, insertedText.length());
+    }
+
+    /**
+     * This method increments the references of this CollabString that refer to an index after the given index with the given amount.
+     * @param index The index after which the indexReferences need to be incremented (inclusive).
+     * @param amount The amount with which the indexReferences need to be incremented.
+     */
+    private void incrementReferences(int index, int amount)
+    {
+        try{
+            model.beginCompoundOperation();
+            for (IndexReference ref : references) {
+                if (ref.getIndex() >= index) {
+                    ref.incrementIndex(amount);
+                }
+            }
+            model.endCompoundOperation();
+        } catch (Model.NoCompoundOperationInProgressException e){
+            e.printStackTrace();;
+        }
     }
 
     /**
@@ -188,7 +204,7 @@ public class CollaborativeString extends CollaborativeObject
      */
     private void deleteText(TextDeletedEvent tdEvent)
     {
-        //TODO: update references of this collabString.
+        //TODO: update references and fire ReferenceShiftedEvent
         int deleteIndex = tdEvent.getIndex();
         String deletedText = tdEvent.getText();
 

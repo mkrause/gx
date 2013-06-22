@@ -5,19 +5,14 @@ public class IndexReference extends CollaborativeObject
 
     private boolean canBeDeleted;
     public int index;
-    private CollaborativeObject collaborativeObject;
+    private CollaborativeObject referencedObject;
 
-	/* TODO:
-     * make sure index updates when position in collaborativeObject changes (see documentation),
-	 * + make this depend on canBeDeleted
-	 * + take into account that the index property is public
-	 */
-
-    public IndexReference(String id, Model model, int index, boolean canBeDeleted)
+    public IndexReference(String id, Model model, CollaborativeObject referencedObject, int index, boolean canBeDeleted)
     {
         super(id, model);
         this.index = index;
         this.canBeDeleted = canBeDeleted;
+        this.referencedObject = referencedObject;
     }
 
     public boolean canBeDeleted()
@@ -27,7 +22,26 @@ public class IndexReference extends CollaborativeObject
 
     public CollaborativeObject collaborativeObject()
     {
-        return collaborativeObject;
+        return referencedObject;
     }
 
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
+    }
+
+    public void incrementIndex(int amount)
+    {
+        this.index += amount;
+    }
+
+    public void decrementIndex(int amount)
+    {
+        this.index -= amount;
+    }
 }

@@ -200,7 +200,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     public IndexReference registerReference(int index, boolean canBeDeleted)
     {
-        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, index, canBeDeleted);
+        IndexReference result = new IndexReference(RandomUtils.getRandomAlphaNumeric(), this.model, this, index, canBeDeleted);
         references.add(result);
         return result;
     }
@@ -321,7 +321,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     private void setValues(ValuesSetEvent valuesSetEvent)
     {
-        //TODO: update references.
+        //TODO: update references and fire ReferenceShiftedEvent
         int index = valuesSetEvent.getIndex();
         List<Object> newValues = valuesSetEvent.getNewValues();
         List<Object> oldValues = valuesSetEvent.getOldValues();
@@ -355,7 +355,7 @@ public class CollaborativeList extends CollaborativeObject
      */
     private void removeValues(ValuesRemovedEvent valuesRemovedEvent)
     {
-        //TODO: update references.
+        //TODO: update references and fire ReferenceShiftedEvent
         try {
             model.beginCompoundOperation();
             for (Object value : valuesRemovedEvent.getValues()) {
