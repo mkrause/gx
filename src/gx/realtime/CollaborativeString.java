@@ -5,6 +5,7 @@ import gx.util.RandomUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class CollaborativeString extends CollaborativeObject
 {
 
@@ -175,29 +176,7 @@ public class CollaborativeString extends CollaborativeObject
         value = value.substring(0, index)
                 + insertedText
                 + value.substring(index);
-        updateReferences(index, insertedText.length(), tiEvent.isLocal());
-    }
-
-    /**
-     * This method increments the references of this CollabString that refer to an index after the given index with the given amount.
-     * @param index The index after which the indexReferences need to be updated (inclusive).
-     * @param amount The amount with which the indexReferences need to be incremented.
-     */
-    private void updateReferences(int index, int amount, boolean isLocal)
-    {
-        try{
-            model.beginCompoundOperation();
-            for (IndexReference ref : references) {
-                if (ref.getIndex() >= index) {
-                    int oldIndex = ref.getIndex();
-                    ref.incrementIndex(amount);
-                    fireRSEvent(ref, oldIndex, isLocal);
-                }
-            }
-            model.endCompoundOperation();
-        } catch (Model.NoCompoundOperationInProgressException e){
-            e.printStackTrace();
-        }
+        ReferenceUpdater.updateReferences(model, references, index, insertedText.length(), tiEvent.isLocal());
     }
 
     /**
@@ -224,45 +203,7 @@ public class CollaborativeString extends CollaborativeObject
         value = value.substring(0, deleteIndex)
                 + value.substring(deleteIndex + deletedText.length());
 
-        deleteReferences(deleteIndex, deletedText.length(), tdEvent.isLocal());
-        updateReferences(deleteIndex, -1 * deletedText.length(), tdEvent.isLocal());
-    }
-
-    /**
-     * Wrapper method for deleting reference that point to the given range. Iff a reference canBeDeleted, its index is set to -1, else to the
-     * start of the deleted range. A corresponding ReferenceShiftedEvent is fired.
-     * @param start The start of the deleted range.
-     * @param length The length of the deleted range.
-     * @param isLocal Boolean indicating whether the deletion was caused by a local event ora remote event.
-     */
-    private void deleteReferences(int start, int length, boolean isLocal){
-        for (IndexReference ref : references) {
-            if (ref.getIndex() >= start && ref.getIndex() < start + length) {
-                int oldIndex = ref.getIndex();
-
-                if(ref.canBeDeleted()){
-                    ref.setIndex(-1);
-                } else {
-                    ref.setIndex(start);
-                }
-
-                fireRSEvent(ref, oldIndex, isLocal);
-            }
-        }
-    }
-
-    /**
-     * Wrapper function for sending a ReferenceShiftedEvent for the given reference to the model.
-     * @param ref The IndexReference that has shifted. The index of this reference should already be updated.
-     * @param oldIndex The old index of the given reference.
-     * @param isLocal Boolean indicating whether the shift was caused by a local change or a remote change. Used to determine whether the event should also be sent to the remote.
-     */
-    private void fireRSEvent(IndexReference ref, int oldIndex, boolean isLocal){
-        ReferenceShiftedEvent rsEvent = new ReferenceShiftedEvent(ref, oldIndex, ref.getIndex(), getSessionId(), getUserId(), isLocal);
-        if (isLocal) {
-            model.dispatchAndSendEvent(rsEvent);
-        } else {
-            model.dispatchEvent(rsEvent);
-        }
+        ReferenceUpdater.deleteReferences(model, references, deleteIndex, deletedText.length(), tdEvent.isLocal());
+        ReferenceUpdater.updateReferences(model, references, deleteIndex, -1 * deletedText.length(), tdEvent.isLocal());
     }
 }

@@ -304,6 +304,7 @@ public class CollaborativeList extends CollaborativeObject
                 ValuesAddedEvent valuesAddedEvent = (ValuesAddedEvent) event;
                 addThisAsParent(valuesAddedEvent.getValues());
                 values.addAll(valuesAddedEvent.getIndex(), valuesAddedEvent.getValues());
+                ReferenceUpdater.updateReferences(model, references, valuesAddedEvent.getIndex(), valuesAddedEvent.getValues().size(), valuesAddedEvent.isLocal());
                 break;
             case VALUES_SET:
                 setValues((ValuesSetEvent) event);
@@ -321,7 +322,6 @@ public class CollaborativeList extends CollaborativeObject
      */
     private void setValues(ValuesSetEvent valuesSetEvent)
     {
-        //TODO: update references and fire ReferenceShiftedEvent
         int index = valuesSetEvent.getIndex();
         List<Object> newValues = valuesSetEvent.getNewValues();
         List<Object> oldValues = valuesSetEvent.getOldValues();
@@ -355,9 +355,9 @@ public class CollaborativeList extends CollaborativeObject
      */
     private void removeValues(ValuesRemovedEvent valuesRemovedEvent)
     {
-        //TODO: update references and fire ReferenceShiftedEvent
         try {
             model.beginCompoundOperation();
+            int amount = 0;
             for (Object value : valuesRemovedEvent.getValues()) {
                 int firstIndex = getFirstIndexOfAfter(value, valuesRemovedEvent.getIndex());
                 if (firstIndex >= 0) {
@@ -365,10 +365,14 @@ public class CollaborativeList extends CollaborativeObject
                         ((EventTarget) values.get(firstIndex)).removeParent(this);
                     }
                     values.remove(firstIndex);
+                    amount++;
                 } else {
                     //Item is probably already removed. No error is thrown.
                 }
             }
+            ReferenceUpdater.deleteReferences(model, references, valuesRemovedEvent.getIndex(), amount, valuesRemovedEvent.isLocal());
+            ReferenceUpdater.updateReferences(model, references, valuesRemovedEvent.getIndex() + amount, -1 * amount, valuesRemovedEvent.isLocal());
+
             model.endCompoundOperation();
         } catch (Model.NoCompoundOperationInProgressException e) {
             e.printStackTrace();
