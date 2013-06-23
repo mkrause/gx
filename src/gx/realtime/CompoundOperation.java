@@ -13,7 +13,7 @@ public class CompoundOperation extends RevertableEvent
 {
 
     private String name;
-    private ArrayList<RevertableEvent> events;
+    private ArrayList<BaseModelEvent> events;
     private boolean InProgress;
 
     public CompoundOperation(String sessionId, String userId, boolean isLocal)
@@ -29,12 +29,12 @@ public class CompoundOperation extends RevertableEvent
         this.name = name;
     }
 
-    public void addEvent(RevertableEvent event)
+    public void addEvent(BaseModelEvent event)
     {
         events.add(event);
     }
 
-    public List<RevertableEvent> getEvents()
+    public List<BaseModelEvent> getEvents()
     {
         return events;
     }
@@ -59,9 +59,21 @@ public class CompoundOperation extends RevertableEvent
     {
         CompoundOperation result = new CompoundOperation(sessionId, userId, isLocal);
         for (int i = events.size() - 1; i >= 0; i--) {
-            result.addEvent(events.get(i).getReverseEvent());
+            BaseModelEvent event = events.get(i);
+            if (event instanceof RevertableEvent)
+                result.addEvent(((RevertableEvent) event).getReverseEvent());
         }
         return result;
+    }
+
+    @Override
+    public void setLocal(boolean local)
+    {
+        super.setLocal(local);
+
+        for (BaseModelEvent event : events) {
+            event.setLocal(local);
+        }
     }
 
     public List<ObjectChangedEvent> toObjectChangedEvents()

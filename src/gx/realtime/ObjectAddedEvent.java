@@ -1,8 +1,11 @@
 package gx.realtime;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import gx.realtime.serialize.ObjectAddedEventSerializer;
+
+@JsonSerialize(using = ObjectAddedEventSerializer.class)
 public class ObjectAddedEvent extends BaseModelEvent
 {
-
     private ObjectType objectType;
 
     public ObjectAddedEvent(String targetId, String sessionId, String userId, boolean local, int type)
@@ -14,6 +17,11 @@ public class ObjectAddedEvent extends BaseModelEvent
     {
         super(EventType.OBJECT_ADDED, targetId, sessionId, userId, local, false);
         this.objectType = type;
+    }
+
+    public int getTypeId()
+    {
+        return ObjectType.map(objectType);
     }
 
     public <T extends CollaborativeObject> Class<T> getObjectType()

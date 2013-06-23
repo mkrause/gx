@@ -43,7 +43,11 @@ public class ValueChangedEventSerializer extends StdSerializer<ValueChangedEvent
             jgen.writeNumber(event.getValueType().asInt());
 
             // Try to serialize the object
-            jgen.writeObject(value);
+            if (event.getValueType() == ValueChangedOperation.ValueType.COLLABORATIVE_OBJECT && value instanceof CollaborativeObject) {
+                jgen.writeObject(((CollaborativeObject) value).getId());
+            } else {
+                jgen.writeObject(value);
+            }
             jgen.writeEndArray();
         }
 

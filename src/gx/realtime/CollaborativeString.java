@@ -4,6 +4,10 @@ import gx.util.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import name.fraser.neil.plaintext.DiffMatchPatch;
+import name.fraser.neil.plaintext.DiffMatchPatch.*;
+
+import java.util.LinkedList;
 
 
 public class CollaborativeString extends CollaborativeObject
@@ -119,14 +123,30 @@ public class CollaborativeString extends CollaborativeObject
      */
     public void setText(String text)
     {
-        try{
-            model.beginCompoundOperation();
+        model.beginCompoundOperation();
 
-            this.removeRange(0, this.length());
-            this.append(text);
+        String oldText = value;
+        DiffMatchPatch dmp = new DiffMatchPatch();
+        LinkedList<Diff> diffs = dmp.diff_main(oldText, text);
 
+        int index = 0;
+        for (Diff diff : diffs) {
+            if (diff.operation == Operation.INSERT) {
+                BaseModelEvent event = new TextInsertedEvent(this, getSessionId(), getUserId(), true, index, diff.text);
+                model.dispatchAndSendEvent(event);
+            } else if (diff.operation == Operation.DELETE) {
+                BaseModelEvent event = new TextDeletedEvent(this, getSessionId(), getUserId(), true, index, diff.text);
+                model.dispatchAndSendEvent(event);
+            }
+            index += diff.text.length();
+        }
+
+        // Update model
+        value = text;
+
+        try {
             model.endCompoundOperation();
-        } catch (Model.NoCompoundOperationInProgressException e){
+        } catch (Model.NoCompoundOperationInProgressException e) {
             e.printStackTrace();
         }
     }

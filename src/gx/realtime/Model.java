@@ -4,6 +4,7 @@ import gx.browserchannel.BrowserChannel;
 import gx.browserchannel.message.SaveMessage;
 import gx.realtime.operation.ValueChangedOperation.ValueType;
 import gx.util.RandomUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -96,6 +97,7 @@ public class Model extends EventTarget
     public void beginCreationCompoundOperation()
     {
         //TODO
+        throw new NotImplementedException();
     }
 
     /**
@@ -107,6 +109,7 @@ public class Model extends EventTarget
      */
     public <T extends CollaborativeObject> T create(Class<T> collabType)
     {
+        // TODO: send event to remote
         return create(RandomUtils.getRandomAlphaNumeric(), collabType);
     }
 
@@ -146,7 +149,10 @@ public class Model extends EventTarget
      */
     public CollaborativeList createList()
     {
-        return new CollaborativeList(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeList list = new CollaborativeList(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(list.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_LIST);
+        dispatchAndSendEvent(event);
+        return list;
     }
 
     /**
@@ -157,8 +163,16 @@ public class Model extends EventTarget
      */
     public CollaborativeList createList(List opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeList result = createList();
         result.pushAll(opt_initialValue);
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -169,7 +183,10 @@ public class Model extends EventTarget
      */
     public CollaborativeMap createMap()
     {
-        return new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeMap map = new CollaborativeMap(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(map.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_MAP);
+        dispatchAndSendEvent(event);
+        return map;
     }
 
     /**
@@ -180,10 +197,18 @@ public class Model extends EventTarget
      */
     public CollaborativeMap createMap(Map<String, Object> opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeMap result = createMap();
         Set<Entry<String, Object>> entries = opt_initialValue.entrySet();
         for (Entry<String, Object> entry : entries) {
             result.set(entry.getKey(), entry.getValue());
+        }
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -195,7 +220,10 @@ public class Model extends EventTarget
      */
     public CollaborativeString createString()
     {
-        return new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
+        CollaborativeString string = new CollaborativeString(RandomUtils.getRandomAlphaNumeric(), this);
+        BaseModelEvent event = new ObjectAddedEvent(string.getId(), getSessionId(), getUserId(), true, ObjectType.COLLABORATIVE_STRING);
+        dispatchAndSendEvent(event);
+        return string;
     }
 
     /**
@@ -206,8 +234,16 @@ public class Model extends EventTarget
      */
     public CollaborativeString createString(String opt_initialValue)
     {
+        beginCompoundOperation("initialize");
+
         CollaborativeString result = createString();
         result.append(opt_initialValue);
+
+        try {
+            endCompoundOperation();
+        } catch (NoCompoundOperationInProgressException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -385,6 +421,11 @@ public class Model extends EventTarget
             for (BaseModelEvent e : ocEvent.getEvents()) {
                 updateModel(e);
             }
+        } else if (event instanceof CompoundOperation) {
+            CompoundOperation coEvent = (CompoundOperation) event;
+            for (BaseModelEvent e : coEvent.getEvents()) {
+                updateModel(e);
+            }
         } else {
             EventTarget target = event.getTarget();
             if (target instanceof CollaborativeObject)
@@ -474,10 +515,7 @@ public class Model extends EventTarget
         registerMutation(event);
 
         // Fire ObjectChangedEvents on the original targets
-        List<ObjectChangedEvent> ocEvents = event.toObjectChangedEvents();
-        for (ObjectChangedEvent oce : ocEvents) {
-            dispatchEvent(oce);
-        }
+        dispatchEvent(event);
 
         // Send event
         sendToRemote(event);
@@ -508,10 +546,8 @@ public class Model extends EventTarget
         if (event instanceof CompoundOperation) {
             eventToSend = (CompoundOperation) event;
         } else {
-            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
-            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
-            eventToSend = new CompoundOperation(sessionId, userId, true);
-            eventToSend.addEvent((RevertableEvent)event);
+            eventToSend = new CompoundOperation(getSessionId(), getUserId(), true);
+            eventToSend.addEvent(event);
         }
 
         BrowserChannel channel = document.getBrowserChannel();
@@ -559,6 +595,17 @@ public class Model extends EventTarget
      */
     public void dispatchEvent(Event event)
     {
+        if (event instanceof CompoundOperation) {
+            List<ObjectChangedEvent> ocEvents = ((CompoundOperation) event).toObjectChangedEvents();
+            for (ObjectChangedEvent oce : ocEvents) {
+                dispatchEvent(oce);
+            }
+            return;
+        }
+
+        if (event instanceof ObjectAddedEvent)
+            return;
+
         if (event.getTarget() == null)
             return;
 
@@ -567,16 +614,22 @@ public class Model extends EventTarget
             eventToDispatch = event;
         } else if (event instanceof BaseModelEvent) {
             BaseModelEvent bmEvent = (BaseModelEvent) event;
-            String sessionId = (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
-            String userId = (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
             List<BaseModelEvent> eventList = new LinkedList<>();
             eventList.add(bmEvent);
-            eventToDispatch = new ObjectChangedEvent(bmEvent.getTarget(), sessionId, userId, true, eventList);
+            eventToDispatch = new ObjectChangedEvent(bmEvent.getTarget(), getSessionId(), getUserId(), true, eventList);
         } else {
             eventToDispatch = event;
         }
 
         eventToDispatch.getTarget().fireEvent(eventToDispatch);
+    }
+
+    private String getSessionId() {
+        return (document != null && document.getSession() != null) ? document.getSession().getSessionId() : null;
+    }
+
+    private String getUserId() {
+        return (document != null && document.getMe() != null) ? document.getMe().getUserId() : null;
     }
 
     /**

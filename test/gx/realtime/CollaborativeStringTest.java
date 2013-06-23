@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 public class CollaborativeStringTest
 {
@@ -11,7 +12,8 @@ public class CollaborativeStringTest
     @Test
     public void testInsertString()
     {
-        CollaborativeString string = new CollaborativeString(null, null);
+        Model model = mock(Model.class);
+        CollaborativeString string = new CollaborativeString("string", model);
         string.append("abcdef");
         assertEquals("abcdef", string.getText());
 
@@ -32,7 +34,7 @@ public class CollaborativeStringTest
         assertEquals("yzxabcduvwefxyz", string.getText());
 
         //test with empty string
-        string = new CollaborativeString(null, null);
+        string = new CollaborativeString("string", model);
         string.insertString(0, "abc");
         assertEquals("abc", string.getText());
     }
@@ -40,7 +42,8 @@ public class CollaborativeStringTest
     @Test
     public void testAppend()
     {
-        CollaborativeString string = new CollaborativeString(null, null);
+        Model model = mock(Model.class);
+        CollaborativeString string = new CollaborativeString("string", model);
         assertEquals("", string.getText());
         string.append("abc");
         assertEquals("abc", string.getText());
@@ -53,7 +56,8 @@ public class CollaborativeStringTest
     @Test
     public void testRemoveRange()
     {
-        CollaborativeString string = new CollaborativeString(null, null);
+        Model model = mock(Model.class);
+        CollaborativeString string = new CollaborativeString("string", model);
         string.append("abcdefghijklmopqrstuvwxyz");
 
         //test for removing nothing
@@ -86,7 +90,8 @@ public class CollaborativeStringTest
     @Test
     public void testSetText()
     {
-        CollaborativeString string = new CollaborativeString(null, null);
+        Model model = mock(Model.class);
+        CollaborativeString string = new CollaborativeString("string", model);
         string.setText("abc");
         assertEquals("abc", string.getText());
         string.setText("");

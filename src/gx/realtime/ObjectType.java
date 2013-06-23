@@ -18,4 +18,17 @@ public enum ObjectType
         }
         return null;
     }
+
+    public static int map(ObjectType type)
+    {
+        switch (type) {
+            case COLLABORATIVE_MAP:
+                return 0;
+            case COLLABORATIVE_LIST:
+                return 1;
+            case COLLABORATIVE_STRING:
+                return 2;
+        }
+        return -1;
+    }
 }

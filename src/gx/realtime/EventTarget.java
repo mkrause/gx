@@ -63,13 +63,15 @@ public abstract class EventTarget
      */
     protected void fireEvent(Event event)
     {
-        if (this.equals(event.getTarget())) {
-            Set<EventHandler> handlers = eventHandlers.get(event.getType());
-            if (handlers != null) {
-                for (EventHandler handler : handlers) {
-                    handler.handleEvent(event);
-                }
-            }
+        if (!this.equals(event.getTarget()))
+            return;
+
+        Set<EventHandler> handlers = eventHandlers.get(event.getType());
+        if (handlers == null)
+            return;
+
+        for (EventHandler handler : handlers) {
+            handler.handleEvent(event);
         }
     }
 
