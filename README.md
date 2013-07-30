@@ -1,5 +1,5 @@
 ___
-**Note:** Unfortunately, due to changes to the protocol (made by Google), this library no longer functions properly. Because we cannot keep up with the pace of protocol changes, this library is not updated anymore :(.
+**Note:** Unfortunately, due to changes to the protocol (made by Google), this library no longer functions properly. Because we cannot keep up with the pace of protocol changes, we don't update this library anymore :(. Of course it is open to contributions.
 ___
 
 gx
